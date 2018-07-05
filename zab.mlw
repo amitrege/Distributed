@@ -1,0 +1,945 @@
+module Zab
+    use import ref.Ref
+    use import int.Int
+    use import int.EuclideanDivision
+
+    use import array.Array
+    use import array.NumOf
+
+    use import list.List
+    use import list.Append
+    use import list.HdTlNoOpt
+
+    type label = Prp | Ack_P | Cmt
+    type roundNo
+    type pid
+
+    exception ExitBroadcast
+    
+    (** p, lab, i, labr *)
+    type tag = Tag int int int int 
+    type message = Msg tag int
+
+    val ptr : ref int
+
+    val m_arr: array message
+    val m1 : message
+    val m2 : message
+    val n: int
+
+
+    predicate gt (t1: tag) (t2:tag)  =
+    match t1, t2 with
+    | Tag p1 lab1 i1 labr1 , Tag p2 lab2 i2 labr2 -> if p1 > p2 then True else if p1 < p2 then false else if lab1 > lab2 then True else if lab1 < lab2 then false else if i1 > i2 then True else if i1 < i2 then false else if labr1 > labr2 then True else false
+    | _ -> False
+    end
+
+    predicate is_propose (m:message) = 
+    match m with
+    | Msg (Tag p lab i labr) pid -> if labr = 1 then True else False
+    | _ -> False
+    end
+
+    let check_propose (m: message) 
+    ensures {result = True <-> is_propose m}
+    =
+    match m with
+    | Msg (Tag p lab i labr) pid -> if labr = 1 then True else False
+    | _ -> False
+    end
+
+    predicate is_commit (m:message) = 
+    match m with
+    | Msg (Tag p lab i labr) pid -> if labr = 3 then True else False
+    | _ -> False
+    end
+
+    let check_commit (m: message) 
+    ensures {result = True <-> is_commit m}
+    =
+    match m with
+    | Msg (Tag p lab i labr) pid -> if labr = 3 then True else False
+    | _ -> False
+    end
+
+(**  n is added for compatibility*)
+    predicate is_ackp_el (n: int) (m:message) = 
+    match m with
+    | Msg (Tag p lab i labr) pid -> if labr = 2 then True else False
+    | _ -> False
+    end
+
+    let check_ackp_el (m: message) 
+    ensures {result = True <-> is_ackp_el 0 m}
+    =
+    match m with
+    | Msg (Tag p lab i labr) pid -> if labr = 2 then True else False
+    | _ -> False
+    end
+
+    predicate is_ackp (m: array message) (n: int) = 
+    if numof is_ackp_el m 0 (length m - 1) >= (div n 2) then True else False
+
+    let check_ackp (m: array message) (n:int)   
+    (**ensures {result = True <-> is_ackp m n}*)
+    ensures {!ptr >= div n 2 <-> result = True}
+    =
+    let correctMsg = ref 0 in
+    let prev = ref (!correctMsg - 1) in  
+    for x = 0 to ((length m) - 1)
+    do
+    invariant {!correctMsg = !prev + 1 \/ !correctMsg = !prev}
+    invariant {0<=x<= (length m) }
+    invariant {!correctMsg >= 0}
+        prev := !correctMsg;
+        if check_ackp_el m[x]
+        then
+        begin
+            correctMsg := !correctMsg + 1;
+            assert {is_ackp_el 0 m[x] -> !correctMsg = !prev + 1};
+        end 
+    done;
+    ptr := !correctMsg;
+    assert {!correctMsg >= 0 /\ !correctMsg = !ptr};
+    if !correctMsg >= div n 2
+    then 
+        True
+    else 
+        False  
+
+    let get_max_p (m: array message) 
+    ensures {forall i:int. 0<=i< length m -> result >= (match m[i] with
+        | Msg (Tag p lab i labr) pid -> p
+        end) }
+    =
+    let max_p = ref 0 in
+    let curr_p = ref 0 in
+    for x = 0 to ((length m) - 1)
+    do
+    invariant {forall i:int. 0<=i<x -> !max_p >= !curr_p}
+    invariant {x>0 -> !curr_p = (match m[x-1] with | Msg (Tag p lab i labr) pid -> p end)}
+    invariant {forall i:int. 0<=i<x -> !max_p >= (match m[i] with | Msg (Tag p lab i labr) pid -> p end)}
+        match m[x] with
+        | Msg (Tag p lab i labr) pid -> curr_p := p
+        end;
+        assert {!curr_p = (match m[x] with | Msg (Tag p lab i labr) pid -> p end)};
+        if !curr_p > !max_p then
+            max_p := !curr_p
+    done;
+    (!max_p) 
+
+    predicate is_newe (m:message) = 
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 2 then True else False
+    | _ -> False
+    end
+
+    let check_newe (m: message)  
+    ensures {result = True <-> is_newe m}
+    =
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 2 then True else False
+    | _ -> False
+    end
+
+    predicate is_newl (m:message) = 
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 4 then True else False
+    | _ -> False
+    end
+
+    let check_newl (m: message)  
+    ensures {result = True <-> is_newl m}
+    =
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 4 then True else False
+    | _ -> False
+    end
+
+    predicate is_cmt (m:message) = 
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 6 then True else False
+    | _ -> False
+    end
+
+    let check_cmt (m: message) 
+    ensures {result = True <-> is_cmt m}
+    =
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 6 then True else False
+    | _ -> False
+    end
+
+    predicate is_acke_el (n: int) (m:message) = 
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 3 then True else False
+    | _ -> False
+    end
+
+    let check_acke_el (m: message) 
+    ensures {result = True <-> is_acke_el 0 m}
+    =
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 3 then True else False
+    | _ -> False
+    end
+
+    let check_acke (m: array message) (n:int)   
+    (**ensures {result = True <-> is_acke m n}*)
+    ensures {!ptr >= div n 2 <-> result = True}
+    =
+    let correctMsg = ref 0 in
+    let prev = ref (!correctMsg - 1) in  
+    for x = 0 to ((length m) - 1)
+    do
+    invariant {!correctMsg = !prev + 1 \/ !correctMsg = !prev}
+    invariant {0<=x<= (length m) }
+    invariant {!correctMsg >= 0}
+        prev := !correctMsg;
+        if check_acke_el m[x]
+        then
+        begin
+            correctMsg := !correctMsg + 1;
+            assert {is_acke_el 0 m[x] -> !correctMsg = !prev + 1};
+        end 
+    done;
+    ptr := !correctMsg;
+    assert {!correctMsg >= 0 /\ !correctMsg = !ptr};
+    if !correctMsg >= div n 2
+    then 
+        True
+    else 
+        False  
+
+    predicate is_ackl_el (n: int) (m:message) = 
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 5 then True else False
+    | _ -> False
+    end
+
+    let check_ackl_el (m: message) 
+    ensures {result = True <-> is_ackl_el 0 m}
+    =
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 5 then True else False
+    | _ -> False
+    end
+
+    let check_ackl (m: array message) (n:int)   
+    (**ensures {result = True <-> is_ackl m n}*)
+    ensures {!ptr >= div n 2 <-> result = True}
+    =
+    let correctMsg = ref 0 in
+    let prev = ref (!correctMsg - 1) in  
+    for x = 0 to ((length m) - 1)
+    do
+    invariant {!correctMsg = !prev + 1 \/ !correctMsg = !prev}
+    invariant {0<=x<= (length m) }
+    invariant {!correctMsg >= 0}
+        prev := !correctMsg;
+        if check_ackl_el m[x]
+        then
+        begin
+            correctMsg := !correctMsg + 1;
+            assert {is_ackl_el 0 m[x] -> !correctMsg = !prev + 1};
+        end 
+    done;
+    ptr := !correctMsg;
+    assert {!correctMsg >= 0 /\ !correctMsg = !ptr};
+    if !correctMsg >= div n 2
+    then 
+        True
+    else 
+        False  
+
+    predicate is_curre_el (n: int) (m:message) = 
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 1 then True else False
+    | _ -> False
+    end
+
+    let check_curre_el (m: message) 
+    ensures {result = True <-> is_curre_el 0 m}
+    =
+    match m with
+    | Msg (Tag p lab i labr) pid -> if lab = 1 then True else False
+    | _ -> False
+    end
+
+    let check_curre (m: array message) (n:int)   
+    (**ensures {result = True <-> is_curre m n}*)
+    ensures {!ptr >= div n 2 <-> result = True}
+    =
+    let correctMsg = ref 0 in
+    let prev = ref (!correctMsg - 1) in  
+    for x = 0 to ((length m) - 1)
+    do
+    invariant {!correctMsg = !prev + 1 \/ !correctMsg = !prev}
+    invariant {0<=x<= (length m) }
+    invariant {!correctMsg >= 0}
+        prev := !correctMsg;
+        if check_curre_el m[x]
+        then
+        begin
+            correctMsg := !correctMsg + 1;
+            assert {is_curre_el 0 m[x] -> !correctMsg = !prev + 1};
+        end 
+    done;
+    ptr := !correctMsg;
+    assert {!correctMsg >= 0 /\ !correctMsg = !ptr};
+    if !correctMsg >= div n 2
+    then 
+        True
+    else 
+        False  
+
+    let sendingThread (p : ref int) (lab: ref int) (i: ref int) (labr: ref int) 
+    ensures {gt (Tag !p !lab !i !labr) (Tag (old !p) (old !lab) (old !i) (old !labr))}
+    =    
+        !i = 1;
+        
+        let k = ref (!i-1) in
+        while True do
+            invariant {!i = !k + 1}
+            k := !i;
+            assert { 
+            match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+            | Tag p1 lab1 i1 labr1, p, lab, i, labr -> if p1=p && lab1=lab && i1=i && labr1=labr then True else False
+            | _ -> False
+            end 
+            };
+            assert {!i + 1 >= !i};
+            i := !i + 1;
+            assert {!k < !i}
+
+        done;
+    (!i)
+
+    let broadcast (p : ref int) (lab: ref int) (i: ref int) (labr: ref int) (pid: int)  
+    ensures { !lab = (old !lab)}
+    ensures {!p >= old !p}
+   (*
+    ensures {!p > old !p}
+    ensures { !lab = (old !lab)}
+
+    ensures {gt (Tag !p !lab !i !labr) (Tag (!prevp) (old !lab) (old !i) (old !labr))}
+    ensures {!prevp = old !p}
+    
+    ensures { !p > (old !p) \/ !i > (old !i) }
+    
+    ensures {gt (Tag !p !lab !i !labr) (Tag (old !p) (old !lab) (old !i) (old !labr))}
+    *)
+    =
+
+    i := 1;
+
+    let oldp = ref !p in
+    let leader = 0 in
+    let oldlab = ref !lab in
+    let oldi = ref (!i-1) in
+    let oldlabr = ref (!labr-1) in
+    try 
+    while True do
+    invariant {!i > !oldi}
+    invariant {!lab = !oldlab}
+    invariant {!p = !oldp}
+    invariant {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)}
+    
+
+        labr := 1;               (* Prp *)
+
+        assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+        
+        oldp := !p;
+        oldlab := !lab;
+        oldi := !i;
+        oldlabr := !labr;
+
+        if check_propose m1 then 
+        begin
+            assert {
+                match m1 with
+                | Msg (Tag a b c d) pid -> if d = 1 then True else False
+                | _ -> False
+                end
+            };
+            
+            labr := !labr + 1 ; (*Ack_P *)
+            
+            assert {!p = !oldp /\ !lab = !oldlab /\ !i = !oldi /\ !labr > !oldlabr };
+            assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)}; 
+
+            oldp := !p;
+            oldlab := !lab;
+            oldi := !i;
+            oldlabr := !labr;
+
+            assert { 
+            match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+            | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+            | _ -> False
+            end 
+            };
+
+            if pid = leader then
+            begin
+                if check_ackp m_arr n then
+                begin
+                    
+                    labr := !labr + 1; (** Cmt *)
+                    
+                    assert {!p = !oldp /\ !lab = !oldlab /\ !i = !oldi /\ !labr > !oldlabr };
+                    assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+                    
+                    oldp := !p;
+                    oldlab := !lab;
+                    oldi := !i;
+                    oldlabr := !labr;
+
+                    assert { 
+                    match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+                    | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+                    | _ -> False
+                    end     
+                    };
+
+                    if check_commit m2 then
+                    begin
+                        assert {
+                            match m1 with
+                            | Msg (Tag p lab i labr) pid -> if labr = 1 then True else False
+                            | _ -> False
+                            end
+                        };
+
+                        i := !i + 1
+                    end
+                    else
+                    begin  
+                        oldp := !p;
+                        p := !p + 1;
+                        assert {!p > !oldp};
+                        raise ExitBroadcast
+                    end
+                end
+                else
+                begin
+                    oldp := !p;
+                    p := !p + 1;
+                    assert {!p > !oldp};
+                    raise ExitBroadcast
+                end
+            end
+            else
+            begin
+                
+                labr := !labr + 1;
+                
+                assert {!p = !oldp /\ !lab = !oldlab /\ !i = !oldi /\ !labr > !oldlabr };
+                assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+                
+                oldp := !p;
+                oldlab := !lab;
+                oldi := !i;
+                oldlabr := !labr;
+
+                if check_commit m2
+                then
+                begin
+                    assert {
+                        match m1 with
+                        | Msg (Tag p lab i labr) pid -> if labr = 1 then True else False
+                        | _ -> False
+                        end
+                    };
+
+                    i := !i + 1
+                end
+                else
+                begin  
+                    oldp := !p;
+                    p := !p + 1;
+                    assert {!p > !oldp};
+                    raise ExitBroadcast
+                end
+            end
+                    
+        end
+        else 
+        begin
+            oldp := !p;
+            p := !p + 1;
+            assert {!p > !oldp};
+            raise ExitBroadcast
+        end
+    done
+    with ExitBroadcast ->
+        assert {!p > !oldp};
+        assert {!i = !oldi};
+        assert {!lab = !oldlab};
+        assert {gt (Tag !p !lab !i !labr) (Tag !oldp !lab !i !labr)}
+    end;
+
+    assert {!p > !oldp};
+    assert {!i = !oldi};
+    assert {!lab = !oldlab};
+    assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+    
+
+
+end 
+
+(*
+let broadcast (p : ref int) (lab: ref int) (i: ref int) (labr: ref int) (pid: int)  =
+    ensures { !p > (old !p) \/ !i > (old !i) }
+    ensures { !lab = (old !lab)}
+    ensures {gt (Tag !p !lab !i !labr) (Tag (old !p) (old !lab) (old !i) (old !labr))}
+    
+    i := 1;
+
+    let leader = 0 in
+    let oldp = ref (!p - 1)  in
+    let oldlab = ref !lab in
+    let oldi = ref (!i-1) in
+    let oldlabr = ref (!labr-1) in
+    while True do
+    invariant {!p > !oldp \/ !i > !oldi}
+    invariant {!lab = !oldlab}
+    invariant {not !p < !oldp}
+
+        labr := 1;               (* Prp *)
+
+        assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+        
+        oldp := !p;
+        oldlab := !lab;
+        oldi := !i;
+        oldlabr := !labr;
+
+        if check_propose m1 then 
+        begin
+            assert {
+                match m1 with
+                | Msg (Tag a b c d) pid -> if d = 1 then True else False
+                | _ -> False
+                end
+            };
+            
+            labr := !labr + 1 ; (*Ack_P *)
+            
+            assert {!p = !oldp /\ !lab = !oldlab /\ !i = !oldi /\ !labr > !oldlabr };
+            assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)}; 
+
+            oldp := !p;
+            oldlab := !lab;
+            oldi := !i;
+            oldlabr := !labr;
+
+            assert { 
+            match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+            | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+            | _ -> False
+            end 
+            };
+
+            if pid = leader then
+            begin
+                if check_ackp m_arr n then
+                begin
+                    
+                    labr := !labr + 1; (** Cmt *)
+                    
+                    assert {!p = !oldp /\ !lab = !oldlab /\ !i = !oldi /\ !labr > !oldlabr };
+                    assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+                    
+                    oldp := !p;
+                    oldlab := !lab;
+                    oldi := !i;
+                    oldlabr := !labr;
+
+                    assert { 
+                    match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+                    | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+                    | _ -> False
+                    end     
+                    };
+
+                    if check_commit m2 then
+                    begin
+                        assert {
+                            match m1 with
+                            | Msg (Tag p lab i labr) pid -> if labr = 1 then True else False
+                            | _ -> False
+                            end
+                        };
+
+                        i := !i + 1
+                    end
+                    else  
+                        p := !p + 1
+                    end
+                else
+                begin
+                    p := !p + 1;
+                    
+                    assert {!p > !oldp};
+                    (*assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};*)
+                end
+            end
+            else
+            begin
+                
+                labr := !labr + 1;
+                
+                assert {!p = !oldp /\ !lab = !oldlab /\ !i = !oldi /\ !labr > !oldlabr };
+                assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+                
+                oldp := !p;
+                oldlab := !lab;
+                oldi := !i;
+                oldlabr := !labr;
+
+                if check_commit m2
+                then
+                begin
+                    assert {
+                        match m1 with
+                        | Msg (Tag p lab i labr) pid -> if labr = 1 then True else False
+                        | _ -> False
+                        end
+                    };
+
+                    i := !i + 1
+                end
+                else
+                begin  
+                    p := !p + 1
+                end
+            end
+                    
+        end
+        else 
+        begin
+            p := !p + 1;
+            
+            assert {!p > !oldp}
+        end
+    done
+
+   
+let main_thread (p : ref int) (lab: ref int) (i: ref int) (labr: ref int) (pid: int) =
+
+        let leader = 0 in
+        let oldp = ref (!p - 1)  in
+        let oldlab = ref (!lab-1) in
+        let oldi = ref (!i) in
+        let oldlabr = ref (!labr) in
+        while True do
+            lab := 1;   (* Set to Curr_E *)
+            
+            oldp := !p;
+            oldlab := !lab;
+            oldi := !i;
+            oldlabr := !labr;
+
+            assert { 
+            match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+            | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+            | _ -> False
+            end 
+            };
+            
+            if pid = leader then
+            begin
+                (* empty mbox *)
+                if check_curre m_arr n then
+                begin
+            
+                    (* Update mbox *)
+                    (* Update set q of pids *)
+
+                    p := (get_max_p m_arr) + 1;
+
+                    (* p is set to the maximum of existing p's *)
+                    assert {forall i:int. 0<=i< length m_arr -> !p >= (match m_arr[i] with
+                                                                        | Msg (Tag p lab i labr) pid -> p
+                                                                        end) };
+
+                    lab := !lab + 1;   (* New_E *)
+
+                    (* p not included ; require condition on p*)
+                    assert { !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+
+                    assert { 
+                    match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+                    | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+                    | _ -> False
+                    end 
+                    };
+                end
+            end
+            else
+            begin
+                lab := !lab + 1; (* New_E *)
+
+                assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+            end;
+
+            oldp := !p;
+            oldlab := !lab;
+            oldi := !i;
+            oldlabr := !labr;
+
+            if check_newe m1 then
+            begin
+                (* Update mbox *)
+                match m1 with                (* Set p to payload p but how to prove increase?*)
+                | Msg (Tag a b c d) proc_id -> p := a
+                end;
+
+                lab := !lab + 1;           (* Ack_E *)
+
+                (* p not included, require condition on p*)
+                assert { !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+
+                oldp := !p;
+                oldlab := !lab;
+                oldi := !i;
+                oldlabr := !labr;
+                
+                assert { 
+                match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+                | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+                | _ -> False
+                end 
+                };
+                
+                if leader = pid then
+                begin
+                    (* empty mbox *)
+                    if check_acke m_arr n then
+                    begin
+                        (* Update mbox *)
+                        (* Update history *)
+
+                        lab := !lab + 1;
+
+                        assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                        assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+
+                        oldp := !p;
+                        oldlab := !lab;
+                        oldi := !i;
+                        oldlabr := !labr;
+                        
+                        assert { 
+                        match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+                        | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+                        | _ -> False
+                        end 
+                        };
+
+                        (* Copied from the else clause *)
+                        if check_newl m1 then
+                        begin
+                            (* Update a,h *)
+
+                            lab := !lab + 1; (* Ack_L *)
+
+                            assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                            assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+
+                            oldp := !p;
+                            oldlab := !lab;
+                            oldi := !i;
+                            oldlabr := !labr;
+                            
+                            assert { 
+                            match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+                            | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+                            | _ -> False
+                            end 
+                            };
+                            
+                            if leader = pid then
+                            begin
+                                if check_ackl m_arr n then
+                                begin
+                                    (* Update history *)
+
+                                    lab := !lab + 1;  (* Cmt *)
+
+                                    assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                                    assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+
+                                    oldp := !p;
+                                    oldlab := !lab;
+                                    oldi := !i;
+                                    oldlabr := !labr;
+                                    
+                                    assert { 
+                                    match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+                                    | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+                                    | _ -> False
+                                    end 
+                                    };
+
+                                    if check_cmt m1 then
+                                    begin
+                                        (* Update mbox *)
+                                        (* Update zvid *)
+                                        lab := !lab + 1; (* Broadcast *)
+
+                                        assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                                        assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+                                        
+                                        oldp := !p;
+                                        oldlab := !lab;
+                                        oldi := !i;
+                                        oldlabr := !labr;
+                                        
+                                        broadcast p lab i labr pid;
+
+                                        assert {gt (Tag !p !lab !i !labr) (Tag (!oldp) (!oldlab) (!oldi) (!oldlabr))};
+                                    end
+                                end
+                            end
+                        end
+                        else
+                        begin
+                           lab := !lab + 1; 
+                           if check_cmt m1 then
+                           begin
+                                (* Update mbox *)
+                                (* Update zvid *)
+                                lab := !lab + 1; (* Broadcast *)
+
+                                assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                                assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+
+                                oldp := !p;
+                                oldlab := !lab;
+                                oldi := !i;
+                                oldlabr := !labr;
+
+                                broadcast p lab i labr pid;
+
+                                assert {gt (Tag !p !lab !i !labr) (Tag (!oldp) (!oldlab) (!oldi) (!oldlabr))};
+                           end
+                        end
+                    end 
+                end
+                else
+                begin
+                    lab := !lab + 1; (* New_L *)
+
+                    assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                    assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+
+                    oldp := !p;
+                    oldlab := !lab;
+                    oldi := !i;
+                    oldlabr := !labr;
+
+                    if check_newl m1 then
+                    begin
+                        (* Update a,h *)
+                        lab := !lab + 1; (* Ack_L *)
+
+                        assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                        assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+
+                        oldp := !p;
+                        oldlab := !lab;
+                        oldi := !i;
+                        oldlabr := !labr;
+
+                        assert { 
+                        match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+                        | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+                        | _ -> False
+                        end 
+                        };
+                        
+                        if leader = pid then
+                        begin
+                            if check_ackl m_arr n then
+                            begin
+                                (* Update history *)
+                                lab := !lab + 1;  (* Cmt *)
+
+                                assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                                assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+
+                                oldp := !p;
+                                oldlab := !lab;
+                                oldi := !i;
+                                oldlabr := !labr;
+
+                                assert { 
+                                match (Tag !p !lab !i !labr), !p, !lab, !i, !labr with
+                                | Tag p1 lab1 i1 labr1, p2, lab2, i2, labr2 -> if p1=p2 && lab1=lab2 && i1=i2 && labr1=labr2 then True else False
+                                | _ -> False
+                                end 
+                                };
+
+                                if check_cmt m1 then
+                                begin
+                                    (* Update mbox *)
+                                    (* Update zvid *)
+                                    lab := !lab + 1; (* Broadcast *)
+
+                                    assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                                    assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+
+                                    oldp := !p;
+                                    oldlab := !lab;
+                                    oldi := !i;
+                                    oldlabr := !labr;
+                                    
+                                    broadcast p lab i labr pid;
+
+                                    assert {gt (Tag !p !lab !i !labr) (Tag (!oldp) (!oldlab) (!oldi) (!oldlabr))};
+                                end
+                            end
+                        end
+                        else
+                        begin
+                            lab := !lab + 1;
+
+                            assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                            assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+
+                            oldp := !p;
+                            oldlab := !lab;
+                            oldi := !i;
+                            oldlabr := !labr;
+
+                            if check_cmt m1 then
+                            begin
+                                (* Update mbox *)
+                                (* Update zvid *)
+
+                                lab := !lab + 1; (* Broadcast *)
+
+                                assert { !p = !oldp /\ !lab > !oldlab /\ !i = !oldi /\ !labr = !oldlabr};
+                                assert {gt (Tag !p !lab !i !labr) (Tag !oldp !oldlab !oldi !oldlabr)};
+
+                                oldp := !p;
+                                oldlab := !lab;
+                                oldi := !i;
+                                oldlabr := !labr;
+                                
+                                broadcast p lab i labr pid;
+                                
+                                assert {gt (Tag !p !lab !i !labr) (Tag (!oldp) (!oldlab) (!oldi) (!oldlabr))};
+                           end
+                        end
+                    end 
+                end
+            end
+        done
+ 
+
+*)

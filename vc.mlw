@@ -1,0 +1,108 @@
+module VS
+    use import ref.Ref
+    use import int.Int
+    use import int.EuclideanDivision
+
+    use import list.List
+    use import list.Append
+    use import list.HdTlNoOpt
+
+    type tag = Tag int int int int int     (* v, vs_msg, n, k, nop_msg *)
+    type message = Msg tag int             (* v, msg type, n, k*)
+    type client_req = Client int int       (* view, request*)
+
+    val retry: bool
+    val req : client_req
+    val m : message
+
+    predicate is_VC (m:message) (current_v : int) =
+        match m with
+        | Msg (Tag v v_msg n k nop_msg) pid -> if ((v_msg = 1 || v_msg = 2) && (v > current_v)) then True else False
+        end 
+
+    let check_VC (m:message) (current_v : int) = 
+    ensures { result = True <-> is_VC m current_v}
+        match m with
+        | Msg (Tag v v_msg n k nop_msg) pid -> if ((v_msg = 1 || v_msg = 2) && (v > current_v)) then True else False
+        end
+
+    predicate is_CR (m : client_req) (current_v : int) = 
+        match m with 
+        | Client v req -> if v = current_v then True else False
+        end
+
+    let get_req (m : client_req) (current_v : int) = 
+    ensures { result = True <-> is_CR m current_v }
+        match m with 
+        | Client v req -> if v = current_v then True else False
+        end
+
+    let empty_req (m : client_req) =
+        match m with 
+        | Client v req -> if v = 0 then True else False
+        end
+
+    let normalOp (v : ref int) (v_msg : ref int) (n : ref int) (k : ref int) (nop_msg : ref int) (i : int) (log : (list int)) (leader : int)=
+        if not check_VC m !v then
+        begin
+            if i = leader then
+            begin
+                (* Get client request *)
+                if get_req req !v then
+                begin 
+                    (* Client request is acceptable *)
+                    assert 
+                    {
+                        match req with 
+                        | Client v1 r -> v1 = !v
+                        end
+                    };
+
+                    n := !n + 1;
+                    match req with
+                    | Client v r -> Cons r log;
+                    end;
+
+                    (* Send Prepare msg to all *)
+                    assert 
+                    { 
+                        match (Tag !v !v_msg !n !k !nop_msg), !v, !v_msg, !n, !k, !nop_msg with
+                        | Tag v1 v_msg1 n1 k1 nop_msg1, v2, v_msg2, n2, k2, nop_msg2  -> if v1=v2 && v_msg1=v_msg2 && n1=n2 && k1=k2 && nop_msg1 = nop_msg2 then True else False
+                        end 
+                    };
+
+                   
+                                  (* Send Prepare msg to all *)
+                        assert 
+                        { 
+                            match (Tag !v !v_msg !n !k !nop_msg), !v, !v_msg, !n, !k, !nop_msg with
+                            | Tag v1 v_msg1 n1 k1 nop_msg1, v2, v_msg2, n2, k2, nop_msg2  -> if v1=v2 && v_msg1=v_msg2 && n1=n2 && k1=k2 && nop_msg1 = nop_msg2 then True else False
+                            end 
+                        };
+
+                        if get_req req !v then
+                        begin 
+                            (* Client request is acceptable *)
+                            assert 
+                            {
+                                match req with 
+                                | Client v1 r -> v1 = !v
+                                end
+                            };
+
+                            if empty_req then 
+                            begin
+                                (* Send commit number to all *)
+                                assert 
+                                { 
+                                    match (Tag !v !v_msg !n !k !nop_msg), !v, !v_msg, !n, !k, !nop_msg with
+                                    | Tag v1 v_msg1 n1 k1 nop_msg1, v2, v_msg2, n2, k2, nop_msg2  -> if v1=v2 && v_msg1=v_msg2 && n1=n2 && k1=k2 && nop_msg1 = nop_msg2 then True else False
+                                    end 
+                                };
+                            end
+                        end                   
+                    done
+                end
+            end
+        end
+end
