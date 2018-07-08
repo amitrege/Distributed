@@ -58,7 +58,7 @@ int AlternatingBit(int id) {
     int count = 0;
 
     int old_lab = 0;
-    int old_count = 0;
+    int old_count = count - 1;  // needed for first assertion
     
     msg mbox_msg[2];
     msg m;
