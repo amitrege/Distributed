@@ -49,10 +49,16 @@ int filter_ack_1 (ack* m, int count) {
         return 1;
     return 0;
 }
-
+void rand(int retry) {
+    _memcad("assume(retry >= 0)");
+    _memcad("assume(retry <= 1)");
+}
 int AlternatingBit(int id) {
     int lab = 0;
     int count = 0;
+
+    int old_lab = 0;
+    int old_count = 0;
     
     msg mbox_msg[2];
     msg m;
@@ -69,15 +75,14 @@ int AlternatingBit(int id) {
         lab = 1;
 
         // assert count > oldcount || count == oldcount ==> lab > oldlab || failure
-        // oldcount = count;
-        // oldlab = lab;
-        // failure = 0;
+        assert(count > old_count);
+	old_count = count;
+        old_lab = lab;
+        failure = 0;
 
         if (id == 1) { // Process is A
 
-            _memcad("assume(retry >= 0)");
-            _memcad("assume(retry <= 1)");
-
+	    rand(retry);
             while (retry) {
                 // send 0
                 //retry = rand() % 2;
@@ -88,8 +93,10 @@ int AlternatingBit(int id) {
             lab = 2;
 
             // assert count > oldcount || count == oldcount ==> lab > oldlab
-            // oldcount = count;
-            // oldlab = lab;
+            assert(count == old_count);
+	    assert(lab > old_lab);
+	    old_count = count;
+            old_lab = lab;
 
             /*
             // Empty mbox_ack
@@ -122,8 +129,10 @@ int AlternatingBit(int id) {
                 lab = 3;
 
                 // assert count > oldcount || count == oldcount ==> lab > oldlab
-                // oldcount = count;
-                // oldlab = lab;
+                assert(count == old_count);
+	        assert(lab > old_lab);
+                old_count = count;
+                old_lab = lab;
 
                 //retry = rand() % 2;
                 _memcad("assume(retry >= 0)");
@@ -139,8 +148,10 @@ int AlternatingBit(int id) {
                 lab = 4;
 
                 // assert count > oldcount || count == oldcount ==> lab > oldlab
-                // oldcount = count;
-                // oldlab = lab;
+                assert(count == old_count);
+	        assert(lab > old_lab);
+                old_count = count;
+                old_lab = lab;
 
                 /*
                 // Empty mbox_ack
@@ -173,11 +184,11 @@ int AlternatingBit(int id) {
                     count = count + 1;
                 }
                 else {
-                    failure = 1;
+                    count = count + 1;
                 }
             } 
             else {
-                failure = 1;
+                count = count + 1;
             }
         }
         else {  // Process is B
@@ -277,18 +288,18 @@ int AlternatingBit(int id) {
                     count = count + 1;
                 }
                 else {
-                    failure = 1;
+                    count = count + 1;
                 }
             }
             else {
-                failure = 1;
+                count = count + 1;
             }
         }
     }
 }
 
 int main() {
-    AlternatingBit(0);
+    AlternatingBit(1);
     return 0;
 } 
 
