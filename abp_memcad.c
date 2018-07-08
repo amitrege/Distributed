@@ -76,13 +76,13 @@ int AlternatingBit(int id) {
 
         // assert count > oldcount || count == oldcount ==> lab > oldlab || failure
         assert(count > old_count);
-	old_count = count;
+	    old_count = count;
         old_lab = lab;
         failure = 0;
 
         if (id == 1) { // Process is A
 
-	    rand(retry);
+	        rand(retry);
             while (retry) {
                 // send 0
                 //retry = rand() % 2;
@@ -94,8 +94,8 @@ int AlternatingBit(int id) {
 
             // assert count > oldcount || count == oldcount ==> lab > oldlab
             assert(count == old_count);
-	    assert(lab > old_lab);
-	    old_count = count;
+	        assert(lab > old_lab);
+	        old_count = count;
             old_lab = lab;
 
             /*
@@ -130,7 +130,7 @@ int AlternatingBit(int id) {
 
                 // assert count > oldcount || count == oldcount ==> lab > oldlab
                 assert(count == old_count);
-	        assert(lab > old_lab);
+	            assert(lab > old_lab);
                 old_count = count;
                 old_lab = lab;
 
@@ -149,7 +149,7 @@ int AlternatingBit(int id) {
 
                 // assert count > oldcount || count == oldcount ==> lab > oldlab
                 assert(count == old_count);
-	        assert(lab > old_lab);
+	            assert(lab > old_lab);
                 old_count = count;
                 old_lab = lab;
 
@@ -223,8 +223,10 @@ int AlternatingBit(int id) {
                 lab = 2;
 
                 // assert count > oldcount || count == oldcount ==> lab > oldlab
-                // oldcount = count;
-                // oldlab = lab;
+                assert(count == old_count);
+                assert(lab > old_lab);
+                old_count = count;
+                old_lab = lab;
 
                 //retry = rand() % 2;
                 _memcad("assume(retry >= 0)");
@@ -239,8 +241,10 @@ int AlternatingBit(int id) {
                 lab = 3;
 
                 // assert count > oldcount || count == oldcount ==> lab > oldlab
-                // oldcount = count;
-                // oldlab = lab;
+                assert(count == old_count);
+                assert(lab > old_lab);
+                old_count = count;
+                old_lab = lab;
 
                 /*
                 // Empty mbox_msg
@@ -272,8 +276,10 @@ int AlternatingBit(int id) {
                     lab = 4;
 
                     // assert count > oldcount || count == oldcount ==> lab > oldlab
-                    // oldcount = count;
-                    // oldlab = lab;
+                    assert(count == old_count);
+                    assert(lab > old_lab);
+                    old_count = count;
+                    old_lab = lab;
 
                     //retry = rand() % 2;
                     _memcad("assume(retry >= 0)");
