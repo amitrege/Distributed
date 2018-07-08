@@ -55,11 +55,11 @@ int AlternatingBit(int id) {
     int count = 0;
     
     msg mbox_msg[2];
-    msg m;
+    msg* m;
     int num_mbox_msg;
 
     ack mbox_ack[2];
-    ack m_ack;
+    ack* m_ack;
     int num_mbox_ack;
 
     int retry;
@@ -104,8 +104,8 @@ int AlternatingBit(int id) {
 
             while (retry) {
                 //m_ack = init_ack();
-                if (filter_ack_0(&m_ack, count)) {
-                    mbox_ack[num_mbox_ack] = m_ack;
+                if (filter_ack_0(m_ack, count)) {
+                    mbox_ack[num_mbox_ack] = *m_ack;
                     num_mbox_ack++;
                 }
 
@@ -155,8 +155,8 @@ int AlternatingBit(int id) {
 
                 while (retry) {
                     //m_ack = init_ack();
-                    if (filter_ack_1(&m_ack, count)) {
-                        mbox_ack[num_mbox_ack] = m_ack;
+                    if (filter_ack_1(m_ack, count)) {
+                        mbox_ack[num_mbox_ack] = *m_ack;
                         num_mbox_ack++;
                     }
     
@@ -194,8 +194,8 @@ int AlternatingBit(int id) {
 
             while (retry) {
                 //m = init_msg();
-                if (filter_msg_0(&m, count)) {
-                    mbox_msg[num_mbox_msg] = m;
+                if (filter_msg_0(m, count)) {
+                    mbox_msg[num_mbox_msg] = *m;
                     num_mbox_msg++;
                 }
 
@@ -243,8 +243,8 @@ int AlternatingBit(int id) {
                 _memcad("assume(retry <= 1)");
                 while (retry) {
                     //m = init_msg();
-                    if (filter_msg_1(&m, count)) {
-                        mbox_msg[num_mbox_msg] = m;
+                    if (filter_msg_1(m, count)) {
+                        mbox_msg[num_mbox_msg] = *m;
                         num_mbox_msg++;
                     }
     
