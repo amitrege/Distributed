@@ -4,26 +4,13 @@ int i = 0;
 int labr = 0;
 int leader = 0;
 
-typedef struct _tag {
-    int p;
-    int lab;
-    int i;
-    int labr;
-} tag;
-
 typedef struct _msg_propose {
     int p;
     int i;
 } msg_propose;
 
-msg_propose init_propose () {
-    msg_propose m;
-    m.p = rand();
-    m.i = rand();
-}
-
-int filter_propose (msg_propose m, int p, int i) {
-    if (m.p == p && m.i == i)
+int filter_propose (msg_propose* m, int p, int i) {
+    if (m->p == p && m->i == i)
         return 1;
     return 0;
 }
@@ -36,16 +23,8 @@ typedef struct _msg_ack_p {
     int val;
 } msg_ack_p;
 
-msg_ack_p init_ack_p () {
-    msg_ack_p m;
-    m.p = rand();
-    m.lab = (rand() % 3) + 1;
-    m.i = rand();
-    m.labr = (rand() % 6) + 1;
-}
-
-int filter_ack_p (msg_ack_p m, int p, int lab, int i, int labr) {
-    if (m.p == p && m.lab == lab && m.i == i && m.labr == labr)
+int filter_ack_p (msg_ack_p* m, int p, int lab, int i, int labr) {
+    if (m->p == p && m->lab == lab && m->i == i && m->labr == labr)
         return 1;
     return 0;
 }
@@ -56,15 +35,8 @@ typedef struct _msg_cmt {
     int labr;
 } msg_cmt;
 
-msg_cmt init_cmt () {
-    msg_cmt m;
-    m.p = rand();
-    m.i = rand();
-    m.labr = (rand() % 6) + 1;
-}
-
-int filter_cmt (msg_cmt m, int p, int i, int labr) {
-    if (m.p == p && m.i == i && m.labr == labr)
+int filter_cmt (msg_cmt* m, int p, int i, int labr) {
+    if (m->p == p && m->i == i && m->labr == labr)
         return 1;
     return 0;
 }
@@ -74,14 +46,8 @@ typedef struct _msg_curr_e {
     int lab;
 } msg_curr_e;
 
-msg_curr_e init_curr_e () {
-    msg_curr_e m;
-    m.p = rand();
-    m.lab = (rand() % 6) + 1;
-}
-
-int filter_curr_e (msg_curr_e m, int p, int lab) {
-    if (m.p == p && m.lab == lab)
+int filter_curr_e (msg_curr_e* m, int p, int lab) {
+    if (m->p == p && m->lab == lab)
         return 1;
     return 0;
 }
@@ -91,14 +57,8 @@ typedef struct _msg_new_e {
     int lab;
 } msg_new_e;
 
-msg_new_e init_new_e () {
-    msg_new_e m;
-    m.p = rand();
-    m.lab = (rand() % 6) + 1;
-}
-
-int filter_new_e (msg_new_e m, int p, int lab) {
-    if (m.p == p && m.lab == lab)
+int filter_new_e (msg_new_e* m, int p, int lab) {
+    if (m->p == p && m->lab == lab)
         return 1;
     return 0;
 }
@@ -109,14 +69,8 @@ typedef struct _msg_ack_e {
     // history not included (as it is not relevant to prove increasing tags)
 } msg_ack_e;
 
-msg_ack_e init_ack_e () {
-    msg_ack_e m;
-    m.p = rand();
-    m.lab = (rand() % 6) + 1;
-}
-
-int filter_ack_e (msg_ack_e m, int p, int lab) {
-    if (m.p == p && m.lab == lab)
+int filter_ack_e (msg_ack_e* m, int p, int lab) {
+    if (m->p == p && m->lab == lab)
         return 1;
     return 0;
 }
@@ -127,14 +81,8 @@ typedef struct _msg_new_l {
     // a and history not included (as it is not relevant to prove increasing tags)
 } msg_new_l;
 
-msg_new_l init_new_l () {
-    msg_new_l m;
-    m.p = rand();
-    m.lab = (rand() % 6) + 1;
-}
-
-int filter_new_l (msg_new_l m, int p, int lab) {
-    if (m.p == p && m.lab == lab)
+int filter_new_l (msg_new_l* m, int p, int lab) {
+    if (m->p == p && m->lab == lab)
         return 1;
     return 0;
 }
@@ -145,14 +93,8 @@ typedef struct _msg_ack_l {
     // a and history not included (as it is not relevant to prove increasing tags)
 } msg_ack_l;
 
-msg_ack_l init_ack_l () {
-    msg_ack_l m;
-    m.p = rand();
-    m.lab = (rand() % 6) + 1;
-}
-
-int filter_ack_l (msg_ack_l m, int p, int lab) {
-    if (m.p == p && m.lab == lab)
+int filter_ack_l (msg_ack_l* m, int p, int lab) {
+    if (m->p == p && m->lab == lab)
         return 1;
     return 0;
 }
@@ -163,16 +105,16 @@ typedef struct _msg_com {
     // a and history not included (as it is not relevant to prove increasing tags)
 } msg_com;
 
-msg_com init_com () {
-    msg_com m;
-    m.p = rand();
-    m.lab = (rand() % 6) + 1;
-}
-
-int filter_com (msg_com m, int p, int lab) {
-    if (m.p == p && m.lab == lab)
+int filter_com (msg_com* m, int p, int lab) {
+    if (m->p == p && m->lab == lab)
         return 1;
     return 0;
+}
+
+void rand(int* i) {
+    int p = *i;
+    _memcad("assume(p >= 0)");
+    _memcad("assume(p <= 1)");
 }
 
 int sendingThread (int p, int lab, int i, int labr){
@@ -185,7 +127,7 @@ int sendingThread (int p, int lab, int i, int labr){
     int old_i = i;
     int old_labr = labr;
     
-    while (1){
+    while (1 && i < 10000){
         // Send v-in
         i++;
 
@@ -196,17 +138,17 @@ int sendingThread (int p, int lab, int i, int labr){
         old_labr = labr;
     }
 }
-/*
+
 int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr, int *old_p, int *old_lab, int *old_i, int *old_labr) {
-    msg_propose mbox_propose[2*num];
+    msg_propose* mbox_propose[200];
     int num_mbox_propose = 0;
     msg_propose m_propose;
 
-    msg_ack_p mbox_ack_p[2*num];
+    msg_ack_p* mbox_ack_p[200];
     int num_mbox_ack_p = 0;
     msg_ack_p m_ack_p;
 
-    msg_cmt mbox_cmt[2*num];
+    msg_cmt* mbox_cmt[200];
     int num_mbox_cmt = 0;
     msg_cmt m_cmt;
 
@@ -216,35 +158,36 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
     *old_i = 0;
     *old_labr = 0;
 
-    while(1) {
-        *i = 1;
+    *old_p = *p;
+    *old_lab = *lab;
+
+    *i = 1;
+
+    while(1 && ((*p) < 10000 || (*i) < 10000)) {
         *labr = 1; // Prp
 
-        // assert *p > *old_p || (*p == *old_p) ==> *lab > *old_lab || (*p == *old_p && *lab == *old_lab) ==> *i > *old_i || (*p == *old_p && *lab == *old_lab && *i == *old_i) ==> *labr >= *old_labr
-        // *old_p = *p;
-        // *old_lab = *lab;
-        // *old_i = *i;
-        // *old_labr = *labr;
+        assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));
+        *old_p = *p;
+        *old_lab = *lab;
+        *old_i = *i;
+        *old_labr = *labr;
 
         if (pid != leader) {
-            // Empty mbox
-            memset(mbox_propose,0,sizeof(mbox_propose));
-            num_mbox_propose = 0;
-    
             // receive propose
-            retry = rand() % 2;
-            while(retry) {
-                m_propose = init_propose();
-    
-                if(filter_propose(m_propose, *p, *i)) {
-                    mbox_propose[num_mbox_propose] = m_propose;
-                    num_mbox_propose++;
+            // retry = rand() % 2;
+            rand(&retry);
+            while(retry && num_mbox_propose < 1) {    
+                if(filter_propose(&m_propose, *p, *i)) {
+                    mbox_propose[num_mbox_propose] = &m_propose;
+                    num_mbox_propose = num_mbox_propose + 1;
                 }
     
-                if (num_mbox_propose >= 1)
+                if (num_mbox_propose >= 1) {
                     break;
+                }
     
-                retry = rand() % 2;
+                // retry = rand() % 2;
+                rand(&retry);
             }
 
             if (num_mbox_propose >= 1) {
@@ -253,40 +196,38 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
             
                 *labr = 2; // ack_p
 
-                // assert *p > *old_p || (*p == *old_p) ==> *lab > *old_lab || (*p == *old_p && *lab == *old_lab) ==> *i > *old_i || (*p == *old_p && *lab == *old_lab && *i == *old_i) ==> *labr >= *old_labr
-                // *old_p = *p;
-                // *old_lab = *lab;
-                // *old_i = *i;
-                // *old_labr = *labr;
+                assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));                
+                *old_p = *p;
+                *old_lab = *lab;
+                *old_i = *i;
+                *old_labr = *labr;
 
                 // send(p, lab, i, labr, val) to leader
 
                 *labr = 3; // cmt
 
-                // assert *p > *old_p || (*p == *old_p) ==> *lab > *old_lab || (*p == *old_p && *lab == *old_lab) ==> *i > *old_i || (*p == *old_p && *lab == *old_lab && *i == *old_i) ==> *labr >= *old_labr
-                // *old_p = *p;
-                // *old_lab = *lab;
-                // *old_i = *i;
-                // *old_labr = *labr;
-                
-                // Empty mbox
-                memset(mbox_cmt,0,sizeof(mbox_cmt));
-                num_mbox_cmt = 0;
+                assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));                
+                *old_p = *p;
+                *old_lab = *lab;
+                *old_i = *i;
+                *old_labr = *labr;
 
                 // receive commit from leader
-                retry = rand() % 2;
-                while(retry) {
-                    m_cmt = init_cmt();
-        
-                    if(filter_cmt(m_cmt, *p, *i, *labr)) {
-                        mbox_cmt[num_mbox_cmt] = m_cmt;
-                        num_mbox_cmt++;
+                // retry = rand() % 2;
+                rand(&retry);
+
+                while(retry && num_mbox_cmt < 1) {
+                    if(filter_cmt(&m_cmt, *p, *i, *labr)) {
+                        mbox_cmt[num_mbox_cmt] = &m_cmt;
+                        num_mbox_cmt = num_mbox_cmt + 1;
                     }
         
-                    if (num_mbox_cmt >= 1)
+                    if (num_mbox_cmt >= 1) {
                         break;
+                    }
         
-                    retry = rand() % 2;
+                    // retry = rand() % 2;
+                    rand(&retry);
                 }
 
                 if (num_mbox_cmt >= 1) {
@@ -299,48 +240,47 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
                     break;
                 }               
             }
-            else
+            else{
                 continue;
+            }
         }
         else {
             // send propose
 
             *labr = 2; // ack_p
             
-            // assert *p > *old_p || (*p == *old_p) ==> *lab > *old_lab || (*p == *old_p && *lab == *old_lab) ==> *i > *old_i || (*p == *old_p && *lab == *old_lab && *i == *old_i) ==> *labr >= *old_labr
-            // *old_p = *p;
-            // *old_lab = *lab;
-            // *old_i = *i;
-            // *old_labr = *labr;
-            
-            // Empty mbox
-            memset(mbox_ack_p,0,sizeof(mbox_ack_p));
-            num_mbox_ack_p = 0;
+            assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));            
+            *old_p = *p;
+            *old_lab = *lab;
+            *old_i = *i;
+            *old_labr = *labr;
 
             // receive ack_p from followers
-            retry = rand() % 2;
-            while(retry) {
-                m_ack_p = init_ack_p();
-    
-                if(filter_ack_p(m_ack_p, *p, *lab, *i, *labr)) {
-                    mbox_ack_p[num_mbox_ack_p] = m_ack_p;
-                    num_mbox_ack_p++;
+            // retry = rand() % 2;
+            rand(&retry);
+
+            while(retry && (num_mbox_ack_p < (num/2))) {
+                if(filter_ack_p(&m_ack_p, *p, *lab, *i, *labr)) {
+                    mbox_ack_p[num_mbox_ack_p] = &m_ack_p;
+                    num_mbox_ack_p = num_mbox_ack_p + 1;
                 }
     
-                if (num_mbox_ack_p >= num/2)
+                if (num_mbox_ack_p >= num/2) {
                     break;
+                }
     
-                retry = rand() % 2;
+                // retry = rand() % 2;
+                rand(&retry);
             }
 
             if (num_mbox_ack_p >= num/2) {
                 *labr = 3; // Commit
 
-                // assert *p > *old_p || (*p == *old_p) ==> *lab > *old_lab || (*p == *old_p && *lab == *old_lab) ==> *i > *old_i || (*p == *old_p && *lab == *old_lab && *i == *old_i) ==> *labr >= *old_labr
-                // *old_p = *p;
-                // *old_lab = *lab;
-                // *old_i = *i;
-                // *old_labr = *labr;
+                assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));                
+                *old_p = *p;
+                *old_lab = *lab;
+                *old_i = *i;
+                *old_labr = *labr;
 
                 // send commit (labr, a, i) to all
 
@@ -353,7 +293,7 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
         }
     }
 }
-
+/*
 int main_thread(int pid, int num){
     int lab = 0;
     int p = 0;
@@ -670,6 +610,16 @@ int main_thread(int pid, int num){
 }
 */
 int main() {
-    sendingThread(0, 0, 0, 0)
+    sendingThread(0, 0, 0, 0);
+    int p = 0;
+    int lab = 0;
+    int i = 0;
+    int labr = 0;
+
+    int old_p = 0;
+    int old_lab = 0;
+    int old_i = 0;
+    int old_labr = 0;
+    Broadcast(5,0,0, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr)
     //main_thread(0, 5); // pid, num
 }
