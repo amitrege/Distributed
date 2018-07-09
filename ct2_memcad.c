@@ -252,8 +252,8 @@ int propose(int pid, int num, int estimate) {
             // retry = rand() % 2;
             rand(&retry);
             while(retry && num_mbox_propose < 1){
-                if(filter_propose(m_propose, round)) {
-                    mbox_propose[num_mbox_propose] = m_propose;
+                if(filter_propose(&m_propose, round)) {
+                    mbox_propose[num_mbox_propose] = &m_propose;
                     num_mbox_propose = num_mbox_propose + 1;
                 }
 
