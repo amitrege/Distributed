@@ -33,11 +33,13 @@ int filter_ack_1 (ack* m, int count) {
         return 1;
     return 0;
 }
+
 void rand(int* retry) {
     int p = *retry;   // Workaround to solve error 
     _memcad("assume(p >= 0)");
     _memcad("assume(p <= 1)");
 }
+
 int AlternatingBit(int id) {
     int lab = 0;
     int count = 0;

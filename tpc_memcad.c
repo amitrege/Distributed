@@ -42,7 +42,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
     int failure = 0;
 
     int m;
-    int* mbox[2*num];
+    int* mbox[200];  // memcad doesn't handle variable size
 
     while (count < 10000) {
         // New Transaction
