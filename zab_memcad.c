@@ -865,7 +865,6 @@ int notLeader(int num) {
     // retry = rand() % 2;
     rand(&retry);
     while(retry && num_mbox_new_e < 1) {
-        assert(0==0);
         if(filter_new_e(&m_new_e, p, lab)) {
             mbox_new_e[num_mbox_new_e] = &m_new_e;
             num_mbox_new_e = num_mbox_new_e + 1;
@@ -879,8 +878,7 @@ int notLeader(int num) {
         rand(&retry);
     }
     
-    assert(num_mbox_curr_e == 0);
-    if (num_mbox_curr_e >= 1) {
+    if (num_mbox_new_e >= 1) {
         rand(&retry);
         if(retry) {  // Actually, p is the max value of all p's received by the leader
             p = p + 1;
