@@ -69,7 +69,6 @@ int AlternatingBit(int id) {
     int num_mbox_ack;
 
     int retry;
-    int failure = 0;
 
     while (count < 10000) {
         lab = 1;
@@ -78,7 +77,6 @@ int AlternatingBit(int id) {
         assert(count > old_count);
 	    old_count = count;
         old_lab = lab;
-        failure = 0;
 
         if (id == 1) { // Process is A
 
