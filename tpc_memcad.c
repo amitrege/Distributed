@@ -1,23 +1,23 @@
-int filter_cr1 (int m) {
-    if (m == 1)
+int filter_cr1 (int* m) {
+    if ((*m) == 1)
         return 1;
     return 0;
 }
 
-int filter_cr2 (int m) {
-    if (m == 2)
+int filter_cr2 (int* m) {
+    if ((*m) == 2)
         return 1;
     return 0;
 }
 
-int filter_c1 (int m) {
-    if (m == 3)
+int filter_c1 (int* m) {
+    if ((*m) == 3)
         return 1;
     return 0;
 }
 
-int filter_c2 (int m) {
-    if (m == 4)
+int filter_c2 (int* m) {
+    if ((*m) == 4)
         return 1;
     return 0;
 }
@@ -41,9 +41,9 @@ void TwoPhaseCommit(int pid, int leader, int num) {
     int failure = 0;
 
     int m;
-    int mbox[2*num];
+    int* mbox[2*num];
 
-    while (1) {
+    while (count < 10000) {
         // New Transaction
 
         lab = 1; // Commit Request 1
@@ -63,22 +63,29 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             old_count = count;
             old_lab = lab;
 
+            /*
             // Empty mbox
             for (int i=0; i < 2*num; i++)
                 mbox[i] = 0;
             num_mbox = 0;
-            
+            */
+
             // receive msgs in mbox
-            retry = rand() % 2;
-            while(retry){
-                m = (rand() % 4) + 1;
-                if(filter_cr2(m)) {
-                    mbox[num_mbox] = m;
+            //retry = rand() % 2;
+            _memcad("assume(retry >= 0)");
+            _memcad("assume(retry <= 1)");
+
+            while(retry && num_mbox < num){
+                //m = (rand() % 4) + 1;
+                if(filter_cr2(&m)) {
+                    mbox[num_mbox] = &m;
                     num_mbox++;
                 }
                 if(num_mbox == num) 
                     break;  
-                retry = rand() % 2;
+                //retry = rand() % 2;
+                _memcad("assume(retry >= 0)");
+                _memcad("assume(retry <= 1)");
             }
 
             if (num_mbox == num) {
@@ -114,17 +121,21 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             old_count = count;
             old_lab = lab;
 
+            /*
             // Empty mbox
             for (int i=0; i < 2*num; i++)
                 mbox[i] = 0;
             num_mbox = 0;
-    
+            */
+
             // receive
-            retry = rand() % 2;
+            //retry = rand() % 2;
+            _memcad("assume(retry >= 0)");
+            _memcad("assume(retry <= 1)");
             while(retry){
-                m = (rand() % 4) + 1;
-                if(filter_c2(m)) {
-                    mbox[num_mbox] = m;
+                //m = (rand() % 4) + 1;
+                if(filter_c2(&m)) {
+                    mbox[num_mbox] = &m;
                     num_mbox++;
                 }  
                 if(num_mbox == num) 
