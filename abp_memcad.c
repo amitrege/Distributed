@@ -5,14 +5,6 @@ typedef struct _msg {
     int req;
 } msg;
 
-/*
-msg init_msg () {
-    msg m;
-    m.count = rand();
-    m.req = rand() % 2;
-}
-*/
-
 int filter_msg_0(msg* m, int count) {
     if (m->req == 0 && m->count == count)
         return 1;
@@ -29,14 +21,6 @@ typedef struct _ack {
     int count;
     int req;
 } ack;
-
-/*
-ack init_ack () {
-    ack m;
-    m.count = rand();
-    m.req = rand() % 2;
-}
-*/
 
 int filter_ack_0 (ack* m, int count) {
     if (m->count == count && m->req == 0)
@@ -74,8 +58,7 @@ int AlternatingBit(int id) {
     while (count < 10000) {
         lab = 1;
 
-        // assert count > oldcount || count == oldcount ==> lab > oldlab || failure
-        assert(count > old_count);
+        assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
 	    old_count = count;
         old_lab = lab;
 
@@ -84,32 +67,23 @@ int AlternatingBit(int id) {
 	        rand(&retry);
             while (retry) {
                 // send 0
+
                 //retry = rand() % 2;
-                _memcad("assume(retry >= 0)");
-                _memcad("assume(retry <= 1)");
+                rand(&retry);
             }
 
             lab = 2;
 
             // assert count > oldcount || count == oldcount ==> lab > oldlab
-            assert(count == old_count);
-	        assert(lab > old_lab);
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
 	        old_count = count;
             old_lab = lab;
 
-            /*
-            // Empty mbox_ack
-            memset(mbox_ack,0,sizeof(mbox_ack));
-            num_mbox_ack = 0;
-            */
-
             // Recieve ack for 0
             //retry = rand() % 2;
-            _memcad("assume(retry >= 0)");
-            _memcad("assume(retry <= 1)");
+            rand(&retry);
 
             while (retry && num_mbox_ack < 1) {
-                //m_ack = init_ack();
                 if (filter_ack_0(&m_ack, count)) {
                     mbox_ack[num_mbox_ack] = &m_ack;
                     num_mbox_ack = num_mbox_ack + 1;
@@ -120,51 +94,37 @@ int AlternatingBit(int id) {
                 }
 
                 //retry = rand() % 2;
-                _memcad("assume(retry >= 0)");
-                _memcad("assume(retry <= 1)");
+                rand(&retry);
             }
 
             if (num_mbox_ack >= 1) {
                 lab = 3;
 
-                // assert count > oldcount || count == oldcount ==> lab > oldlab
-                assert(count == old_count);
-	            assert(lab > old_lab);
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
                 //retry = rand() % 2;
-                _memcad("assume(retry >= 0)");
-                _memcad("assume(retry <= 1)");
+                rand(&retry);
 
                 while (retry) {
                     // send 1 to B
+
                     //retry = rand() % 2;
-                    _memcad("assume(retry >= 0)");
-                    _memcad("assume(retry <= 1)");
+                    rand(&retry);
                 }
 
                 lab = 4;
 
-                // assert count > oldcount || count == oldcount ==> lab > oldlab
-                assert(count == old_count);
-	            assert(lab > old_lab);
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
-                /*
-                // Empty mbox_ack
-                memset(mbox_ack,0,sizeof(mbox_ack));
-                num_mbox_ack = 0;
-                */
-
                 // Recieve ack for 0
                 //retry = rand() % 2;
-                _memcad("assume(retry >= 0)");
-                _memcad("assume(retry <= 1)");
+                rand(&retry);
 
                 while (retry && num_mbox_ack < 1) {
-                    //m_ack = init_ack();
                     if (filter_ack_1(&m_ack, count)) {
                         mbox_ack[num_mbox_ack] = &m_ack;
                         num_mbox_ack = num_mbox_ack + 1;
@@ -175,8 +135,7 @@ int AlternatingBit(int id) {
                     }
     
                     //retry = rand() % 2;
-                    _memcad("assume(retry >= 0)");
-                    _memcad("assume(retry <= 1)");
+                    rand(&retry);
                 }
     
                 if (num_mbox_ack >= 1) {
@@ -191,19 +150,11 @@ int AlternatingBit(int id) {
             }
         }
         else {  // Process is B
-            /*
-            // Empty mbox_msg
-            memset(mbox_msg,0,sizeof(mbox_msg));
-            num_mbox_msg = 0;
-            */
-
             // Recieve ack for 0
             //retry = rand() % 2;
-            _memcad("assume(retry >= 0)");
-            _memcad("assume(retry <= 1)");
+            rand(&retry);
 
             while (retry && num_mbox_msg < 1) {
-                //m = init_msg();
                 if (filter_msg_0(&m, count)) {
                     mbox_msg[num_mbox_msg] = &m;
                     num_mbox_msg = num_mbox_msg + 1;
@@ -214,49 +165,38 @@ int AlternatingBit(int id) {
                 }
 
                 //retry = rand() % 2;
-                _memcad("assume(retry >= 0)");
-                _memcad("assume(retry <= 1)");
+                rand(&retry);
             }
 
             if (num_mbox_msg >= 1) {
                 lab = 2;
 
-                // assert count > oldcount || count == oldcount ==> lab > oldlab
-                assert(count == old_count);
-                assert(lab > old_lab);
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
                 //retry = rand() % 2;
-                _memcad("assume(retry >= 0)");
-                _memcad("assume(retry <= 1)");
+                rand(&retry);
+                
                 while (retry) {
                     // send ack to A
+                    
                     //retry = rand() % 2;
-                    _memcad("assume(retry >= 0)");
-                    _memcad("assume(retry <= 1)");
+                    rand(&retry);
                 }
 
                 lab = 3;
 
-                // assert count > oldcount || count == oldcount ==> lab > oldlab
-                assert(count == old_count);
-                assert(lab > old_lab);
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
-                /*
-                // Empty mbox_msg
-                memset(mbox_msg,0,sizeof(mbox_msg));
-                num_mbox_msg = 0;
-                */
-
                 // Recieve ack for 0
+
                 //retry = rand() % 2;
-                _memcad("assume(retry >= 0)");
-                _memcad("assume(retry <= 1)");
+                rand(&retry);
+                
                 while (retry && num_mbox_msg < 1) {
-                    //m = init_msg();
                     if (filter_msg_1(&m, count)) {
                         mbox_msg[num_mbox_msg] = &m;
                         num_mbox_msg = num_mbox_msg + 1;
@@ -267,27 +207,23 @@ int AlternatingBit(int id) {
                     }
     
                     //retry = rand() % 2;
-                    _memcad("assume(retry >= 0)");
-                    _memcad("assume(retry <= 1)");
+                    rand(&retry);
                 }
 
                 if (num_mbox_msg >= 1) {
                     lab = 4;
 
-                    // assert count > oldcount || count == oldcount ==> lab > oldlab
-                    assert(count == old_count);
-                    assert(lab > old_lab);
+                    assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                     old_count = count;
                     old_lab = lab;
 
                     //retry = rand() % 2;
-                    _memcad("assume(retry >= 0)");
-                    _memcad("assume(retry <= 1)");
+                    rand(&retry);
                     while (retry) {
                         // send ack to A
+
                         //retry = rand() % 2;
-                        _memcad("assume(retry >= 0)");
-                        _memcad("assume(retry <= 1)");
+                        rand(&retry);
                     }
                     
                     count = count + 1;
@@ -309,6 +245,8 @@ int main() {
 } 
 
 /*
+Code for Interproc
+
 proc AlternatingBit(id:int) returns (count : int)
 var lab:int, retry:int, m:int; 
 begin

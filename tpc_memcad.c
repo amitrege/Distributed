@@ -22,10 +22,11 @@ int filter_c2 (int* m) {
     return 0;
 }
 
-/*@
-    predicate gt(int count, int lab, int old_count, int old_lab) =
-    (count > old_count) || ((count == old_count) ==> lab >= old_lab);
-*/
+int rand(int* retry) {
+    int p = *retry;
+    _memcad("assume(p >= 0)");
+    _memcad("assume(p <= 1)");
+}
 
 void TwoPhaseCommit(int pid, int leader, int num) {
     int commit = 0;
@@ -48,7 +49,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
 
         lab = 1; // Commit Request 1
         
-        // assert (count > old_count) || ((count == old_count) ==> lab >= old_lab) || failure;
+        assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
         old_count = count;
         old_lab = lab;
 
@@ -57,44 +58,33 @@ void TwoPhaseCommit(int pid, int leader, int num) {
 
             lab = 2; // Commit Request 2
 
-            // assert (count > old_count) || ((count == old_count) ==> lab >= old_lab)
-            assert(count == old_count);
-            assert(lab > old_lab);
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
 
-            /*
-            // Empty mbox
-            for (int i=0; i < 2*num; i++)
-                mbox[i] = 0;
-            num_mbox = 0;
-            */
-
             // receive msgs in mbox
             //retry = rand() % 2;
-            _memcad("assume(retry >= 0)");
-            _memcad("assume(retry <= 1)");
+            rand(&retry);
 
             while(retry && num_mbox < num){
-                //m = (rand() % 4) + 1;
                 if(filter_cr2(&m)) {
                     mbox[num_mbox] = &m;
                     num_mbox++;
                 }
-                if(num_mbox == num) 
-                    break;  
+                
+                if(num_mbox == num) {
+                    break;
+                }   
+                
                 //retry = rand() % 2;
-                _memcad("assume(retry >= 0)");
-                _memcad("assume(retry <= 1)");
+                rand(&retry);                
             }
 
             if (num_mbox == num) {
                 commit = 1;  // Move to Commit Phase
                 lab = 3; // Commit Phase 1
 
-                // assert (count > old_count) || ((count == old_count) ==> lab >= old_lab)
-                assert(count == old_count);
-                assert(lab > old_lab);
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
@@ -104,9 +94,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 commit = 0; // Perform rollback
                 lab = 3;
 
-                // assert (count > old_count) || ((count == old_count) ==> lab >= old_lab)
-                assert(count == old_count);
-                assert(lab > old_lab);
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
         
@@ -115,115 +103,104 @@ void TwoPhaseCommit(int pid, int leader, int num) {
 
             lab = 4;
 
-            // assert (count > old_count) || ((count == old_count) ==> lab >= old_lab)
-            assert(count == old_count);
-            assert(lab > old_lab);
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
 
-            /*
-            // Empty mbox
-            for (int i=0; i < 2*num; i++)
-                mbox[i] = 0;
-            num_mbox = 0;
-            */
-
             // receive
             //retry = rand() % 2;
-            _memcad("assume(retry >= 0)");
-            _memcad("assume(retry <= 1)");
-            while(retry){
-                //m = (rand() % 4) + 1;
+            rand(&retry);
+
+            while(retry && num_mbox < num){
                 if(filter_c2(&m)) {
                     mbox[num_mbox] = &m;
                     num_mbox++;
                 }  
-                if(num_mbox == num) 
+                if(num_mbox == num) {
                     break;
-                retry = rand() % 2;
+                } 
+
+                // retry = rand() % 2;
+                rand(&retry);
             } 
             
             if (num_mbox == num) {
                 // Complete Transaction
-                count++;
+                count = count + 1;
             }
             else {
-                failure = 1;
+                count = count + 1;
             }
         }
         else {
-            // Empty mbox
-            for (int i=0; i < 2*num; i++)
-            mbox[i] = 0;
-            num_mbox = 0;   
-            
             // receive Transaction
-            retry = rand() % 2;
-            while(retry) {
-                m = (rand() % 4) + 1;
-                
-                if(filter_cr1(m)) {
-                    mbox[num_mbox] = m;
+            //retry = rand() % 2;
+            rand(&retry);
+
+            while(retry && num_mbox < 1) { 
+                if(filter_cr1(&m)) {
+                    mbox[num_mbox] = &m;
                     num_mbox++;
                 } 
 
-                if(num_mbox >= 1) 
-                    break; 
+                if(num_mbox >= 1) {
+                    break;
+                } 
                 
-                retry = rand() % 2;
+                // retry = rand() % 2;
+                rand(&retry);
             }
 
             if (num_mbox >= 1) {
                 lab = 2; // Commit Request 2
     
-                // assert (count > old_count) || ((count == old_count) ==> lab >= old_lab)
-                // old_count = count;
-                // old_lab = lab;
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                old_count = count;
+                old_lab = lab;
             
                 // send agreement/ abort to leader
 
                 lab = 3;
                 
-                // assert (count > old_count) || ((count == old_count) ==> lab >= old_lab)
-                // old_count = count;
-                // old_lab = lab;
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                old_count = count;
+                old_lab = lab;
 
-                // Empty mbox
-                for (int i=0; i < 2*num; i++)
-                    mbox[i] = 0;
-                num_mbox = 0;
-        
                 // receive
-                retry = rand() % 2;
-                while(retry){
-                    m = (rand() % 4) + 1;
-                    if(filter_c1(m)) {
-                        mbox[num_mbox] = m;
+                // retry = rand() % 2;
+                rand(&retry);
+
+                while(retry && num_mbox < 1){
+                    if(filter_c1(&m)) {
+                        mbox[num_mbox] = &m;
                         num_mbox++;
                     }  
-                    if(num_mbox >= 1) 
+
+                    if(num_mbox >= 1) {
                         break;
-                    retry = rand() % 2;
+                    }
+                    
+                    // retry = rand() % 2;
                 }
 
                 if (num_mbox >= 1) {
                     // Complete Transaction
                     lab = 4; // Commit Phase 2
                 
-                    // assert (count > old_count) || ((count == old_count) ==> lab >= old_lab)
-                    // old_count = count;
-                    // old_lab = lab;
+                    assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                    old_count = count;
+                    old_lab = lab;
 
                     // send ack
 
-                    count++;
+                    count = count + 1;
                 }
                 else {
-                    failure = 1;
+                    count = count + 1;
                 }
             }
             else {
-                failure = 1;
+                count = count + 1;
             }
         } 
     }
