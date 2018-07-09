@@ -950,7 +950,7 @@ int notLeader(int num) {
             rand(&retry);
             while(retry && num_mbox_com < 1) {
                 if(filter_com(&m_com, p, lab)) {
-                    //mbox_com[num_mbox_com] = &m_com;
+                    mbox_com[num_mbox_com] = &m_com;
                     num_mbox_com = num_mbox_com + 1;
                 }
     
@@ -988,8 +988,56 @@ int notLeader(int num) {
             
 }
 
+int test(int num) {
+    int lab = 0;
+    int p = 0;
+    int i = 0;
+    int labr = 0;
+
+    int old_p = p - 1;
+    int old_lab = 0;
+    int old_i = 0;
+    int old_labr = 0;
+
+    int leader;
+
+    msg_com* mbox_com[200];
+    int num_mbox_com = 0;
+    msg_com m_com;
+
+    int retry;
+
+    // receive commit
+    // retry = rand() % 2;
+    rand(&retry);
+    while(retry && num_mbox_com < 1) {
+        if(filter_com(&m_com, p, lab)) {
+            mbox_com[num_mbox_com] = &m_com;
+            num_mbox_com = num_mbox_com + 1;
+        }
+
+        if (num_mbox_com >= 1) {
+            break;
+        }
+
+        // retry = rand() % 2;
+        rand(&retry);
+    }
+
+    if (num_mbox_com >= 1) {
+        // Update zvid
+
+        // Start Broadcast
+        //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
+        p = p + 1;
+    }
+    else {
+        p = p + 1;
+    }
+}
+
 int main() {
     //sendingThread(0, 0, 0, 0);
     //main_thread(0, 5); // pid, num
-    notLeader(5);
+    test(5);
 }
