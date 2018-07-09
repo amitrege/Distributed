@@ -878,6 +878,7 @@ int notLeader(int num) {
         rand(&retry);
     }
     
+    assert(num_mbox_curr_e == 0);
     if (num_mbox_curr_e >= 1) {
         rand(&retry);
         if(retry) {  // Actually, p is the max value of all p's received by the leader
