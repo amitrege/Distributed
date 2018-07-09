@@ -465,7 +465,8 @@ int main_thread(int pid, int num){
                         // send (p, lab, h) to Q
 
                         // Start Broadcast
-                        Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
+                        //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
+                        p = p + 1;
                     }
                     else {
                         p = p + 1;
@@ -596,7 +597,8 @@ int main_thread(int pid, int num){
                         // Update zvid
 
                         // Start Broadcast
-                        Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
+                        //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
+                        p = p + 1;
                     }
                     else {
                         p = p + 1;
