@@ -937,6 +937,14 @@ int notLeader(int num) {
 
             // send (lab, a, h) to leader
 
+            lab = 6; // cmt
+            
+            assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                        
+            old_p = p;
+            old_lab = lab;
+            old_i = i;
+            old_labr = labr;
+            
             p = p + 1;
         }
         else {
