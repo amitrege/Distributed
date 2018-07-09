@@ -865,6 +865,7 @@ int notLeader(int num) {
     // retry = rand() % 2;
     rand(&retry);
     while(retry && num_mbox_new_e < 1) {
+        assert(0==0);
         if(filter_new_e(&m_new_e, p, lab)) {
             mbox_new_e[num_mbox_new_e] = &m_new_e;
             num_mbox_new_e = num_mbox_new_e + 1;
