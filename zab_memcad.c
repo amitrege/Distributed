@@ -352,6 +352,10 @@ int main_thread(int pid, int num){
     
         if (leader == pid){
             // receive curr_e
+
+            // Empty mbox
+            num_mbox_curr_e = 0;
+
             // retry = rand() % 2;
             rand(&retry);
             while(retry && (num_mbox_curr_e < (num/2))) {
@@ -400,6 +404,10 @@ int main_thread(int pid, int num){
                 old_labr = labr;
 
                 // receive ack_e
+
+                // Empty mbox
+                num_mbox_ack_e = 0;
+
                 // retry = rand() % 2;
                 rand(&retry);
                 while(retry && (num_mbox_ack_e < (num/2))) {
@@ -438,6 +446,10 @@ int main_thread(int pid, int num){
                     old_labr = labr;
 
                     // receive ack_l
+
+                    // Empty mbox
+                    num_mbox_ack_l = 0;
+
                     // retry = rand() % 2;
                     rand(&retry);
                     while(retry && (num_mbox_ack_l < (num/2))) {
@@ -494,6 +506,10 @@ int main_thread(int pid, int num){
             old_labr = labr;
 
             // receive new_e
+
+            // Empty mbox
+            num_mbox_new_e = 0;
+
             // retry = rand() % 2;
             rand(&retry);
             while(retry && num_mbox_new_e < 1) {
@@ -510,7 +526,7 @@ int main_thread(int pid, int num){
                 rand(&retry);
             }
             
-            if (num_mbox_curr_e >= 1) {
+            if (num_mbox_new_e >= 1) {
                 rand(&retry);
                 if(retry) {  // Actually, p is the max value of all p's received by the leader
                     p = p + 1;
@@ -539,6 +555,10 @@ int main_thread(int pid, int num){
                 old_labr = labr;
 
                 // receive new_l
+
+                // Empty mbox
+                num_mbox_new_l = 0;
+
                 // retry = rand() % 2;
                 rand(&retry);
                 while(retry && num_mbox_new_l < 1) {
@@ -578,6 +598,10 @@ int main_thread(int pid, int num){
                     old_labr = labr;
                     
                     // receive commit
+
+                    // Empty mbox
+                    num_mbox_com = 0;
+
                     // retry = rand() % 2;
                     rand(&retry);
                     while(retry && num_mbox_com < 1) {
@@ -1038,6 +1062,6 @@ int test(int num) {
 
 int main() {
     //sendingThread(0, 0, 0, 0);
-    //main_thread(0, 5); // pid, num
-    test(5);
+    main_thread(0, 5); // pid, num
+    //test(5);
 }
