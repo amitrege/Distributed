@@ -945,7 +945,31 @@ int notLeader(int num) {
             old_i = i;
             old_labr = labr;
             
-            p = p + 1;
+            // receive commit
+            // retry = rand() % 2;
+            rand(&retry);
+            while(retry && num_mbox_com < 1) {
+
+                num_mbox_com = num_mbox_com + 1;
+    
+                if (num_mbox_com >= 1) {
+                    break;
+                }
+    
+                // retry = rand() % 2;
+                rand(&retry);
+            }
+
+            if (num_mbox_com >= 1) {
+                // Update zvid
+
+                // Start Broadcast
+                //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
+                p = p + 1;
+            }
+            else {
+                p = p + 1;
+            }
         }
         else {
             p = p + 1;
