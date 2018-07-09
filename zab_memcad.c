@@ -618,15 +618,5 @@ int main_thread(int pid, int num){
 
 int main() {
     sendingThread(0, 0, 0, 0);
-    int p = 0;
-    int lab = 0;
-    int i = 0;
-    int labr = 0;
-
-    int old_p = 0;
-    int old_lab = 0;
-    int old_i = 0;
-    int old_labr = 0;
-    Broadcast(5,0,0, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
-    //main_thread(0, 5); // pid, num
+    main_thread(0, 5); // pid, num
 }
