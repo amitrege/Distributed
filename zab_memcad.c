@@ -336,8 +336,9 @@ int main_thread(int pid, int num){
 
     while (1 && p < 10000) {
         //leader = rand() % num;
-        _memcad("assume(leader >= 0)");
-        _memcad("assume(leader <= num)");
+        //_memcad("assume(leader >= 0)");
+        //_memcad("assume(leader <= num)");
+        leader = p % num;
 
         lab = 1; // Curr_E
 
