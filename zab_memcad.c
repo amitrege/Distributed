@@ -945,8 +945,22 @@ int notLeader(int num) {
             old_i = i;
             old_labr = labr;
             
-
-            num_mbox_com = num_mbox_com + 1;
+            // receive commit
+            // retry = rand() % 2;
+            rand(&retry);
+            while(retry && num_mbox_com < 1) {
+                if(filter_com(&m_com, p, lab)) {
+                    //mbox_com[num_mbox_com] = &m_com;
+                    num_mbox_com = num_mbox_com + 1;
+                }
+    
+                if (num_mbox_com >= 1) {
+                    break;
+                }
+    
+                // retry = rand() % 2;
+                rand(&retry);
+            }
 
             if (num_mbox_com >= 1) {
                 // Update zvid
