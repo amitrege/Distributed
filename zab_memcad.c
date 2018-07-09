@@ -131,7 +131,7 @@ int sendingThread (int p, int lab, int i, int labr){
         // Send v-in
         i++;
 
-        assert (p > old_p) || ((p == old_p) && lab > old_lab) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr));
+        assert ((p > old_p) || ((p == old_p) && lab > old_lab) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));
         old_p = p;
         old_lab = lab;
         old_i = i;
@@ -620,6 +620,6 @@ int main() {
     int old_lab = 0;
     int old_i = 0;
     int old_labr = 0;
-    Broadcast(5,0,0, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr)
+    Broadcast(5,0,0, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
     //main_thread(0, 5); // pid, num
 }
