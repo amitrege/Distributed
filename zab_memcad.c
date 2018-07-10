@@ -1053,33 +1053,16 @@ int test(int num) {
 
     // send (p,lab) to leader
 
-    lab = 2; // New_E
-    
-    assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                    
-    old_p = p;
-    old_lab = lab;
-    old_i = i;
-    old_labr = labr;
-
-    // receive new_e
-    // retry = rand() % 2;
-    rand(&retry);
-    while(retry && num_mbox_new_e < 1) {
-        if(filter_new_e(&m_new_e, p, lab)) {
-            mbox_new_e[num_mbox_new_e] = &m_new_e;
-            num_mbox_new_e = num_mbox_new_e + 1;
-        }
-
-        if (num_mbox_new_e >= 1) {
-            break;
-        }
-
-        // retry = rand() % 2;
-        rand(&retry);
-    }
+    _memcad("assume(num_mbox_new_e >= 0)");
     
     if (num_mbox_new_e >= 1) {
-        
+        rand(&retry);
+        if(retry) {  // Actually, p is the max value of all p's received by the leader
+            p = p + 1;
+        }
+        else {
+            p = p + 2;
+        } 
         p = p + 1;
 
         lab = 3; // ack_e
