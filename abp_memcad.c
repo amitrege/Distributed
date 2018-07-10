@@ -63,6 +63,10 @@ int AlternatingBit(int id) {
     int retry1;
     int retry2;
     int retry3;
+    int retry4;
+    int retry5;
+    int retry6;
+    int retry7;
 
     while (count < 10000) {
         lab = 1;
@@ -172,7 +176,7 @@ int AlternatingBit(int id) {
             //retry = rand() % 2;
             //rand(&retry);
 
-            while (retry && num_mbox_msg < 1) {
+            while (retry4 && num_mbox_msg < 1) {
                 if (filter_msg_0(&m, count)) {
                     mbox_msg[num_mbox_msg] = &m;
                     num_mbox_msg = num_mbox_msg + 1;
@@ -189,14 +193,14 @@ int AlternatingBit(int id) {
             if (num_mbox_msg >= 1) {
                 lab = 2;
 
-                //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
                 //retry = rand() % 2;
-                rand(&retry);
+                //rand(&retry);
                 
-                while (retry) {
+                while (retry5) {
                     // send ack to A
                     
                     //retry = rand() % 2;
@@ -205,7 +209,7 @@ int AlternatingBit(int id) {
 
                 lab = 3;
 
-                //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
@@ -216,7 +220,7 @@ int AlternatingBit(int id) {
                 //retry = rand() % 2;
                 //rand(&retry);
                 
-                while (retry && num_mbox_msg < 1) {
+                while (retry6 && num_mbox_msg < 1) {
                     if (filter_msg_1(&m, count)) {
                         mbox_msg[num_mbox_msg] = &m;
                         num_mbox_msg = num_mbox_msg + 1;
@@ -233,13 +237,13 @@ int AlternatingBit(int id) {
                 if (num_mbox_msg >= 1) {
                     lab = 4;
 
-                    //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                    assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                     old_count = count;
                     old_lab = lab;
 
                     //retry = rand() % 2;
                     //rand(&retry);
-                    while (retry) {
+                    while (retry7) {
                         // send ack to A
 
                         //retry = rand() % 2;
