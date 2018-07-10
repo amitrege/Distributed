@@ -91,6 +91,7 @@ int AlternatingBit(int id) {
 
             //retry = rand() % 2;
             //rand(&retry);
+            _memcad("assume(retry >= 0)");
 
             while (retry && num_mbox_ack < 1) {
                 assert(retry != 0);
