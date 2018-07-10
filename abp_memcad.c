@@ -72,7 +72,7 @@ int AlternatingBit(int id) {
     while (count < 10000) {
         lab = 1;
 
-        //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+        assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
 	    old_count = count;
         old_lab = lab;
 
@@ -223,7 +223,6 @@ int AlternatingBit(int id) {
                 
                 while (retry6 && num_mbox_msg < 1) {
                     if (filter_msg_1(&m2, count)) {
-                        assert(1==1);
                         mbox_msg[num_mbox_msg] = &m2;
                         num_mbox_msg = num_mbox_msg + 1;
                     }
@@ -239,7 +238,7 @@ int AlternatingBit(int id) {
                 if (num_mbox_msg >= 1) {
                     lab = 4;
 
-                    //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                    assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                     old_count = count;
                     old_lab = lab;
 
