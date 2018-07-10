@@ -81,7 +81,7 @@ int AlternatingBit(int id) {
             lab = 2;
 
             // assert count > oldcount || count == oldcount ==> lab > oldlab
-            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+            //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
 	        old_count = count;
             old_lab = lab;
 
