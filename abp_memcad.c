@@ -87,7 +87,8 @@ int AlternatingBit(int id) {
 
             //retry = rand() % 2;
             rand(&retry);
-
+            assert(retry >= 0 && retry <= 1);
+            
             while (retry && num_mbox_ack < 1) {
                 if (filter_ack_0(&m_ack, count)) {
                     mbox_ack[num_mbox_ack] = &m_ack;
@@ -100,7 +101,6 @@ int AlternatingBit(int id) {
 
                 //retry = rand() % 2;
                 rand(&retry);
-                assert(retry >= 0 && retry <= 1);
             }
 
             if (num_mbox_ack >= 1) {
