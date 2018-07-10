@@ -82,6 +82,9 @@ int AlternatingBit(int id) {
             old_lab = lab;
 
             // Recieve ack for 0
+            // Empty mbox
+            num_mbox_ack = 0;
+
             //retry = rand() % 2;
             rand(&retry);
 
@@ -123,6 +126,9 @@ int AlternatingBit(int id) {
                 old_lab = lab;
 
                 // Recieve ack for 0
+                // Empty mbox
+                num_mbox_ack = 0;
+
                 //retry = rand() % 2;
                 rand(&retry);
 
@@ -153,6 +159,9 @@ int AlternatingBit(int id) {
         }
         else {  // Process is B
             // Recieve ack for 0
+            // Empty mbox
+            num_mbox_msg = 0;
+
             //retry = rand() % 2;
             rand(&retry);
 
@@ -194,6 +203,8 @@ int AlternatingBit(int id) {
                 old_lab = lab;
 
                 // Recieve ack for 0
+                // Empty mbox
+                num_mbox_msg = 0;
 
                 //retry = rand() % 2;
                 rand(&retry);
