@@ -13,5 +13,5 @@ int main() {
     _memcad("assume(r>=0)");
 
     // r should be >= 0
-    assert(r >= 0);
+    assert(r == 0);
 }
