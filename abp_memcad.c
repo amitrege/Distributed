@@ -52,7 +52,8 @@ int AlternatingBit(int id) {
     int old_count = count - 1;  // needed for first assertion
     
     msg* mbox_msg[2];
-    msg m;
+    msg m1;
+    msg m2;
     int num_mbox_msg;
 
     ack* mbox_ack[2];
@@ -177,8 +178,8 @@ int AlternatingBit(int id) {
             //rand(&retry);
 
             while (retry4 && num_mbox_msg < 1) {
-                if (filter_msg_0(&m, count)) {
-                    mbox_msg[num_mbox_msg] = &m;
+                if (filter_msg_0(&m1, count)) {
+                    mbox_msg[num_mbox_msg] = &m1;
                     num_mbox_msg = num_mbox_msg + 1;
                 }
 
@@ -221,9 +222,9 @@ int AlternatingBit(int id) {
                 //rand(&retry);
                 
                 while (retry6 && num_mbox_msg < 1) {
-                    if (filter_msg_1(&m, count)) {
+                    if (filter_msg_1(&m2, count)) {
                         assert(1==1);
-                        mbox_msg[num_mbox_msg] = &m;
+                        mbox_msg[num_mbox_msg] = &m2;
                         num_mbox_msg = num_mbox_msg + 1;
                     }
     
