@@ -1029,18 +1029,52 @@ int test(int num) {
     int num_mbox_com = 0;
     msg_com m_com;
 
+    msg_ack_e* mbox_ack_e[200];
+    int num_mbox_ack_e = 0;
+    msg_ack_e m_ack_e;
+
+    msg_new_l* mbox_new_l[200];
+    int num_mbox_new_l = 0;
+    msg_new_l m_new_l;
+
+    msg_ack_l* mbox_ack_l[200];
+    int num_mbox_ack_l = 0;
+    msg_ack_l m_ack_l;
+
+    msg_com* mbox_com[200];
+    int num_mbox_com = 0;
+    msg_com m_com;
+
     int retry;
 
-    // receive commit
+    lab = 3; // ack_e
+    
+    assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                    
+    old_p = p;
+    old_lab = lab;
+    old_i = i;
+    old_labr = labr;
+
+    // send (p, lab, a, h) to leader
+
+    lab = 4; // new_l
+
+    assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                    
+    old_p = p;
+    old_lab = lab;
+    old_i = i;
+    old_labr = labr;
+
+    // receive new_l
     // retry = rand() % 2;
     rand(&retry);
-    while(retry && num_mbox_com < 1) {
-        if(filter_com(&m_com, p, lab)) {
-            mbox_com[num_mbox_com] = &m_com;
-            num_mbox_com = num_mbox_com + 1;
+    while(retry && num_mbox_new_l < 1) {
+        if(filter_new_l(&m_new_l, p, lab)) {
+            mbox_new_l[num_mbox_new_l] = &m_new_l;
+            num_mbox_new_l = num_mbox_new_l + 1;
         }
 
-        if (num_mbox_com >= 1) {
+        if (num_mbox_new_l >= 1) {
             break;
         }
 
@@ -1048,20 +1082,64 @@ int test(int num) {
         rand(&retry);
     }
 
-    if (num_mbox_com >= 1) {
-        // Update zvid
+    if(num_mbox_new_l >= 1) {
+        // Update a
+        // Update history
 
-        // Start Broadcast
-        //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
-        p = p + 1;
+        lab = 5; // ack_l
+
+        assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                        
+        old_p = p;
+        old_lab = lab;
+        old_i = i;
+        old_labr = labr;
+
+        // send (lab, a, h) to leader
+
+        lab = 6; // cmt
+        
+        assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                        
+        old_p = p;
+        old_lab = lab;
+        old_i = i;
+        old_labr = labr;
+        
+        // receive commit
+        // retry = rand() % 2;
+        rand(&retry);
+        while(retry && num_mbox_com < 1) {
+            if(filter_com(&m_com, p, lab)) {
+                mbox_com[num_mbox_com] = &m_com;
+                num_mbox_com = num_mbox_com + 1;
+            }
+
+            if (num_mbox_com >= 1) {
+                break;
+            }
+
+            // retry = rand() % 2;
+            rand(&retry);
+        }
+
+        if (num_mbox_com >= 1) {
+            // Update zvid
+
+            // Start Broadcast
+            //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
+            p = p + 1;
+        }
+        else {
+            p = p + 1;
+        }
     }
     else {
         p = p + 1;
     }
 }
 
+
 int main() {
     //sendingThread(0, 0, 0, 0);
-    main_thread(0, 5); // pid, num
-    //test(5);
+    //main_thread(0, 5); // pid, num
+    test(5);
 }
