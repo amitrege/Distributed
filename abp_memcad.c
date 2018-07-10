@@ -72,6 +72,7 @@ int AlternatingBit(int id) {
 
 	        //rand(&retry);
             while (retry) {
+                assert(retry != 0);
                 // send 0
 
                 //retry = rand() % 2;
