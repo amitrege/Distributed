@@ -60,6 +60,7 @@ int AlternatingBit(int id) {
     int num_mbox_ack;
 
     int retry;
+    int retry1;
 
     while (count < 10000) {
         lab = 1;
@@ -92,11 +93,11 @@ int AlternatingBit(int id) {
             //retry = rand() % 2;
             //rand(&retry);
             assert(retry == 0);
-            _memcad("assume(retry >= 0)");
-            assert(retry == 0);
+            //_memcad("assume(retry >= 0)");
+            //assert(retry == 0);
 
-            while (retry && num_mbox_ack < 1) {
-                assert(retry != 0);
+            while (retry1 && num_mbox_ack < 1) {
+                assert(retry1 != 0);
                 if (filter_ack_0(&m_ack, count)) {
                     mbox_ack[num_mbox_ack] = &m_ack;
                     num_mbox_ack = num_mbox_ack + 1;
@@ -114,7 +115,7 @@ int AlternatingBit(int id) {
             if (num_mbox_ack >= 1) {
                 lab = 3;
 
-                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
@@ -130,7 +131,7 @@ int AlternatingBit(int id) {
 
                 lab = 4;
 
-                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
