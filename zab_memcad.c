@@ -1142,6 +1142,7 @@ int test(int num) {
             }
 
             if (num_mbox_com >= 1) {
+                assert(num_mbox_com >= 1);
                 // Update zvid
 
                 // Start Broadcast
