@@ -222,6 +222,7 @@ int AlternatingBit(int id) {
                 
                 while (retry6 && num_mbox_msg < 1) {
                     if (filter_msg_1(&m, count)) {
+                        assert(1==1);
                         mbox_msg[num_mbox_msg] = &m;
                         num_mbox_msg = num_mbox_msg + 1;
                     }
@@ -234,7 +235,6 @@ int AlternatingBit(int id) {
                     //rand(&retry);
                 }
 
-                assert(retry6 == 0);
                 if (num_mbox_msg >= 1) {
                     lab = 4;
 
