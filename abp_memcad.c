@@ -234,8 +234,7 @@ int AlternatingBit(int id) {
                     //retry = rand() % 2;
                     //rand(&retry);
                 }
-
-                assert(num_mbox_msg >= 1);
+                assert(retry6 != 0);
                 if (num_mbox_msg >= 1) {
                     lab = 4;
 
