@@ -1053,9 +1053,10 @@ int test(int num) {
 
     // send (p,lab) to leader
 
-    _memcad("assume(num_mbox_new_e > 1)");
-    assert(num_mbox_new_e > 1);
-    
+    //_memcad("assume(num_mbox_new_e > 1)");
+    //assert(num_mbox_new_e > 1);
+    num_mbox_new_e = 2;
+
     if (num_mbox_new_e >= 1) {
         rand(&retry);
         if(retry) {  // Actually, p is the max value of all p's received by the leader
