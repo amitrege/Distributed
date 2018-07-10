@@ -1079,13 +1079,7 @@ int test(int num) {
     }
     
     if (num_mbox_new_e >= 1) {
-        rand(&retry);
-        if(retry) {  // Actually, p is the max value of all p's received by the leader
-            p = p + 1;
-        }
-        else {
-            p = p + 2;
-        } 
+        
         p = p + 1;
 
         lab = 3; // ack_e
@@ -1177,8 +1171,7 @@ int test(int num) {
             p = p + 1;
         }
     }
-    else {
-        // Special Case (state transfer?) 
+    else { 
         p = p + 1;
     }
 }
