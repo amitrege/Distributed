@@ -1,24 +1,28 @@
 int filter_cr1 (int* m) {
-    if ((*m) == 1)
+    if ((*m) == 1) {
         return 1;
+    }
     return 0;
 }
 
 int filter_cr2 (int* m) {
-    if ((*m) == 2)
+    if ((*m) == 2) {
         return 1;
+    }
     return 0;
 }
 
 int filter_c1 (int* m) {
-    if ((*m) == 3)
+    if ((*m) == 3) {
         return 1;
+    }
     return 0;
 }
 
 int filter_c2 (int* m) {
-    if ((*m) == 4)
+    if ((*m) == 4) {
         return 1;
+    }
     return 0;
 }
 
@@ -32,14 +36,15 @@ void TwoPhaseCommit(int pid, int leader, int num) {
     int commit = 0;
     int count = 1;
     int num_mbox = 0;
-    int retry;
+    int retry1;
+    int retry2;
+    int retry3;
+    int retry4;
 
     int lab = 1;
 
     int old_count = count - 1;
     int old_lab = 0;
-
-    int failure = 0;
 
     int m;
     int* mbox[200];  // memcad doesn't handle variable size
@@ -63,10 +68,13 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             old_lab = lab;
 
             // receive msgs in mbox
-            //retry = rand() % 2;
-            rand(&retry);
+            // Empty mbox
+            num_mbox = 0;
 
-            while(retry && num_mbox < num){
+            //retry = rand() % 2;
+            // rand(&retry);
+
+            while(retry1 && num_mbox < num){
                 if(filter_cr2(&m)) {
                     mbox[num_mbox] = &m;
                     num_mbox++;
@@ -77,7 +85,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 }   
                 
                 //retry = rand() % 2;
-                rand(&retry);                
+                // rand(&retry);                
             }
 
             if (num_mbox == num) {
@@ -108,10 +116,13 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             old_lab = lab;
 
             // receive
+            // Empty mbox
+            num_mbox = 0;
+            
             //retry = rand() % 2;
-            rand(&retry);
+            // rand(&retry);
 
-            while(retry && num_mbox < num){
+            while(retry2 && num_mbox < num){
                 if(filter_c2(&m)) {
                     mbox[num_mbox] = &m;
                     num_mbox++;
@@ -121,7 +132,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 } 
 
                 // retry = rand() % 2;
-                rand(&retry);
+                // rand(&retry);
             } 
             
             if (num_mbox == num) {
@@ -134,10 +145,13 @@ void TwoPhaseCommit(int pid, int leader, int num) {
         }
         else {
             // receive Transaction
+            // Empty mbox
+            num_mbox = 0;
+            
             //retry = rand() % 2;
-            rand(&retry);
+            // rand(&retry);
 
-            while(retry && num_mbox < 1) { 
+            while(retry3 && num_mbox < 1) { 
                 if(filter_cr1(&m)) {
                     mbox[num_mbox] = &m;
                     num_mbox++;
@@ -148,7 +162,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 } 
                 
                 // retry = rand() % 2;
-                rand(&retry);
+                // rand(&retry);
             }
 
             if (num_mbox >= 1) {
@@ -167,10 +181,13 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 old_lab = lab;
 
                 // receive
+                // Empty mbox
+                num_mbox = 0;
+            
                 // retry = rand() % 2;
-                rand(&retry);
+                // rand(&retry);
 
-                while(retry && num_mbox < 1){
+                while(retry4 && num_mbox < 1){
                     if(filter_c1(&m)) {
                         mbox[num_mbox] = &m;
                         num_mbox++;
