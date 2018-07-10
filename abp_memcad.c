@@ -103,6 +103,7 @@ int AlternatingBit(int id) {
             }
 
             if (num_mbox_ack >= 1) {
+                assert(num_mbox_ack >= 1);
                 lab = 3;
 
                 assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
