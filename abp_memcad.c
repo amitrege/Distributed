@@ -237,7 +237,7 @@ int AlternatingBit(int id) {
                 if (num_mbox_msg >= 1) {
                     lab = 4;
 
-                    assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                    //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                     old_count = count;
                     old_lab = lab;
 
