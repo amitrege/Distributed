@@ -77,7 +77,13 @@ int propose(int pid, int num, int estimate) {
     msg_ack* mbox_ack[200];
     int num_mbox_ack = 0;
 
-    msg_commit m_commit;
+    msg_commit m_commit1;
+    msg_commit m_commit2;
+    msg_commit m_commit3;
+    msg_commit m_commit4;
+    msg_commit m_commit5;
+    msg_commit m_commit6;
+    msg_commit m_commit7;
     msg_commit* mbox_commit[200];
     int num_mbox_commit = 0;
 
@@ -148,8 +154,8 @@ int propose(int pid, int num, int estimate) {
                     // NO retry because if the process transistions (non deterministically) to
                     // lab = 4 it must have received an R-Deliver 
                     while(num_mbox_commit < 1) {
-                        if(filter_commit(&m_commit)) {
-                            mbox_commit[num_mbox_commit] = &m_commit;
+                        if(filter_commit(&m_commit1)) {
+                            mbox_commit[num_mbox_commit] = &m_commit1;
                             num_mbox_commit = num_mbox_commit + 1;
                         }
 
@@ -159,7 +165,7 @@ int propose(int pid, int num, int estimate) {
                     }
                 
                     if(num_mbox_commit >= 1) {
-                        estimate = m_commit.estimate;
+                        estimate = m_commit1.estimate;
                         state = 1;
                         break;
                     }
@@ -192,8 +198,8 @@ int propose(int pid, int num, int estimate) {
                     // NO retry because if the process transistions (non deterministically) to
                     // lab = 4 it must have received an R-Deliver 
                     while(num_mbox_commit < 1) {
-                        if(filter_commit(&m_commit)) {
-                            mbox_commit[num_mbox_commit] = &m_commit;
+                        if(filter_commit(&m_commit2)) {
+                            mbox_commit[num_mbox_commit] = &m_commit2;
                             num_mbox_commit = num_mbox_commit + 1;
                         }
 
@@ -203,7 +209,7 @@ int propose(int pid, int num, int estimate) {
                     }
                 
                     if(num_mbox_commit >= 1) {
-                        estimate = m_commit.estimate;
+                        estimate = m_commit2.estimate;
                         state = 1;
                         break;
                     }
@@ -261,8 +267,8 @@ int propose(int pid, int num, int estimate) {
                         // NO retry because if the process transistions (non deterministically) to
                         // lab = 4 it must have received an R-Deliver 
                         while(num_mbox_commit < 1) {
-                            if(filter_commit(&m_commit)) {
-                                mbox_commit[num_mbox_commit] = &m_commit;
+                            if(filter_commit(&m_commit3)) {
+                                mbox_commit[num_mbox_commit] = &m_commit3;
                                 num_mbox_commit = num_mbox_commit + 1;
                             }
     
@@ -272,7 +278,7 @@ int propose(int pid, int num, int estimate) {
                         }
                     
                         if(num_mbox_commit >= 1) {
-                            estimate = m_commit.estimate;
+                            estimate = m_commit3.estimate;
                             state = 1;
                             break;
                         }
@@ -320,8 +326,8 @@ int propose(int pid, int num, int estimate) {
                 // NO retry because if the process transistions (non deterministically) to
                 // lab = 4 it must have received an R-Deliver 
                 while(num_mbox_commit < 1) {
-                    if(filter_commit(&m_commit)) {
-                        mbox_commit[num_mbox_commit] = &m_commit;
+                    if(filter_commit(&m_commit4)) {
+                        mbox_commit[num_mbox_commit] = &m_commit4;
                         num_mbox_commit = num_mbox_commit + 1;
                     }
 
@@ -331,7 +337,7 @@ int propose(int pid, int num, int estimate) {
                 }
             
                 if(num_mbox_commit >= 1) {
-                    estimate = m_commit.estimate;
+                    estimate = m_commit4.estimate;
                     state = 1;
                     break;
                 }
@@ -385,8 +391,8 @@ int propose(int pid, int num, int estimate) {
                     // NO retry because if the process transistions (non deterministically) to
                     // lab = 4 it must have received an R-Deliver 
                     while(num_mbox_commit < 1) {
-                        if(filter_commit(&m_commit)) {
-                            mbox_commit[num_mbox_commit] = &m_commit;
+                        if(filter_commit(&m_commit5)) {
+                            mbox_commit[num_mbox_commit] = &m_commit5;
                             num_mbox_commit = num_mbox_commit + 1;
                         }
     
@@ -396,7 +402,7 @@ int propose(int pid, int num, int estimate) {
                     }
                 
                     if(num_mbox_commit >= 1) {
-                        estimate = m_commit.estimate;
+                        estimate = m_commit5.estimate;
                         state = 1;
                         break;
                     }
@@ -430,8 +436,8 @@ int propose(int pid, int num, int estimate) {
                     // NO retry because if the process transistions (non deterministically) to
                     // lab = 4 it must have received an R-Deliver 
                     while(num_mbox_commit < 1) {
-                        if(filter_commit(&m_commit)) {
-                            mbox_commit[num_mbox_commit] = &m_commit;
+                        if(filter_commit(&m_commit6)) {
+                            mbox_commit[num_mbox_commit] = &m_commit6;
                             num_mbox_commit = num_mbox_commit + 1;
                         }
     
@@ -441,7 +447,7 @@ int propose(int pid, int num, int estimate) {
                     }
                 
                     if(num_mbox_commit >= 1) {
-                        estimate = m_commit.estimate;
+                        estimate = m_commit6.estimate;
                         state = 1;
                         break;
                     }
@@ -475,8 +481,8 @@ int propose(int pid, int num, int estimate) {
                 // NO retry because if the process transistions (non deterministically) to
                 // lab = 4 it must have received an R-Deliver 
                 while(num_mbox_commit < 1) {
-                    if(filter_commit(&m_commit)) {
-                        mbox_commit[num_mbox_commit] = &m_commit;
+                    if(filter_commit(&m_commit7)) {
+                        mbox_commit[num_mbox_commit] = &m_commit7;
                         num_mbox_commit = num_mbox_commit + 1;
                     }
 
@@ -486,7 +492,7 @@ int propose(int pid, int num, int estimate) {
                 }
             
                 if(num_mbox_commit >= 1) {
-                    estimate = m_commit.estimate;
+                    estimate = m_commit7.estimate;
                     state = 1;
                     break;
                 }
