@@ -254,6 +254,7 @@ int AlternatingBit(int id) {
                     count = count + 1;
                 }
                 else {
+                    assert(0 == 0);
                     count = count + 1;
                 }
             }
