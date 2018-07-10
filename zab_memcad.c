@@ -1053,7 +1053,7 @@ int test(int num) {
 
     // send (p,lab) to leader
 
-    _memcad("assume(num_mbox_new_e >= 0)");
+    _memcad("assume(num_mbox_new_e > 1)");
     
     if (num_mbox_new_e >= 1) {
         rand(&retry);
