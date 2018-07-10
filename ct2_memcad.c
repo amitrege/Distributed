@@ -131,7 +131,7 @@ int propose(int pid, int num, int estimate) {
                 if(commit1) {
                     lab = 4;
 
-                    assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
+                    // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
                     assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
                     old_round = round;
                     old_lab = lab;
