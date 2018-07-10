@@ -1025,10 +1025,6 @@ int test(int num) {
 
     int leader;
 
-    msg_com* mbox_com[200];
-    int num_mbox_com = 0;
-    msg_com m_com;
-
     msg_ack_e* mbox_ack_e[200];
     int num_mbox_ack_e = 0;
     msg_ack_e m_ack_e;
