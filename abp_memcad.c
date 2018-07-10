@@ -60,7 +60,7 @@ int AlternatingBit(int id) {
     while (count < 10000) {
         lab = 1;
 
-        assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+        //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
 	    old_count = count;
         old_lab = lab;
 
