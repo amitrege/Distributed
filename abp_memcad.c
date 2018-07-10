@@ -91,7 +91,6 @@ int AlternatingBit(int id) {
 
             //retry = rand() % 2;
             rand(&retry);
-            assert(retry == 0 || retry == 1);
 
             while (retry && num_mbox_ack < 1) {
                 assert(retry == 1);
