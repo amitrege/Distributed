@@ -264,7 +264,7 @@ int AlternatingBit(int id) {
 }
 
 int main() {
-    AlternatingBit(1);
+    AlternatingBit(0);
     return 0;
 } 
 
