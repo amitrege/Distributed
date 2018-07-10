@@ -87,7 +87,7 @@ int AlternatingBit(int id) {
 
             // Recieve ack for 0
             // Empty mbox
-            num_mbox_ack = 0;
+            //num_mbox_ack = 0;
 
             //retry = rand() % 2;
             rand(&retry);
