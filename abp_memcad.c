@@ -92,7 +92,7 @@ int AlternatingBit(int id) {
 
             //retry = rand() % 2;
             //rand(&retry);
-            assert(retry == 0);
+            //assert(retry == 0);
             //_memcad("assume(retry >= 0)");
             //assert(retry == 0);
 
