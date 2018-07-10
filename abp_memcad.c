@@ -72,7 +72,7 @@ int AlternatingBit(int id) {
     while (count < 10000) {
         lab = 1;
 
-        //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+        assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
 	    old_count = count;
         old_lab = lab;
 
@@ -187,9 +187,6 @@ int AlternatingBit(int id) {
                     break;
                 }
 
-                assert(retry4 != 0);
-                _memcad("assume(retry4 >= 0)");
-                assert(retry4 == 0 );
                 //retry = rand() % 2;
                 //rand(&retry);
             }
@@ -197,7 +194,7 @@ int AlternatingBit(int id) {
             if (num_mbox_msg >= 1) {
                 lab = 2;
 
-                //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
@@ -213,7 +210,7 @@ int AlternatingBit(int id) {
 
                 lab = 3;
 
-                //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
 
@@ -241,7 +238,7 @@ int AlternatingBit(int id) {
                 if (num_mbox_msg >= 1) {
                     lab = 4;
 
-                    //assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+                    assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                     old_count = count;
                     old_lab = lab;
 
@@ -261,6 +258,7 @@ int AlternatingBit(int id) {
                 }
             }
             else {
+                assert(0 == 0);
                 count = count + 1;
             }
         }
