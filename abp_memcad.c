@@ -60,6 +60,8 @@ int AlternatingBit(int id) {
     ack m_ack;
     int num_mbox_ack;
 
+    volatile int random;
+
     int retry;
     int retry1;
     int retry2;
@@ -84,6 +86,7 @@ int AlternatingBit(int id) {
 
                 //retry = rand() % 2;
                 //rand(&retry);
+                retry = random;
             }
 
             lab = 2;
@@ -99,6 +102,7 @@ int AlternatingBit(int id) {
 
             //retry = rand() % 2;
             //rand(&retry);
+            retry1 = random;
 
             while (retry1 && num_mbox_ack < 1) {
                 if (filter_ack_0(&m_ack, count)) {
@@ -112,6 +116,7 @@ int AlternatingBit(int id) {
 
                 //retry = rand() % 2;
                 //rand(&retry);
+                retry1 = random;
             }
 
             if (num_mbox_ack >= 1) {
@@ -124,11 +129,13 @@ int AlternatingBit(int id) {
                 //retry = rand() % 2;
                 //rand(&retry);
 
+                retry2 = random;
                 while (retry2) {
                     // send 1 to B
 
                     //retry = rand() % 2;
                     //rand(&retry);
+                    retry2 = random;
                 }
 
                 lab = 4;
@@ -143,6 +150,7 @@ int AlternatingBit(int id) {
 
                 //retry = rand() % 2;
                 //rand(&retry);
+                retry3 = random;
 
                 while (retry3 && num_mbox_ack < 1) {
                     if (filter_ack_1(&m_ack, count)) {
@@ -156,6 +164,7 @@ int AlternatingBit(int id) {
     
                     //retry = rand() % 2;
                     //rand(&retry);
+                    retry3 = random;
                 }
     
                 if (num_mbox_ack >= 1) {
@@ -176,6 +185,7 @@ int AlternatingBit(int id) {
 
             //retry = rand() % 2;
             //rand(&retry);
+            retry4 = random;
 
             while (retry4 && num_mbox_msg < 1) {
                 if (filter_msg_0(&m1, count)) {
@@ -189,6 +199,7 @@ int AlternatingBit(int id) {
 
                 //retry = rand() % 2;
                 //rand(&retry);
+                retry4 = random;
             }
 
             if (num_mbox_msg >= 1) {
@@ -200,12 +211,14 @@ int AlternatingBit(int id) {
 
                 //retry = rand() % 2;
                 //rand(&retry);
+                retry5 = random;
                 
                 while (retry5) {
                     // send ack to A
                     
                     //retry = rand() % 2;
                     //rand(&retry);
+                    retry5 = random;
                 }
 
                 lab = 3;
@@ -220,6 +233,7 @@ int AlternatingBit(int id) {
 
                 //retry = rand() % 2;
                 //rand(&retry);
+                retry6 = random;
                 
                 while (retry6 && num_mbox_msg < 1) {
                     if (filter_msg_1(&m2, count)) {
@@ -233,6 +247,7 @@ int AlternatingBit(int id) {
     
                     //retry = rand() % 2;
                     //rand(&retry);
+                    retry6 = random;
                 }
                 
                 if (num_mbox_msg >= 1) {
@@ -244,11 +259,13 @@ int AlternatingBit(int id) {
 
                     //retry = rand() % 2;
                     //rand(&retry);
+                    retry7 = random;
                     while (retry7) {
                         // send ack to A
 
                         //retry = rand() % 2;
                         //rand(&retry);
+                        retry7 = random;
                     }
                     
                     count = count + 1;
