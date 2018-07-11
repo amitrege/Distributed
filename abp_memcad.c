@@ -38,12 +38,6 @@ int filter_ack_1 (ack* m, int count) {
     return 0;
 }
 
-void rand(int* retry) {
-    int p = *retry;   // Workaround to solve error 
-    _memcad("assume(p >= 0)");
-    _memcad("assume(p <= 1)");
-}
-
 int AlternatingBit(int id) {
     int lab = 0;
     int count = 0;
@@ -73,18 +67,15 @@ int AlternatingBit(int id) {
 
         if (id == 1) { // Process is A
 
-	        //rand(&retry);
+            retry = random;
             while (retry) {
                 // send 0
 
-                //retry = rand() % 2;
-                //rand(&retry);
                 retry = random;
             }
 
             lab = 2;
 
-            // assert count > oldcount || count == oldcount ==> lab > oldlab
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
 	        old_count = count;
             old_lab = lab;
@@ -93,8 +84,6 @@ int AlternatingBit(int id) {
             // Empty mbox
             num_mbox_ack = 0;
 
-            //retry = rand() % 2;
-            //rand(&retry);
             retry = random;
 
             while (retry && num_mbox_ack < 1) {
@@ -107,8 +96,6 @@ int AlternatingBit(int id) {
                     break;
                 }
 
-                //retry = rand() % 2;
-                //rand(&retry);
                 retry = random;
             }
 
@@ -119,15 +106,10 @@ int AlternatingBit(int id) {
                 old_count = count;
                 old_lab = lab;
 
-                //retry = rand() % 2;
-                //rand(&retry);
-
                 retry = random;
                 while (retry) {
                     // send 1 to B
 
-                    //retry = rand() % 2;
-                    //rand(&retry);
                     retry = random;
                 }
 
@@ -141,8 +123,6 @@ int AlternatingBit(int id) {
                 // Empty mbox
                 num_mbox_ack = 0;
 
-                //retry = rand() % 2;
-                //rand(&retry);
                 retry = random;
 
                 while (retry && num_mbox_ack < 1) {
@@ -155,8 +135,6 @@ int AlternatingBit(int id) {
                         break;
                     }
     
-                    //retry = rand() % 2;
-                    //rand(&retry);
                     retry = random;
                 }
     
@@ -176,8 +154,6 @@ int AlternatingBit(int id) {
             // Empty mbox
             num_mbox_msg = 0;
 
-            //retry = rand() % 2;
-            //rand(&retry);
             retry = random;
 
             while (retry && num_mbox_msg < 1) {
@@ -190,8 +166,6 @@ int AlternatingBit(int id) {
                     break;
                 }
 
-                //retry = rand() % 2;
-                //rand(&retry);
                 retry = random;
             }
 
@@ -202,15 +176,11 @@ int AlternatingBit(int id) {
                 old_count = count;
                 old_lab = lab;
 
-                //retry = rand() % 2;
-                //rand(&retry);
                 retry = random;
                 
                 while (retry) {
                     // send ack to A
                     
-                    //retry = rand() % 2;
-                    //rand(&retry);
                     retry = random;
                 }
 
@@ -224,8 +194,6 @@ int AlternatingBit(int id) {
                 // Empty mbox
                 num_mbox_msg = 0;
 
-                //retry = rand() % 2;
-                //rand(&retry);
                 retry = random;
                 
                 while (retry && num_mbox_msg < 1) {
@@ -238,8 +206,6 @@ int AlternatingBit(int id) {
                         break;
                     }
     
-                    //retry = rand() % 2;
-                    //rand(&retry);
                     retry = random;
                 }
                 
@@ -250,14 +216,10 @@ int AlternatingBit(int id) {
                     old_count = count;
                     old_lab = lab;
 
-                    //retry = rand() % 2;
-                    //rand(&retry);
                     retry = random;
                     while (retry) {
                         // send ack to A
 
-                        //retry = rand() % 2;
-                        //rand(&retry);
                         retry = random;
                     }
                     

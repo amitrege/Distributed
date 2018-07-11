@@ -95,6 +95,8 @@ int propose(int pid, int num, int estimate) {
 
     int nack; // ack or nack
 
+    volatile int random;
+
     while(state != 1 && round < 10000) {    // while state is undecided
         leader = (round % num) + 1;
 
