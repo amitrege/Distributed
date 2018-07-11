@@ -380,7 +380,7 @@ int main_thread(int pid, int num){
 
                 // rand(&retry);
                 retry = random;
-                if(retry2) {  // Actually, p is the max value of all p's received by the leader
+                if(retry) {  // Actually, p is the max value of all p's received by the leader
                     p = p + 1;
                 }
                 else {
