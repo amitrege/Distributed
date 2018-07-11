@@ -1167,6 +1167,5 @@ int test(int num) {
 
 int main() {
     //sendingThread(0, 0, 0, 0);
-    //main_thread(0, 5); // pid, num
-    test(5);
+    main_thread(0, 5); // pid, num
 }
