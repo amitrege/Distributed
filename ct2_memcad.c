@@ -152,7 +152,7 @@ int propose(int pid, int num, int estimate) {
                     // lab = 4 it must have received an R-Deliver 
                     while(num_mbox_commit < 1) {
                         if(filter_commit(&m_commit)) {
-                            mbox_commit[num_mbox_commit] = &m_commit;
+                            //mbox_commit[num_mbox_commit] = &m_commit;
                             num_mbox_commit = num_mbox_commit + 1;
                         }
 
@@ -202,7 +202,7 @@ int propose(int pid, int num, int estimate) {
                     // lab = 4 it must have received an R-Deliver 
                     while(num_mbox_commit < 1) {
                         if(filter_commit(&m_commit)) {
-                            mbox_commit[num_mbox_commit] = &m_commit;
+                            //mbox_commit[num_mbox_commit] = &m_commit;
                             num_mbox_commit = num_mbox_commit + 1;
                         }
 
@@ -275,7 +275,7 @@ int propose(int pid, int num, int estimate) {
                         // lab = 4 it must have received an R-Deliver 
                         while(num_mbox_commit < 1) {
                             if(filter_commit(&m_commit)) {
-                                mbox_commit[num_mbox_commit] = &m_commit;
+                                //mbox_commit[num_mbox_commit] = &m_commit;
                                 num_mbox_commit = num_mbox_commit + 1;
                             }
     
@@ -336,7 +336,7 @@ int propose(int pid, int num, int estimate) {
                 // lab = 4 it must have received an R-Deliver 
                 while(num_mbox_commit < 1) {
                     if(filter_commit(&m_commit)) {
-                        mbox_commit[num_mbox_commit] = &m_commit;
+                        //mbox_commit[num_mbox_commit] = &m_commit;
                         num_mbox_commit = num_mbox_commit + 1;
                     }
 
@@ -403,7 +403,7 @@ int propose(int pid, int num, int estimate) {
                     // lab = 4 it must have received an R-Deliver 
                     while(num_mbox_commit < 1) {
                         if(filter_commit(&m_commit)) {
-                            mbox_commit[num_mbox_commit] = &m_commit;
+                            //mbox_commit[num_mbox_commit] = &m_commit;
                             num_mbox_commit = num_mbox_commit + 1;
                         }
 
@@ -450,7 +450,7 @@ int propose(int pid, int num, int estimate) {
                     // lab = 4 it must have received an R-Deliver 
                     while(num_mbox_commit < 1) {
                         if(filter_commit(&m_commit)) {
-                            mbox_commit[num_mbox_commit] = &m_commit;
+                            //mbox_commit[num_mbox_commit] = &m_commit;
                             num_mbox_commit = num_mbox_commit + 1;
                         }
 
@@ -497,7 +497,7 @@ int propose(int pid, int num, int estimate) {
                 // lab = 4 it must have received an R-Deliver 
                 while(num_mbox_commit < 1) {
                     if(filter_commit(&m_commit)) {
-                        mbox_commit[num_mbox_commit] = &m_commit;
+                        //mbox_commit[num_mbox_commit] = &m_commit;
                         num_mbox_commit = num_mbox_commit + 1;
                     }
 
