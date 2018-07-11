@@ -116,7 +116,7 @@ int propose(int pid, int num, int estimate) {
 
             while(retry1 && (num_mbox_est < (num + 1)/2) ){            
                 if(filter_est(&m_est, round)) {
-                    mbox_est[num_mbox_est] = &m_est;
+                    //mbox_est[num_mbox_est] = &m_est;
                     num_mbox_est = num_mbox_est + 1;
                 }
             
@@ -237,7 +237,7 @@ int propose(int pid, int num, int estimate) {
                 // rand(&retry);
                 while(retry2 && (num_mbox_ack < (num + 1)/2)) {
                     if(filter_ack(&m_ack, round)) {
-                        mbox_ack[num_mbox_ack] = &m_ack;
+                        //mbox_ack[num_mbox_ack] = &m_ack;
                         
                         // We add to the mbox all valid replies but only increment the counter if the reply is an Ack
                         if(m_ack.ack) {
@@ -371,7 +371,7 @@ int propose(int pid, int num, int estimate) {
             // rand(&retry);
             while(retry3 && num_mbox_propose < 1){
                 if(filter_propose(&m_propose, round)) {
-                    mbox_propose[num_mbox_propose] = &m_propose;
+                    //mbox_propose[num_mbox_propose] = &m_propose;
                     num_mbox_propose = num_mbox_propose + 1;
                 }
 
