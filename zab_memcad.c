@@ -514,7 +514,7 @@ int main_thread(int pid, int num){
             rand(&retry);
             while(retry && num_mbox_new_e < 1) {
                 if(filter_new_e(&m_new_e, p, lab)) {
-                    mbox_new_e[num_mbox_new_e] = &m_new_e;
+                    //mbox_new_e[num_mbox_new_e] = &m_new_e;
                     num_mbox_new_e = num_mbox_new_e + 1;
                 }
     
@@ -563,7 +563,7 @@ int main_thread(int pid, int num){
                 rand(&retry);
                 while(retry && num_mbox_new_l < 1) {
                     if(filter_new_l(&m_new_l, p, lab)) {
-                        mbox_new_l[num_mbox_new_l] = &m_new_l;
+                        //mbox_new_l[num_mbox_new_l] = &m_new_l;
                         num_mbox_new_l = num_mbox_new_l + 1;
                     }
         
@@ -606,7 +606,7 @@ int main_thread(int pid, int num){
                     rand(&retry);
                     while(retry && num_mbox_com < 1) {
                         if(filter_com(&m_com, p, lab)) {
-                            mbox_com[num_mbox_com] = &m_com;
+                            //mbox_com[num_mbox_com] = &m_com;
                             num_mbox_com = num_mbox_com + 1;
                         }
             
