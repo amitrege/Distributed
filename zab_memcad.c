@@ -954,7 +954,7 @@ int notLeader(int num) {
         retry = random;
         while(retry && num_mbox_new_l < 1) {
             if(filter_new_l(&m_new_l, p, lab)) {
-                mbox_new_l[num_mbox_new_l] = &m_new_l;
+                //mbox_new_l[num_mbox_new_l] = &m_new_l;
                 num_mbox_new_l = num_mbox_new_l + 1;
             }
 
@@ -993,7 +993,7 @@ int notLeader(int num) {
             retry = random;
             while(retry && num_mbox_com < 1) {
                 if(filter_com(&m_com, p, lab)) {
-                    mbox_com[num_mbox_com] = &m_com;
+                    //mbox_com[num_mbox_com] = &m_com;
                     num_mbox_com = num_mbox_com + 1;
                 }
     
