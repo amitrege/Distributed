@@ -1,0 +1,50 @@
+module ABP 
+    use import ref.Ref
+    use import int.Int
+    use import int.EuclideanDivision
+
+    use import array.Array
+    use import array.NumOf
+
+    type message = Msg int int  (* Msg count req *)
+    type ack = Ack int int      (* Msg count req *)
+
+    predicate is_msg_0 (m : message) (count : int)
+    = 
+        match m with 
+        | Msg count_m req_m -> if (count_m = count && req_m = 0) then True else False
+        end
+
+    let filter_msg_0 (m : message) (count : int)
+    ensures { result = True <-> is_msg_0 m count }
+    = 
+        match m with 
+        | Msg count_m req_m -> if (count_m = count && req_m = 0) then True else False
+        end
+    
+    predicate is_msg_1 (m : message) (count : int)
+    = 
+        match m with 
+        | Msg count_m req_m -> if (count_m = count && req_m = 1) then True else False
+        end
+
+    let filter_msg_1 (m : message) (count : int)
+    ensures { result = True <-> is_msg_1 m count }
+    = 
+        match m with 
+        | Msg count_m req_m -> if (count_m = count && req_m = 1) then True else False
+        end
+    
+    predicate is_ack_0 (m : message) (count : int)
+    = 
+        match m with 
+        | Msg count_m req_m -> if (count_m = count && req_m = 0) then True else False
+        end
+
+    let filter_msg_0 (m : message) (count : int)
+    ensures { result = True <-> is_msg_0 m count }
+    = 
+        match m with 
+        | Msg count_m req_m -> if (count_m = count && req_m = 0) then True else False
+        end
+end

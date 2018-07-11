@@ -1050,6 +1050,8 @@ int test(int num) {
     msg_com m_com;
 
     int retry;
+    int retry1;
+    int retry2;
 
     // send (p,lab) to leader
 
@@ -1058,7 +1060,7 @@ int test(int num) {
     num_mbox_new_e = 2;
 
     if (num_mbox_new_e >= 1) {
-        rand(&retry);
+        //rand(&retry);
         if(retry) {  // Actually, p is the max value of all p's received by the leader
             p = p + 1;
         }
@@ -1087,8 +1089,8 @@ int test(int num) {
 
         // receive new_l
         // retry = rand() % 2;
-        rand(&retry);
-        while(retry && num_mbox_new_l < 1) {
+        //rand(&retry);
+        while(retry1 && num_mbox_new_l < 1) {
             if(filter_new_l(&m_new_l, p, lab)) {
                 mbox_new_l[num_mbox_new_l] = &m_new_l;
                 num_mbox_new_l = num_mbox_new_l + 1;
@@ -1099,7 +1101,7 @@ int test(int num) {
             }
 
             // retry = rand() % 2;
-            rand(&retry);
+            //rand(&retry);
         }
 
         if(num_mbox_new_l >= 1) {
@@ -1126,8 +1128,8 @@ int test(int num) {
             
             // receive commit
             // retry = rand() % 2;
-            rand(&retry);
-            while(retry && num_mbox_com < 1) {
+            // rand(&retry);
+            while(retry2 && num_mbox_com < 1) {
                 if(filter_com(&m_com, p, lab)) {
                     mbox_com[num_mbox_com] = &m_com;
                     num_mbox_com = num_mbox_com + 1;
@@ -1138,7 +1140,7 @@ int test(int num) {
                 }
     
                 // retry = rand() % 2;
-                rand(&retry);
+                //rand(&retry);
             }
 
             if (num_mbox_com >= 1) {
