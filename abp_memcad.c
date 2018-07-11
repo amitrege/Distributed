@@ -102,7 +102,7 @@ int AlternatingBit(int id) {
 
             while (retry1 && num_mbox_ack < 1) {
                 if (filter_ack_0(&m_ack, count)) {
-                    mbox_ack[num_mbox_ack] = &m_ack;
+                    // mbox_ack[num_mbox_ack] = &m_ack;
                     num_mbox_ack = num_mbox_ack + 1;
                 }
 
@@ -146,7 +146,7 @@ int AlternatingBit(int id) {
 
                 while (retry3 && num_mbox_ack < 1) {
                     if (filter_ack_1(&m_ack, count)) {
-                        mbox_ack[num_mbox_ack] = &m_ack;
+                        // mbox_ack[num_mbox_ack] = &m_ack;
                         num_mbox_ack = num_mbox_ack + 1;
                     }
     
@@ -179,7 +179,7 @@ int AlternatingBit(int id) {
 
             while (retry4 && num_mbox_msg < 1) {
                 if (filter_msg_0(&m1, count)) {
-                    mbox_msg[num_mbox_msg] = &m1;
+                    // mbox_msg[num_mbox_msg] = &m1;
                     num_mbox_msg = num_mbox_msg + 1;
                 }
 
@@ -223,7 +223,7 @@ int AlternatingBit(int id) {
                 
                 while (retry6 && num_mbox_msg < 1) {
                     if (filter_msg_1(&m2, count)) {
-                        mbox_msg[num_mbox_msg] = &m2;
+                       //  mbox_msg[num_mbox_msg] = &m2;
                         num_mbox_msg = num_mbox_msg + 1;
                     }
     
