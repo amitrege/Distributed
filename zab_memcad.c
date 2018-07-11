@@ -332,16 +332,10 @@ int main_thread(int pid, int num){
     int num_mbox_com = 0;
     msg_com m_com;
 
-    int retry1;
-    int retry2;
-    int retry3;
-    int retry4;
-    int retry5;
-    int retry6;
-    int retry7;
-    int retry8;
+    int retry;
+    volatile int random;
 
-    while (1 && p < 10000) {
+    while (p < 1000) {
         //leader = rand() % num;
         //_memcad("assume(leader >= 0)");
         //_memcad("assume(leader <= num)");
@@ -366,7 +360,8 @@ int main_thread(int pid, int num){
 
             // retry = rand() % 2;
             // rand(&retry);
-            while(retry1 && (num_mbox_curr_e < (num/2))) {
+            retry = random;
+            while(retry && (num_mbox_curr_e < (num/2))) {
                 if(filter_curr_e(&m_curr_e, p, lab)) {
                     //mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
                     num_mbox_curr_e = num_mbox_curr_e + 1;
@@ -376,8 +371,7 @@ int main_thread(int pid, int num){
                     break;
                 }
     
-                // retry = rand() % 2;
-                // rand(&retry);
+                retry = random;
             }
             
             if (num_mbox_curr_e >= num/2) {
@@ -385,6 +379,7 @@ int main_thread(int pid, int num){
                 // get max p in mbox and add 1
 
                 // rand(&retry);
+                retry = random;
                 if(retry2) {  // Actually, p is the max value of all p's received by the leader
                     p = p + 1;
                 }
@@ -420,7 +415,8 @@ int main_thread(int pid, int num){
 
                 // retry = rand() % 2;
                 // rand(&retry);
-                while(retry3 && (num_mbox_ack_e < (num/2))) {
+                retry = random;
+                while(retry && (num_mbox_ack_e < (num/2))) {
                     if(filter_ack_e(&m_ack_e, p, lab)) {
                         //mbox_ack_e[num_mbox_ack_e] = &m_ack_e;
                         num_mbox_ack_e = num_mbox_ack_e + 1;
@@ -432,6 +428,7 @@ int main_thread(int pid, int num){
         
                     // retry = rand() % 2;
                     //rand(&retry);
+                    retry = random;
                 }
 
                 if(num_mbox_ack_e >= num/2) {
@@ -464,7 +461,8 @@ int main_thread(int pid, int num){
 
                     // retry = rand() % 2;
                     // rand(&retry);
-                    while(retry4 && (num_mbox_ack_l < (num/2))) {
+                    retry = random;
+                    while(retry && (num_mbox_ack_l < (num/2))) {
                         if(filter_ack_l(&m_ack_l, p, lab)) {
                             //mbox_ack_l[num_mbox_ack_l] = &m_ack_l;
                             num_mbox_ack_l = num_mbox_ack_l + 1;
@@ -476,6 +474,7 @@ int main_thread(int pid, int num){
             
                         // retry = rand() % 2;
                         // rand(&retry);
+                        retry = random;
                     }
                     
                     if (num_mbox_ack_l >= num/2) {
@@ -492,7 +491,16 @@ int main_thread(int pid, int num){
 
                         // Start Broadcast
                         //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
-                        p = p + 1;
+                        
+                        // Simulating Brooadcast
+                        retry = random;
+                        if(retry) {
+                            p = p + 1;
+                        }
+                        else {
+                            i = i + 1;
+                            p = p + 1;
+                        }
                     }
                     else {
                         p = p + 1;
@@ -526,7 +534,8 @@ int main_thread(int pid, int num){
 
             // retry = rand() % 2;
             // rand(&retry);
-            while(retry5 && num_mbox_new_e < 1) {
+            retry = random;
+            while(retry && num_mbox_new_e < 1) {
                 if(filter_new_e(&m_new_e, p, lab)) {
                     //mbox_new_e[num_mbox_new_e] = &m_new_e;
                     num_mbox_new_e = num_mbox_new_e + 1;
@@ -538,11 +547,13 @@ int main_thread(int pid, int num){
     
                 // retry = rand() % 2;
                 // rand(&retry);
+                retry = random;
             }
             
             if (num_mbox_new_e >= 1) {
                 // rand(&retry);
-                if(retry6) {  // Actually, p is the max value of all p's received by the leader
+                retry = random;
+                if(retry) {  // Actually, p is the max value of all p's received by the leader
                     p = p + 1;
                 }
                 else {
@@ -577,7 +588,8 @@ int main_thread(int pid, int num){
 
                 // retry = rand() % 2;
                 // rand(&retry);
-                while(retry7 && num_mbox_new_l < 1) {
+                retry = random;
+                while(retry && num_mbox_new_l < 1) {
                     if(filter_new_l(&m_new_l, p, lab)) {
                         //mbox_new_l[num_mbox_new_l] = &m_new_l;
                         num_mbox_new_l = num_mbox_new_l + 1;
@@ -589,6 +601,7 @@ int main_thread(int pid, int num){
         
                     // retry = rand() % 2;
                     // rand(&retry);
+                    retry = random;
                 }
 
                 if(num_mbox_new_l >= 1) {
@@ -622,7 +635,8 @@ int main_thread(int pid, int num){
 
                     // retry = rand() % 2;
                     // rand(&retry);
-                    while(retry8 && num_mbox_com < 1) {
+                    retry = random;
+                    while(retry && num_mbox_com < 1) {
                         if(filter_com(&m_com, p, lab)) {
                             //mbox_com[num_mbox_com] = &m_com;
                             num_mbox_com = num_mbox_com + 1;
@@ -634,6 +648,7 @@ int main_thread(int pid, int num){
             
                         // retry = rand() % 2;
                         // rand(&retry);
+                        retry = random;
                     }
 
                     if (num_mbox_com >= 1) {
@@ -641,7 +656,16 @@ int main_thread(int pid, int num){
 
                         // Start Broadcast
                         //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
-                        p = p + 1;
+                        
+                        // Simulating Brooadcast
+                        retry = random;
+                        if(retry) {
+                            p = p + 1;
+                        }
+                        else {
+                            i = i + 1;
+                            p = p + 1;
+                        }
                     }
                     else {
                         p = p + 1;
@@ -703,7 +727,7 @@ int leadership (int num) {
 
     volatile int random;
     
-    
+    while (p < 10000) {
         lab = 1; // Curr_E
         
         assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
@@ -846,11 +870,7 @@ int leadership (int num) {
         else {
             p = p + 1;
         }
-    
-        lab = 1; // Curr_E
-        
-        assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
-
+    }
 }
 
 int notLeader(int num) {
@@ -1200,6 +1220,6 @@ int test(int num) {
 
 int main() {
     //sendingThread(0, 0, 0, 0);
-    // main_thread(0, 5); // pid, num
-    leadership(5);
+    main_thread(0, 5); // pid, num
+    // leadership(5);
 }
