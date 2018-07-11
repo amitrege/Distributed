@@ -81,19 +81,9 @@ int propose(int pid, int num, int estimate) {
     msg_commit* mbox_commit[200];
     int num_mbox_commit = 0;
 
-    int retry1;
-    int retry2;
-    int retry3;
-
-    int commit1;
-    int commit2;
-    int commit3;
-    int commit4;
-    int commit5;
-    int commit6;
-    int commit7;
-
-    int nack; // ack or nack
+    // Non deterministic variables
+    int retry;
+    int commit;
 
     volatile int random;
 
@@ -111,10 +101,9 @@ int propose(int pid, int num, int estimate) {
             // Empty mbox
             num_mbox_est = 0;
 
-            // retry = rand() % 2;
-            // rand(&retry);
+            retry = random;
 
-            while(retry1 && (num_mbox_est < (num + 1)/2) ){            
+            while(retry && (num_mbox_est < (num + 1)/2) ){            
                 if(filter_est(&m_est, round)) {
                     //mbox_est[num_mbox_est] = &m_est;
                     num_mbox_est = num_mbox_est + 1;
@@ -124,8 +113,7 @@ int propose(int pid, int num, int estimate) {
                     break;
                 }  
                 
-                //retry = rand() % 2;
-                // rand(&retry);
+                retry = random;
             }
 
             if (num_mbox_est >= (num + 1)/2) {
@@ -133,9 +121,8 @@ int propose(int pid, int num, int estimate) {
                 // pick estimate
 
                 // Non deterministic R-Deliver
-                //commit = rand() % 2;
-                // rand(&commit);
-                if(commit1) {
+                commit = random;
+                if(commit) {
                     lab = 4;
 
                     // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
@@ -184,9 +171,8 @@ int propose(int pid, int num, int estimate) {
                 // send (p, round, estimate) to all 
 
                 // Non deterministic R-Deliver
-                //commit = rand() % 2;
-                // rand(&commit);
-                if(commit2) {
+                commit = random;
+                if(commit) {
                     lab = 4;
 
                     // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
@@ -233,9 +219,8 @@ int propose(int pid, int num, int estimate) {
                 // Empty mbox
                 num_mbox_ack = 0;
             
-                // retry = rand() % 2;
-                // rand(&retry);
-                while(retry2 && (num_mbox_ack < (num + 1)/2)) {
+                retry = random;
+                while(retry && (num_mbox_ack < (num + 1)/2)) {
                     if(filter_ack(&m_ack, round)) {
                         //mbox_ack[num_mbox_ack] = &m_ack;
                         
@@ -249,17 +234,15 @@ int propose(int pid, int num, int estimate) {
                         break; 
                     } 
                     
-                    // retry = rand() % 2;
-                    // rand(&retry);
+                    retry = random;
                 }
 
                 // The case where not all messages in the quorum are acks is handled by retry
 
                 if (num_mbox_ack >= (num + 1)/2) {
                     // Non deterministic R-Deliver
-                    // commit = rand() % 2;
-                    // rand(&commit);
-                    if(commit3) {
+                    commit = random;
+                    if(commit) {
                         lab = 4;
                         
                         // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
@@ -320,9 +303,8 @@ int propose(int pid, int num, int estimate) {
             // send (p, round, est, ts) to leader
 
             // Non deterministic R-Deliver
-            // commit = rand() % 2;
-            // rand(&commit);
-            if(commit4) {
+            commit = random;
+            if(commit) {
                 lab = 4;
 
                 // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
@@ -367,9 +349,8 @@ int propose(int pid, int num, int estimate) {
             // Empty mbox
             num_mbox_propose = 0;
             
-            // retry = rand() % 2;
-            // rand(&retry);
-            while(retry3 && num_mbox_propose < 1){
+            retry = random;
+            while(retry && num_mbox_propose < 1){
                 if(filter_propose(&m_propose, round)) {
                     //mbox_propose[num_mbox_propose] = &m_propose;
                     num_mbox_propose = num_mbox_propose + 1;
@@ -379,17 +360,15 @@ int propose(int pid, int num, int estimate) {
                     break;
                 }  
                 
-                // retry = rand() % 2;
-                // rand(&retry);
+                retry = random;
             }
     
             if (num_mbox_propose >= 1) {
                 // Update estimate and timestamp
 
                 // Non deterministic R-Deliver
-                // commit = rand() % 2;
-                // rand(&commit);
-                if(commit5) {
+                commit = random;
+                if(commit) {
                     lab = 4;
                     
                     // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
@@ -434,9 +413,8 @@ int propose(int pid, int num, int estimate) {
             }
             else {
                 // Non deterministic R-Deliver
-                //commit = rand() % 2;
-                // rand(&commit);
-                if(commit6) {
+                commit = random;
+                if(commit) {
                     lab = 4;
 
                     // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
@@ -481,9 +459,8 @@ int propose(int pid, int num, int estimate) {
             }
 
             // Non deterministic R-Deliver
-            //commit = rand() % 2;
-            // rand(&commit);
-            if(commit7) {
+            commit = random;
+            if(commit) {
                 lab = 4;
 
                 // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
