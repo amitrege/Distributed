@@ -884,6 +884,7 @@ int notLeader(int num) {
     msg_com m_com;
 
     int retry;
+    volatile int random;
     
     lab = 1; // Curr_E
     
@@ -905,10 +906,10 @@ int notLeader(int num) {
 
     // receive new_e
     // retry = rand() % 2;
-    rand(&retry);
+    retry = random;
     while(retry && num_mbox_new_e < 1) {
         if(filter_new_e(&m_new_e, p, lab)) {
-            mbox_new_e[num_mbox_new_e] = &m_new_e;
+            // mbox_new_e[num_mbox_new_e] = &m_new_e;
             num_mbox_new_e = num_mbox_new_e + 1;
         }
 
@@ -917,11 +918,11 @@ int notLeader(int num) {
         }
 
         // retry = rand() % 2;
-        rand(&retry);
+        retry = random;
     }
     
     if (num_mbox_new_e >= 1) {
-        rand(&retry);
+        retry = random;
         if(retry) {  // Actually, p is the max value of all p's received by the leader
             p = p + 1;
         }
@@ -950,7 +951,7 @@ int notLeader(int num) {
 
         // receive new_l
         // retry = rand() % 2;
-        rand(&retry);
+        retry = random;
         while(retry && num_mbox_new_l < 1) {
             if(filter_new_l(&m_new_l, p, lab)) {
                 mbox_new_l[num_mbox_new_l] = &m_new_l;
@@ -962,7 +963,7 @@ int notLeader(int num) {
             }
 
             // retry = rand() % 2;
-            rand(&retry);
+            retry = random;
         }
 
         if(num_mbox_new_l >= 1) {
@@ -989,7 +990,7 @@ int notLeader(int num) {
             
             // receive commit
             // retry = rand() % 2;
-            rand(&retry);
+            retry = random;
             while(retry && num_mbox_com < 1) {
                 if(filter_com(&m_com, p, lab)) {
                     mbox_com[num_mbox_com] = &m_com;
@@ -1001,7 +1002,7 @@ int notLeader(int num) {
                 }
     
                 // retry = rand() % 2;
-                rand(&retry);
+                retry = random;
             }
 
             if (num_mbox_com >= 1) {
@@ -1185,5 +1186,6 @@ int test(int num) {
 
 int main() {
     //sendingThread(0, 0, 0, 0);
-    main_thread(0, 5); // pid, num
+    // main_thread(0, 5); // pid, num
+    notLeader(5);
 }
