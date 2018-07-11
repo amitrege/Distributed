@@ -141,7 +141,7 @@ int propose(int pid, int num, int estimate) {
                     old_round = round;
                     old_lab = lab;
 
-                    /*
+                    
                     // receive 
                     // Empty mbox
                     num_mbox_commit = 0;
@@ -160,16 +160,16 @@ int propose(int pid, int num, int estimate) {
                     }
                 
                     if(num_mbox_commit >= 1) {
-                        estimate = m_commit1.estimate;
+                        estimate = m_commit.estimate;
                         state = 1;
                         break;
                     }
-                    */
-
+                    
+/*
                     estimate = m_commit.estimate;
                     state = 1;
                     break;
-
+*/
                 }
 
                 lab = 2;
