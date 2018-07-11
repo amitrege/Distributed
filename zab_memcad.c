@@ -703,7 +703,7 @@ int leadership (int num) {
 
     volatile int random;
     
-    while(p < 1000) {
+    
         lab = 1; // Curr_E
         
         assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
@@ -846,7 +846,10 @@ int leadership (int num) {
         else {
             p = p + 1;
         }
-    }
+    
+        lab = 1; // Curr_E
+        
+        assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
 
 }
 
