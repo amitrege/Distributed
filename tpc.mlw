@@ -1,0 +1,245 @@
+module TPC
+    use import ref.Ref
+    use import int.Int
+    use import int.EuclideanDivision
+
+    use import array.Array
+    use import array.NumOf
+
+    val retry : bool
+
+    type cr1 = CR1 int 
+    type cr2 = CR2 int
+    type c1 = C1 int
+    type c2 = C2 int
+
+    val m_cr1 : cr1
+    val m_cr2 : cr2
+    val m_c1 : c1
+    val m_c2 : c2
+
+    predicate is_cr1 (m : cr1) (count : int)
+    = 
+        match m with
+        | CR1 count1 -> if count1 = count then True else False
+        end
+
+    let filter_cr1 (m : cr1) (count : int) 
+    ensures { result = True <-> is_cr1 m count}
+    =
+        match m with
+        | CR1 count1 -> if count1 = count then True else False
+        end
+
+    predicate is_cr2 (m : cr2) (count : int)
+    = 
+        match m with
+        | CR2 count1 -> if count1 = count then True else False
+        end
+
+    let filter_cr2 (m : cr2) (count : int) 
+    ensures { result = True <-> is_cr2 m count}
+    =
+        match m with
+        | CR2 count1 -> if count1 = count then True else False
+        end  
+
+    predicate is_c1 (m : c1) (count : int)
+    = 
+        match m with
+        | C1 count1 -> if count1 = count then True else False
+        end
+
+    let filter_c1 (m : c1) (count : int) 
+    ensures { result = True <-> is_c1 m count}
+    =
+        match m with
+        | C1 count1 -> if count1 = count then True else False
+        end 
+
+    predicate is_c2 (m : c2) (count : int)
+    = 
+        match m with
+        | C2 count1 -> if count1 = count then True else False
+        end
+
+    let filter_c2 (m : c2) (count : int) 
+    ensures { result = True <-> is_c2 m count}
+    =
+        match m with
+        | C2 count1 -> if count1 = count then True else False
+        end
+
+    predicate gt (count : int) (lab : int) (old_count : int) (old_lab : int) 
+    =
+        if count > old_count then
+            True
+        else 
+            if count < old_count then
+                False
+            else 
+                if lab >= old_lab then
+                    True
+                else
+                    False
+
+    let tpc (pid : int) (leader : int) (num : int) 
+    =
+        let count = ref 0 in
+        let lab = ref 0 in
+        let old_count = ref (!count - 1) in
+        let old_lab = ref 0 in
+        let num_mbox_cr1 = ref 0 in
+        let num_mbox_cr2 = ref 0 in
+        let num_mbox_c1 = ref 0 in
+        let num_mbox_c2 = ref 0 in
+        let mbox_cr1 = make 100 m_cr1 in
+        let mbox_cr2 = make 100 m_cr2 in
+        let mbox_c1 = make 100 m_c1 in
+        let mbox_c2 = make 100 m_c2 in
+        while True do 
+        invariant {!count > !old_count}
+        invariant {gt !count !lab !old_count !old_lab}
+            lab := 1;
+
+            assert{gt !count !lab !old_count !old_lab}; 
+            old_count := !count;
+            old_lab := !lab;
+
+            if pid = leader then
+            begin
+                (* Send Transaction to all *)
+
+                lab := 2;
+
+                assert{gt !count !lab !old_count !old_lab}; 
+                old_count := !count;
+                old_lab := !lab;
+
+                (* Empty Mbox*)
+                num_mbox_cr2 := 0;
+
+                while (retry && (!num_mbox_cr2 < num)) do 
+                    if filter_cr2 m_cr2 !count then
+                    begin
+                        (* mbox_cr2[!num_mbox_cr2] <- m_cr2; *)
+                        num_mbox_cr2 := !num_mbox_cr2 + 1;
+                    end
+                done;
+
+                if !num_mbox_cr2 >= num then
+                begin
+                    (* Move to commit *)
+
+                    lab := 3;
+
+                    assert{gt !count !lab !old_count !old_lab}; 
+                    old_count := !count;
+                    old_lab := !lab;
+
+                    (* Send Commit message *)
+                end
+                else
+                begin
+                    (* Abort Transaction *)
+
+                    lab := 3;
+
+                    assert{gt !count !lab !old_count !old_lab}; 
+                    old_count := !count;
+                    old_lab := !lab;
+
+                    (* Send Abort message *)
+                end;
+
+                lab := 4;
+
+                assert{gt !count !lab !old_count !old_lab}; 
+                old_count := !count;
+                old_lab := !lab;
+
+                (* Empty Mbox*)
+                num_mbox_c2 := 0;
+
+                while (retry && (!num_mbox_c2 < num)) do 
+                    if filter_c2 m_c2 !count then
+                    begin
+                        (* mbox_c2[!num_mbox_c2] <- m_c2; *)
+                        num_mbox_c2 := !num_mbox_c2 + 1;
+                    end
+                done;
+
+                if !num_mbox_c2 >= num then
+                begin
+                    count := !count + 1
+                end
+                else
+                begin
+                    count := !count + 1
+                end
+            end
+            else
+            begin
+                (* Empty Mbox*)
+                num_mbox_cr1 := 0;
+
+                while (retry && (!num_mbox_cr1 < 1)) do 
+                    if filter_cr1 m_cr1 !count then
+                    begin
+                        (* mbox_cr1[!num_mbox_cr1] <- m_cr1; *)
+                        num_mbox_cr1 := !num_mbox_cr1 + 1;
+                    end
+                done;
+
+                if !num_mbox_cr1 >= 1 then
+                begin
+                    lab := 2;
+
+                    assert{gt !count !lab !old_count !old_lab}; 
+                    old_count := !count;
+                    old_lab := !lab;
+
+                    (* Send commit/Abort to leader *)
+
+                    lab := 3;
+
+                    assert{gt !count !lab !old_count !old_lab}; 
+                    old_count := !count;
+                    old_lab := !lab;
+
+                    (* Empty Mbox*)
+                    num_mbox_c1 := 0;
+
+                    while (retry && (!num_mbox_c1 < 1)) do 
+                        if filter_c1 m_c1 !count then
+                        begin
+                            (* mbox_c1[!num_mbox_c1] <- m_c1; *)
+                            num_mbox_c1 := !num_mbox_c1 + 1;
+                        end
+                    done;
+
+                    if !num_mbox_c1 >= 1 then
+                    begin
+                        lab := 4;
+
+                        assert{gt !count !lab !old_count !old_lab}; 
+                        old_count := !count;
+                        old_lab := !lab;
+
+                        (* Send Ack *)
+
+                        count := !count + 1
+                    end
+                    else
+                    begin
+                        count := !count + 1
+                    end
+                end
+                else
+                begin
+                    count := !count + 1
+                end
+            end
+
+        done 
+end

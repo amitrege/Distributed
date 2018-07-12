@@ -6,8 +6,13 @@ module ABP
     use import array.Array
     use import array.NumOf
 
+    val retry : bool
+
     type message = Msg int int  (* Msg count req *)
     type ack = Ack int int      (* Msg count req *)
+
+    val m : message
+    val a : ack
 
     predicate is_msg_0 (m : message) (count : int)
     = 
@@ -35,16 +40,195 @@ module ABP
         | Msg count_m req_m -> if (count_m = count && req_m = 1) then True else False
         end
     
-    predicate is_ack_0 (m : message) (count : int)
+    predicate is_ack_0 (m : ack) (count : int)
     = 
         match m with 
-        | Msg count_m req_m -> if (count_m = count && req_m = 0) then True else False
+        | Ack count_m req_m -> if (count_m = count && req_m = 0) then True else False
         end
 
-    let filter_msg_0 (m : message) (count : int)
-    ensures { result = True <-> is_msg_0 m count }
+    let filter_ack_0 (m : ack) (count : int)
+    ensures { result = True <-> is_ack_0 m count }
     = 
         match m with 
-        | Msg count_m req_m -> if (count_m = count && req_m = 0) then True else False
+        | Ack count_m req_m -> if (count_m = count && req_m = 0) then True else False
         end
+
+    predicate is_ack_1 (m : ack) (count : int)
+    = 
+        match m with 
+        | Ack count_m req_m -> if (count_m = count && req_m = 1) then True else False
+        end
+
+    let filter_ack_1 (m : ack) (count : int)
+    ensures { result = True <-> is_ack_1 m count }
+    = 
+        match m with 
+        | Ack count_m req_m -> if (count_m = count && req_m = 1) then True else False
+        end
+
+    predicate gt (count : int) (lab : int) (old_count : int) (old_lab : int) 
+    =
+        if count > old_count then
+            True
+        else 
+            if count < old_count then
+                False
+            else 
+                if lab >= old_lab then
+                    True
+                else
+                    False
+    
+
+    let abp (id : int)
+    =
+        let count = ref 0 in
+        let lab = ref 0 in
+        let old_count = ref (!count - 1) in
+        let old_lab = ref 0 in
+        let num_mbox_msg = ref 0 in
+        let num_mbox_ack = ref 0 in
+        let mbox_msg = make 100 m in
+        let mbox_ack = make 100 a in
+        while True do
+        invariant { !count > !old_count }
+        invariant { gt !count !lab !old_count !old_lab } 
+            lab := 1;
+
+            assert{gt !count !lab !old_count !old_lab}; 
+            old_count := !count;
+            old_lab := !lab;
+
+            if (id = 1) then
+            begin
+                while retry do
+                    (* Send 0 *)
+                    assert {!old_count = !count};
+                done;
+
+                lab := 2;
+                assert{gt !count !lab !old_count !old_lab};
+                old_count := !count;
+                old_lab := !lab;
+
+                (* Empty Mbox*)
+                num_mbox_ack := 0;
+
+                while (retry && (!num_mbox_ack < 1)) do 
+                    if filter_ack_0 a !count then
+                    begin
+                        (* mbox_ack[!num_mbox_ack] <- a; *)
+                        num_mbox_ack := !num_mbox_ack + 1;
+                    end
+                done;
+
+                if !num_mbox_ack >= 1 then
+                begin
+                    lab := 3;
+                    assert{gt !count !lab !old_count !old_lab};
+                    old_count := !count;
+                    old_lab := !lab;
+
+                    while retry do
+                        (* Send 1 *)
+                        assert {!old_count = !count};
+                    done; 
+
+                    lab := 4;
+                    assert{gt !count !lab !old_count !old_lab};
+                    old_count := !count;
+                    old_lab := !lab;
+
+                    (* Empty Mbox*)
+                    num_mbox_ack := 0;
+
+                    while (retry && (!num_mbox_ack < 1)) do 
+                        if filter_ack_0 a !count then
+                        begin
+                            (* mbox_ack[!num_mbox_ack] <- a; *)
+                            num_mbox_ack := !num_mbox_ack + 1;
+                        end 
+                    done;
+
+                    if !num_mbox_ack >= 1 then
+                    begin
+                        count := !count + 1
+                    end
+                    else
+                    begin
+                        count := !count + 1
+                    end
+                end
+                else
+                begin
+                    count := !count + 1 
+                end
+            end
+            else
+            begin
+                (* Empty Mbox*)
+                num_mbox_msg := 0;
+
+                while (retry && (!num_mbox_msg < 1)) do 
+                    if filter_msg_0 m !count then
+                    begin
+                        (* mbox_msg[!num_mbox_msg] <- m; *)
+                        num_mbox_msg := !num_mbox_msg + 1;
+                    end
+                done;
+
+                if !num_mbox_msg >= 1 then
+                begin
+                    lab := 2;
+                    assert{gt !count !lab !old_count !old_lab};
+                    old_count := !count;
+                    old_lab := !lab;
+
+                    while retry do
+                        (* Send ack to A *)
+                        assert {!old_count = !count};
+                    done;
+
+                    lab := 3;
+                    assert{gt !count !lab !old_count !old_lab};
+                    old_count := !count;
+                    old_lab := !lab;
+
+                    (* Empty Mbox*)
+                    num_mbox_msg := 0;
+
+                    while (retry && (!num_mbox_msg < 1)) do 
+                        if filter_msg_0 m !count then
+                        begin
+                            (* mbox_msg[!num_mbox_msg] <- m; *)
+                            num_mbox_msg := !num_mbox_msg + 1;
+                        end
+                    done;
+
+                    if !num_mbox_msg >= 1 then 
+                    begin
+                        lab := 4;
+                        assert{gt !count !lab !old_count !old_lab};
+                        old_count := !count;
+                        old_lab := !lab;
+
+                        while retry do
+                            (* Send ack to A *)
+                            assert {!old_count = !count};
+                        done;
+
+                        count := !count + 1 
+                    end
+                    else
+                    begin
+                        count := !count + 1 
+                    end
+                end
+                else
+                begin
+                    count := !count + 1 
+                end
+            end 
+        done
+    
 end
