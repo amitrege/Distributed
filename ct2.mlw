@@ -1,0 +1,480 @@
+module CT2
+    use import ref.Ref
+    use import int.Int
+    use import int.EuclideanDivision
+
+    use import array.Array
+    use import array.NumOf
+
+    val retry : bool
+    val commit1 : bool
+    val commit2 : bool
+    val commit3: bool
+
+    type msg_est = Estimate int int int int (*  pid, round, estimate, timestamp *)
+    type msg_propose = Propose int int int (* pid, round, estimate *)
+    type msg_ack = Ack int int int (* pid, round, ack *)
+    type msg_commit = Commit int int int (* pid, round, estimate *)
+
+    val m_est : msg_est
+    val m_propose : msg_propose
+    val m_ack : msg_ack
+    val m_commit : msg_commit
+
+    predicate is_est (m : msg_est) (round : int)
+    = 
+        match m with
+        | Estimate pid1 round1 estimate1 timestamp1 -> if round1 = round then True else False
+        end
+
+    let filter_est (m : msg_est) (round : int) 
+    ensures { result = True <-> is_est m round}
+    =
+        match m with
+        | Estimate pid1 round1 estimate1 timestamp1 -> if round1 = round then True else False
+        end
+
+    predicate is_propose (m : msg_propose) (round : int)
+    = 
+        match m with
+        | Propose pid1 round1 estimate1 -> if round1 = round then True else False
+        end
+
+    let filter_propose (m : msg_propose) (round : int) 
+    ensures { result = True <-> is_propose m round}
+    =
+        match m with
+        | Propose pid1 round1 estimate1 -> if round1 = round then True else False
+        end
+    
+    predicate is_ack (m : msg_ack) (round : int)
+    = 
+        match m with
+        | Ack pid1 round1 ack1 -> if round1 = round then True else False
+        end
+
+    let filter_ack (m : msg_ack) (round : int) 
+    ensures { result = True <-> is_ack m round}
+    =
+        match m with
+        | Ack pid1 round1 ack1 -> if round1 = round then True else False
+        end
+
+    predicate is_commit (m : msg_commit) (round : int)
+    = 
+        True
+
+    let filter_commit (m : msg_commit) (round : int) 
+    ensures { result = True <-> is_commit m round}
+    =
+        True
+
+    predicate gt (round : int) (lab : int) (old_round : int) (old_lab : int) 
+    =
+        if lab = 4 then
+            True
+        else 
+            if round > old_round then
+                True
+            else 
+                if round < old_round then
+                    False
+                else
+                    if lab >= old_lab then
+                        True
+                    else
+                        False
+    
+    let ct2 (pid : int) (num : int) (estimate : int) 
+    =
+        let round = ref 0 in 
+        let lab = ref 1 in
+        let old_round = ref (!round - 1) in
+        let old_lab = ref 1 in
+        let num_mbox_est = ref 0 in
+        let num_mbox_propose = ref 0 in
+        let num_mbox_ack = ref 0 in
+        let num_mbox_commit = ref 0 in
+        let mbox_est = make 100 m_est in
+        let mbox_propose = make 100 m_propose in
+        let mbox_ack = make 100 m_ack in
+        let mbox_commit = make 100 m_commit in
+        let state = ref 0 in                        (*  State 0 -> undecided, 1_. decided *)
+        let leader = ref 0 in
+        let estimate = ref 0 in
+        while !state = 0 do
+        invariant { gt !round !lab !old_round !old_lab }
+        invariant { !state = 0 -> (not (!lab = 4)) && (not (!old_lab = 4))}
+        invariant { !state = 0 -> !round > !old_round }
+
+            leader := (mod !round num) + 1;
+
+            lab := 1;  
+    
+            assert{gt !round !lab !old_round !old_lab};  
+            old_round := !round;
+            old_lab := !lab;
+
+            if pid = !leader then
+            begin
+                (* Empty Mbox*)
+                num_mbox_est := 0;
+
+                while (retry && (!num_mbox_est < (div (num + 1) 2))) do 
+                    if filter_est m_est !round then
+                    begin
+                        (* mbox_est[!num_mbox_est] <- m_est; *)
+                        num_mbox_est := !num_mbox_est + 1;
+                    end
+                done;
+
+                if !num_mbox_est >= (div (num + 1) 2) then
+                begin
+                    (* Pick message with highest timestamp *)
+                    (* Pick estimate *)
+
+                    (* Non deterministic R Deliver *)
+                    if commit1 then
+                    begin
+                        lab := 4;
+
+                        assert{gt !round !lab !old_round !old_lab}; 
+                        old_round := !round;
+                        old_lab := !lab;
+
+                        (* Empty Mbox*)
+                        num_mbox_commit := 0;
+
+                        while !num_mbox_commit < 1 do 
+                            if filter_commit m_commit !round then
+                            begin
+                                (* mbox_commit[!num_mbox_commit] <- m_commit; *)
+                                num_mbox_commit := !num_mbox_commit + 1;
+                            end
+                        done;
+
+                        if !num_mbox_commit >= 1 then
+                        begin
+                            match m_commit with
+                            | Commit pid1 round1 estimate1 -> estimate := estimate1
+                            end;
+                            state := 1;
+                        end
+                    end
+                    else
+                    begin
+                        lab := 2;
+
+                        assert{gt !round !lab !old_round !old_lab}; 
+                        old_round := !round;
+                        old_lab := !lab;
+
+                        (* Send chosen estimate to all *)
+
+                        (* Non deterministic R Deliver *)
+                        if commit2 then
+                        begin
+                            lab := 4;
+
+                            assert{gt !round !lab !old_round !old_lab}; 
+                            old_round := !round;
+                            old_lab := !lab;
+                        
+                            (* Empty Mbox*)
+                            num_mbox_commit := 0;
+
+                            while !num_mbox_commit < 1 do 
+                                if filter_commit m_commit !round then
+                                begin
+                                    (* mbox_commit[!num_mbox_commit] <- m_commit; *)
+                                    num_mbox_commit := !num_mbox_commit + 1;
+                                end
+                            done;
+
+                            if !num_mbox_commit >= 1 then
+                            begin
+                                match m_commit with
+                                | Commit pid1 round1 estimate1 -> estimate := estimate1
+                                end;
+                                state := 1;
+                            end
+                        end
+                        else
+                        begin
+                            lab := 3;
+
+                            assert{gt !round !lab !old_round !old_lab}; 
+                            old_round := !round;
+                            old_lab := !lab;
+
+                            (* Empty Mbox*)
+                            num_mbox_ack := 0;
+
+                            while (retry && (!num_mbox_ack < (div (num + 1) 2))) do 
+                                if filter_ack m_ack !round then
+                                begin
+                                    (* mbox_ack[!num_mbox_ack] <- m_ack; *)
+                                    num_mbox_ack := !num_mbox_ack + 1;
+                                end
+                            done;
+
+                            if !num_mbox_ack >= (div (num + 1) 2) then 
+                            begin
+                                (* Non deterministic R Deliver *)
+                                if commit3 then
+                                begin
+                                    lab := 4;
+
+                                    assert{gt !round !lab !old_round !old_lab}; 
+                                    old_round := !round;
+                                    old_lab := !lab;
+                        
+                                    (* Empty Mbox*)
+                                    num_mbox_commit := 0;
+
+                                    while !num_mbox_commit < 1 do 
+                                        if filter_commit m_commit !round then
+                                        begin
+                                            (* mbox_commit[!num_mbox_commit] <- m_commit; *)
+                                            num_mbox_commit := !num_mbox_commit + 1;
+                                        end
+                                    done;
+
+                                    if !num_mbox_commit >= 1 then
+                                    begin
+                                        match m_commit with
+                                        | Commit pid1 round1 estimate1 -> estimate := estimate1
+                                        end;
+                                        state := 1;
+                                    end
+                                end
+                                else 
+                                begin
+                                    lab := 4;
+
+                                    assert{gt !round !lab !old_round !old_lab}; 
+                                    old_round := !round;
+                                    old_lab := !lab;
+
+                                    (* Send decided value to all *)
+
+                                    state := 1;
+                                end
+                            end
+                            else
+                            begin
+                                round := !round + 1;
+                            end
+                        end
+                    end
+                end
+                else
+                begin
+                    round := !round + 1;
+                end
+            end
+            else
+            begin
+                (* Send Estimate to leader *)
+
+                (* Non deterministic R Deliver *)
+                if commit1 then
+                begin
+                    lab := 4;
+
+                    assert{gt !round !lab !old_round !old_lab}; 
+                    old_round := !round;
+                    old_lab := !lab;
+                        
+                    (* Empty Mbox*)
+                    num_mbox_commit := 0;
+
+                    while !num_mbox_commit < 1 do 
+                        if filter_commit m_commit !round then
+                        begin
+                            (* mbox_commit[!num_mbox_commit] <- m_commit; *)
+                            num_mbox_commit := !num_mbox_commit + 1;
+                        end
+                    done;
+
+                    if !num_mbox_commit >= 1 then
+                    begin
+                        match m_commit with
+                        | Commit pid1 round1 estimate1 -> estimate := estimate1
+                        end;
+                        state := 1;
+                    end
+                end
+                else
+                begin
+                    lab := 2;
+
+                    assert{gt !round !lab !old_round !old_lab}; 
+                    old_round := !round;
+                    old_lab := !lab;
+
+                    (* Empty Mbox*)
+                    num_mbox_propose := 0;
+
+                    while !num_mbox_propose < 1 do 
+                        if filter_propose m_propose !round then
+                        begin
+                            (* mbox_propose[!num_mbox_propose] <- m_propose; *)
+                            num_mbox_propose := !num_mbox_propose + 1;
+                        end
+                    done;
+                    
+                    if !num_mbox_propose >= 1 then 
+                    begin
+                        (* Update estimate and timestamp *)
+                         
+                        (* Non deterministic R Deliver *)
+                        if commit2 then
+                        begin
+                            lab := 4;
+
+                            assert{gt !round !lab !old_round !old_lab}; 
+                            old_round := !round;
+                            old_lab := !lab;
+                        
+                            (* Empty Mbox*)
+                            num_mbox_commit := 0;
+
+                            while !num_mbox_commit < 1 do 
+                                if filter_commit m_commit !round then
+                                begin
+                                    (* mbox_commit[!num_mbox_commit] <- m_commit; *)
+                                    num_mbox_commit := !num_mbox_commit + 1;
+                                end
+                            done;
+
+                            if !num_mbox_commit >= 1 then
+                            begin
+                                match m_commit with
+                                | Commit pid1 round1 estimate1 -> estimate := estimate1
+                                end;
+                                state := 1;
+                            end
+                        end
+                        else 
+                        begin
+                            lab := 3;
+
+                            assert{gt !round !lab !old_round !old_lab}; 
+                            old_round := !round;
+                            old_lab := !lab;
+
+                            (* Send Ack to leader *)
+
+                            (* Non deterministic R Deliver *)
+                            if commit3 then
+                            begin
+                                lab := 4;
+
+                                assert{gt !round !lab !old_round !old_lab}; 
+                                old_round := !round;
+                                old_lab := !lab;
+
+                                (* Empty Mbox*)
+                                num_mbox_commit := 0;
+
+                                while !num_mbox_commit < 1 do 
+                                    if filter_commit m_commit !round then
+                                    begin
+                                        (* mbox_commit[!num_mbox_commit] <- m_commit; *)
+                                        num_mbox_commit := !num_mbox_commit + 1;
+                                    end
+                                done;
+
+                                if !num_mbox_commit >= 1 then
+                                begin
+                                    match m_commit with
+                                    | Commit pid1 round1 estimate1 -> estimate := estimate1
+                                    end;
+                                    state := 1;
+                                end
+                            end
+                            else
+                            begin
+                                round := !round + 1;
+                            end
+                        end
+                    end
+                    else
+                    begin
+                        (* Non deterministic R Deliver *)
+                        if commit2 then
+                        begin
+                            lab := 4;
+
+                            assert{gt !round !lab !old_round !old_lab}; 
+                            old_round := !round;
+                            old_lab := !lab;
+                        
+                            (* Empty Mbox*)
+                            num_mbox_commit := 0;
+
+                            while !num_mbox_commit < 1 do 
+                                if filter_commit m_commit !round then
+                                begin
+                                    (* mbox_commit[!num_mbox_commit] <- m_commit; *)
+                                    num_mbox_commit := !num_mbox_commit + 1;
+                                end
+                            done;
+
+                            if !num_mbox_commit >= 1 then
+                            begin
+                                match m_commit with
+                                | Commit pid1 round1 estimate1 -> estimate := estimate1
+                                end;
+                                state := 1;
+                            end
+                        end
+                        else
+                        begin
+                            lab := 3;
+
+                            assert{gt !round !lab !old_round !old_lab}; 
+                            old_round := !round;
+                            old_lab := !lab;
+
+                            (* Send Nack to leader *)
+
+                            (* Non deterministic R Deliver *)
+                            if commit3 then
+                            begin
+                                lab := 4;
+
+                                assert{gt !round !lab !old_round !old_lab}; 
+                                old_round := !round;
+                                old_lab := !lab;
+                        
+                                (* Empty Mbox*)
+                                num_mbox_commit := 0;
+
+                                while !num_mbox_commit < 1 do 
+                                    if filter_commit m_commit !round then
+                                    begin
+                                        (* mbox_commit[!num_mbox_commit] <- m_commit; *)
+                                        num_mbox_commit := !num_mbox_commit + 1;
+                                    end
+                                done;
+
+                                if !num_mbox_commit >= 1 then
+                                begin
+                                    match m_commit with
+                                    | Commit pid1 round1 estimate1 -> estimate := estimate1
+                                    end;
+                                    state := 1;
+                                end
+                            end
+                            else 
+                            begin
+                                round := !round + 1;
+                            end
+                        end
+                    end
+                end
+            end
+        done
+end
