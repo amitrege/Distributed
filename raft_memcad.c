@@ -474,15 +474,9 @@ void test (int pid, int num) {
     int old_LLI = 0;
     
     while (state != CANDIDATE) {
-        assert(currentTerm >= old_term);
-        assert(old_lab_election == lab_election);
-        assert(commitIndex >= old_commit);
-        assert(lab_normal >= old_lab_normal);
-
         retry = random;
         
         while (retry) {
-            assert(currentTerm >= old_term);
             // receive command from client
             cmd = random;
             if (cmd == 0) {   // Empty command (HeartBeat)
@@ -518,10 +512,6 @@ void test (int pid, int num) {
     
         lab_normal = 2;
  
-        assert(currentTerm >= old_term);
-        assert(old_lab_election == lab_election);
-        assert(commitIndex >= old_commit);
-        assert(lab_normal >= old_lab_normal);
         assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
         old_term = currentTerm;
         old_lab_election = lab_election;
@@ -529,9 +519,8 @@ void test (int pid, int num) {
         old_lab_normal = lab_normal;
         old_LLI = lastIndex;
     
-       //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
+        //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
         // Empty mbox
-        //memset(mbox_AE_ack,0,sizeof(mbox_AE_ack));
         num_mbox_AE_ack = 0;
         
         retry = random;
@@ -567,8 +556,8 @@ void test (int pid, int num) {
             commitIndex = commitIndex + 1;
         }
         else {
-            currentTerm = currentTerm + 1;
-            //break;
+            //currentTerm = currentTerm + 1;
+            break;
         }  
     }
 }
