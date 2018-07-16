@@ -748,7 +748,7 @@ void follower_normal (int pid, int num) {
                 break;
             }
     
-            if (num_mbox_AE_ack >= 1) {
+            if (num_mbox_AE >= 1) {
                 if (leaderCommit > commitIndex) {
                     commitIndex = leaderCommit;
                     assert(currentTerm > old_term);
