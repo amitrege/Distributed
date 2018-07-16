@@ -532,11 +532,11 @@ void test (int pid, int num) {
        //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
         // Empty mbox
         //memset(mbox_AE_ack,0,sizeof(mbox_AE_ack));
-        num_mbox_AE_ack = random;
-/*        
+        num_mbox_AE_ack = 0;
+        
         retry = random;
         while (retry) {
-            if (m_AE_ack.term > currentTerm) {
+            /*if (m_AE_ack.term > currentTerm) {
                 state = FOLLOWER;
                 currentTerm = m_AE_ack.term;
                 
@@ -547,7 +547,7 @@ void test (int pid, int num) {
                 // old_lab_election = 0;
                 
                 break;
-            }
+            }*/
     
             if (m_AE_ack.success == 0 && m_AE_ack.term == currentTerm) {
                 // set next index one by one
@@ -566,7 +566,7 @@ void test (int pid, int num) {
         }
 
         // Leader can't timeout
-    */
+    
         if (num_mbox_AE_ack >= num/2) {
             commitIndex = commitIndex + 1;
     
