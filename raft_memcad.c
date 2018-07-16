@@ -9,8 +9,8 @@ typedef struct _msg_reqVote {
     int lastLogTerm;
 } msg_reqVote;
 
-int filter_reqVote (msg_reqVote m, int term) {
-    if (m.term == term)
+int filter_reqVote (msg_reqVote* m, int term) {
+    if (m->term == term)
         return 1;
     return 0;
 }
@@ -20,8 +20,8 @@ typedef struct _msg_vote {
     int vote;
 } msg_vote;
 
-int filter_vote(msg_vote m, int term) {
-    if (m.term == term && m.vote == 1)
+int filter_vote(msg_vote* m, int term) {
+    if (m->term == term && m->vote == 1)
         return 1;
     return 0;
 }
@@ -35,8 +35,8 @@ typedef struct _msg_AE {
     //int entries[100];
 } msg_AE;
 
-int filter_AE(msg_AE m, int currentTerm, int lastIndex, int lastTerm) {
-    if (m.term = currentTerm && m.prevLogIndex == lastIndex && m.prevLogTerm == lastTerm)
+int filter_AE(msg_AE* m, int currentTerm, int lastIndex, int lastTerm) {
+    if (m->term = currentTerm && m->prevLogIndex == lastIndex && m->prevLogTerm == lastTerm)
         return 1;
     return 0;
 }
@@ -46,8 +46,8 @@ typedef struct _msg_AE_ack {
     int success;
 } msg_AE_ack;
 
-int filter_AE_ack(msg_AE_ack m, int term) {
-    if (m.term == term && m.success == 1)
+int filter_AE_ack(msg_AE_ack* m, int term) {
+    if (m->term == term && m->success == 1)
         return 1;
     return 0;
 }
@@ -640,7 +640,7 @@ void follower_normal (int pid, int num) {
                 break;
             }
 
-            if (filter_AE(m_AE, currentTerm, lastIndex, lastTerm)) {
+            if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
                 // mbox_AE[num_mbox_AE] = m_AE;
                 num_mbox_AE = num_mbox_AE + 1;
             }
