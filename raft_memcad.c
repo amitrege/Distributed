@@ -474,6 +474,7 @@ void test (int pid, int num) {
     int old_LLI = 0;
     
     while (state != CANDIDATE) {
+        assert(currentTerm >= old_term);
         retry = random;
         
         while (retry) {
