@@ -478,6 +478,7 @@ void test (int pid, int num) {
         retry = random;
         
         while (retry) {
+            assert(currentTerm >= old_term);
             // receive command from client
             cmd = random;
             if (cmd == 0) {   // Empty command (HeartBeat)
