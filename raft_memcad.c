@@ -474,8 +474,6 @@ void test (int pid, int num) {
     int old_LLI = 0;
     
     while (state != CANDIDATE) {
-        assert(old_lab_election == lab_election);
-        assert(old_LLI == lastIndex);
         retry = random;
         
         while (retry) {
@@ -567,6 +565,10 @@ void test (int pid, int num) {
             currentTerm = currentTerm + 1;
             //break;
         }
+
+        lab_normal = 1;
+        assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+        
     }
 }
 
