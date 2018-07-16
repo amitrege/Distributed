@@ -475,7 +475,7 @@ void test (int pid, int num) {
     
     while (state != CANDIDATE) {
         assert(old_lab_election == lab_election);
-        assert(old_LLI = lastIndex);
+        assert(old_LLI == lastIndex);
         retry = random;
         
         while (retry) {
