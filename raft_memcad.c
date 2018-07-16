@@ -613,79 +613,169 @@ void follower_normal (int pid, int num) {
     int old_LLI = 0;
 
     while (state != CANDIDATE) {
-        lab_normal = 1;
-        assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
-        old_term = currentTerm;
-        old_lab_election = lab_election;
-        old_commit = commitIndex;
-        old_lab_normal = lab_normal;
-        old_LLI = lastIndex;
-        
-        // Empty mbox
-        num_mbox_AE = 0;
-
-        // receive
-        retry = random;
-        while (retry && num_mbox_AE < 1) {
-            if (m_AE_ack.term > currentTerm) {
-                state = FOLLOWER;
-                currentTerm = m_AE_ack.term;
-
-                // Just to make sure
-                assert(currentTerm > old_term);
-
-                // when entering a different machine
-                //old_lab_election = 0;
-
-                break;
-            }
-
-            if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
-                // mbox_AE[num_mbox_AE] = m_AE;
-                num_mbox_AE = num_mbox_AE + 1;
-            }
-
-            if (num_mbox_AE >= 1) {
-                break;
-            }
-
+        if (state == LEADER) {
             retry = random;
-        }
-
-        timeout = random;
-        if (timeout) {
-            state = CANDIDATE;
-
-            break;
-        }
-
-        if (num_mbox_AE_ack >= 1) {
-            if (leaderCommit > commitIndex) {
-                commitIndex = leaderCommit;
-                // Commit all terms till min(commitIndex, lastIndex)
+            
+            while (retry) {
+                // receive command from client
+                cmd = random;
+                if (cmd == 0) {   // Empty command (HeartBeat)
+                    lab_normal = 1;
+        
+                    assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                    old_term = currentTerm;
+                    old_lab_election = lab_election;
+                    old_commit = commitIndex;
+                    old_lab_normal = lab_normal;
+                    old_LLI = lastIndex;
+    
+                    // assert((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
+        
+                    // send(term, leaderId, prevLogIndex, entries[], leaderCommit) with empty entries
+                }
+                else {
+                    lastIndex = lastIndex + 1;
+        
+                    lab_normal = 1;
+        
+                    assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                    old_term = currentTerm;
+                    old_lab_election = lab_election;
+                    old_commit = commitIndex;
+                    old_lab_normal = lab_normal;
+                    old_LLI = lastIndex;
+                        
+                    // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
+                }
+                retry = random;
             }
-
+        
             lab_normal = 2;
-
+     
             assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
             old_term = currentTerm;
             old_lab_election = lab_election;
             old_commit = commitIndex;
             old_lab_normal = lab_normal;
             old_LLI = lastIndex;
-
-            // send(term, success) to leader
-
-            // need to do this after the send to prove invarinat 
-            lastIndex = lastIndex + 1;
+        
+            //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
+            // Empty mbox
+            num_mbox_AE_ack = 0;
+            
+            retry = random;
+            while (retry && num_mbox_AE_ack < (num/2)) {
+                if (m_AE_ack.term > currentTerm) {
+                    state = FOLLOWER;
+                    currentTerm = m_AE_ack.term;
+                    
+                    // Just to make sure
+                    assert(currentTerm > old_term);
+        
+                    // when entering a different machine
+                    // old_lab_election = 0;
+                    
+                    break;
+                }
+        
+                if (m_AE_ack.success == 0 && m_AE_ack.term == currentTerm) {
+                    // set next index one by one
+                }
+        
+                if (m_AE_ack.term == currentTerm && m_AE_ack.success == 1) {
+                    // mbox_AE_ack[num_mbox_AE_ack] = m_AE_ack;
+                    num_mbox_AE_ack = num_mbox_AE_ack + 1;
+                }
+        
+                retry = random;
+            }
+    
+            // Leader can't timeout
+        
+            if (num_mbox_AE_ack >= num/2) {
+                commitIndex = commitIndex + 1;
+            }
+            else {
+                //currentTerm = currentTerm + 1;
+                break;
+            }  
         }
-        else {
-            state = CANDIDATE;
 
-            // when entering a different machine
-            old_lab_election = 0;
-
-            break;
+        if (state == FOLLOWER) {
+            lab_normal = 1;
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            old_term = currentTerm;
+            old_lab_election = lab_election;
+            old_commit = commitIndex;
+            old_lab_normal = lab_normal;
+            old_LLI = lastIndex;
+            
+            // Empty mbox
+            num_mbox_AE = 0;
+    
+            // receive
+            retry = random;
+            while (retry && num_mbox_AE < 1) {
+                if (m_AE_ack.term > currentTerm) {
+                    state = FOLLOWER;
+                    currentTerm = m_AE_ack.term;
+    
+                    // Just to make sure
+                    assert(currentTerm > old_term);
+    
+                    // when entering a different machine
+                    //old_lab_election = 0;
+    
+                    break;
+                }
+    
+                if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
+                    // mbox_AE[num_mbox_AE] = m_AE;
+                    num_mbox_AE = num_mbox_AE + 1;
+                }
+    
+                if (num_mbox_AE >= 1) {
+                    break;
+                }
+    
+                retry = random;
+            }
+    
+            timeout = random;
+            if (timeout) {
+                state = CANDIDATE;
+    
+                break;
+            }
+    
+            if (num_mbox_AE_ack >= 1) {
+                if (leaderCommit > commitIndex) {
+                    commitIndex = leaderCommit;
+                    // Commit all terms till min(commitIndex, lastIndex)
+                }
+    
+                lab_normal = 2;
+    
+                assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                old_term = currentTerm;
+                old_lab_election = lab_election;
+                old_commit = commitIndex;
+                old_lab_normal = lab_normal;
+                old_LLI = lastIndex;
+    
+                // send(term, success) to leader
+    
+                // need to do this after the send to prove invarinat 
+                lastIndex = lastIndex + 1;
+            }
+            else {
+                state = CANDIDATE;
+    
+                // when entering a different machine
+                old_lab_election = 0;
+    
+                break;
+            }
         }
     }
 }
