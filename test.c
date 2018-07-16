@@ -1,6 +1,7 @@
-void test_2 () { 
+void test () { 
     int retry;
     volatile int random;
+    volatile int random2;
     int cmd;
     
     int currentTerm = 0;
@@ -19,7 +20,7 @@ void test_2 () {
     
     while (retry) {
         // receive command from client
-        cmd = random;
+        cmd = random2;
         if (cmd == 0) {   // Empty command (HeartBeat)
             lab_normal = 1;
 
@@ -65,6 +66,6 @@ void test_2 () {
 }
 
 int main() {
-    test_2();
+    test();
     return 0;
 }
