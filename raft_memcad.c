@@ -732,8 +732,8 @@ void follower_normal (int pid, int num) {
                 if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
                     // mbox_AE[num_mbox_AE] = m_AE;
                     num_mbox_AE = num_mbox_AE + 1;
-                    assert(0==0);
                 }
+                assert(0==0);
     
                 retry = random;
             }
