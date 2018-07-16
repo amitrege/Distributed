@@ -486,7 +486,7 @@ void test (int pid, int num) {
                 old_term = currentTerm;
                 old_lab_election = lab_election;
                 old_commit = commitIndex;
-                old_lab_normal = old_lab_normal;
+                old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
     
                 // send(term, leaderId, prevLogIndex, entries[], leaderCommit) with empty entries
@@ -500,7 +500,7 @@ void test (int pid, int num) {
                 old_term = currentTerm;
                 old_lab_election = lab_election;
                 old_commit = commitIndex;
-                old_lab_normal = old_lab_normal;
+                old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
     
                 // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
@@ -514,7 +514,7 @@ void test (int pid, int num) {
         old_term = currentTerm;
         old_lab_election = lab_election;
         old_commit = commitIndex;
-        old_lab_normal = old_lab_normal;
+        old_lab_normal = lab_normal;
         old_LLI = lastIndex;
     
         //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
