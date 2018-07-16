@@ -551,13 +551,13 @@ void test (int pid, int num) {
     
             if (m_AE_ack.success == 0 && m_AE_ack.term == currentTerm) {
                 // set next index one by one
-            }*/
+            }
     
             if (m_AE_ack.term == currentTerm && m_AE_ack.success == 1) {
                 // mbox_AE_ack[num_mbox_AE_ack] = m_AE_ack;
                 num_mbox_AE_ack = num_mbox_AE_ack + 1;
-            }
-    
+            }*/
+            num_mbox_AE_ack = num_mbox_AE_ack + 1;
             if (num_mbox_AE_ack >= num/2) {
                 break;
             }
