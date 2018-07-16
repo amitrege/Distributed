@@ -488,6 +488,8 @@ void test (int pid, int num) {
                 old_commit = commitIndex;
                 old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
+
+                assert((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
     
                 // send(term, leaderId, prevLogIndex, entries[], leaderCommit) with empty entries
             }
@@ -503,6 +505,8 @@ void test (int pid, int num) {
                 old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
     
+                assert((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
+                
                 // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
             }
             retry = random;
