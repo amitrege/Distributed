@@ -520,8 +520,8 @@ void test (int pid, int num) {
         //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
         // Empty mbox
         //memset(mbox_AE_ack,0,sizeof(mbox_AE_ack));
-        num_mbox_AE_ack = random;
-    /*
+        num_mbox_AE_ack = 0;
+
         retry = random;
         while (retry) {
             if (m_AE_ack.term > currentTerm) {
@@ -552,7 +552,7 @@ void test (int pid, int num) {
     
             retry = random;
         }
-    */
+
         // Leader can't timeout
     
         if (num_mbox_AE_ack >= num/2) {
