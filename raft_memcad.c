@@ -1087,6 +1087,134 @@ int candidate_election (int pid, int num) {
             }
         }
     }
+} 
+
+void follower_election (int pid, int num) {
+    int state = FOLLOWER;
+    int currentTerm = 0;
+    int votedFor = pid;
+    //int log[1000];
+
+    int lastIndex = 0;
+    int lastTerm = 0;
+
+    int cmd;
+
+    int commitIndex = 0;
+    int lastApplied = 0;
+
+    int leaderCommit;
+
+    //int nextIndex[100];
+    //int matchIndex[100];
+
+    //msg_reqVote mbox_reqVote[200];
+    int num_mbox_reqVote = 0;
+    msg_reqVote m_reqVote;
+
+   // msg_vote mbox_vote[200];
+    int num_mbox_vote = 0;
+    msg_vote m_vote;
+
+    //msg_AE mbox_AE[200];
+    int num_mbox_AE = 0;
+    msg_AE m_AE;
+
+    //msg_AE_ack mbox_AE_ack[200];
+    int num_mbox_AE_ack = 0;
+    msg_AE_ack m_AE_ack;
+
+    int lab_election = 0;
+    int lab_normal = 0;
+
+    int retry;
+    int timeout;
+    int election;
+
+    volatile int random;
+
+    int old_term = currentTerm - 1;
+    int old_lab_election = 0;
+    int old_commit = 0;
+    int old_lab_normal = 0;
+    int old_LLI = 0; 
+
+        if (state == FOLLOWER) {
+            lab_election = 1;
+
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            old_term = currentTerm;
+            old_lab_election = lab_election;
+            old_commit = commitIndex;
+            old_lab_normal = lab_normal;
+            old_LLI = lastIndex;
+
+            // Empty mbox
+            num_mbox_reqVote = 0;
+
+            // receive
+            retry = random;
+            while (retry && num_mbox_reqVote < 1) {
+                if (m_vote.term > currentTerm) {
+                    state = FOLLOWER;
+                    currentTerm = m_vote.term;
+                    break;
+                }
+
+                if (filter_reqVote(&m_reqVote,currentTerm)) {
+                    // mbox_reqVote[num_mbox_reqVote] = m_reqVote;
+                    num_mbox_reqVote = num_mbox_reqVote + 1;
+                }
+
+                if (num_mbox_vote >= 1) {
+                    break;
+                }
+
+                retry = random;
+            }
+
+            timeout = random;
+            if (timeout) {
+                state = CANDIDATE;
+            }
+
+            if (num_mbox_reqVote >= 1) {
+                lab_election = 2;
+
+                assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                old_term = currentTerm;
+                old_lab_election = lab_election;
+                old_commit = commitIndex;
+                old_lab_normal = lab_normal;
+                old_LLI = lastIndex;
+
+                // when entering a different machine
+                old_lab_normal = 0; 
+
+                /*
+                if (mbox_reqVote[0].lastLogTerm > log.lastTerm) {
+                    send vote with success = 1;
+                    votedFor = mbox_reqVote[0].candidateId;
+                }
+                else {
+                    if (mbox_reqVote[0].lastLogTerm < log.lastTerm)
+                        send vote with success = 0;
+                    else {
+                        if (mbox_reqVote[0].lastLogIndex > log.lastIndex) {
+                            send vote with success = 1;
+                            votedFor = mbox_reqVote[0].candidateId;
+                        }
+                        else
+                            send vote with success = 0;
+                    }
+                }
+                */
+            }
+            else {
+                state = CANDIDATE;
+            }
+        }
+    
 }
 
 int main() {
