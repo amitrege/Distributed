@@ -529,7 +529,7 @@ void test (int pid, int num) {
                 currentTerm = m_AE_ack.term;
                 
                 // Just to make sure
-                assert(currentTerm > old_term);
+                // assert(currentTerm > old_term);
     
                 // when entering a different machine
                 old_lab_election = 0;
