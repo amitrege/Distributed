@@ -1220,6 +1220,6 @@ void follower_election (int pid, int num) {
 int main() {
     //Raft(0,5);
     //follower_normal(0,5);
-    candidate_election(0,5);
+    follower_election(0,5);
     return 0;
 }
