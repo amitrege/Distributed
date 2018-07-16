@@ -532,7 +532,7 @@ void test (int pid, int num) {
                 assert(currentTerm > old_term);
     
                 // when entering a different machine
-                old_lab_election = 0;
+                // old_lab_election = 0;
                 
                 break;
             }
