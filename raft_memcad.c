@@ -563,7 +563,7 @@ void leader_normal (int pid, int num) {
 }
 
 void follower_normal (int pid, int num) {
-    int state = FOLLOWER;
+    int state = LEADER;
     int currentTerm = 0;
     int votedFor = pid;
     //int log[1000];
