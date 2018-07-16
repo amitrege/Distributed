@@ -20,6 +20,8 @@ void test () {
     
     while (retry) {
         // receive command from client
+
+        /*
         cmd = random2;
         if (cmd == 0) {   // Empty command (HeartBeat)
             lab_normal = 1;
@@ -46,7 +48,7 @@ void test () {
             assert(currentTerm == old_term);
             assert(old_lab_election == lab_election);
             assert(commitIndex == old_commit);
-            assert(old_lab_normal >= 0 && old_lab_normal <= 5);
+            assert(old_lab_normal == 0 || old_lab_normal == 1);
             assert(lastIndex >= old_LLI);
 
             old_term = currentTerm;
@@ -57,6 +59,24 @@ void test () {
                 
             // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
         }
+        */
+
+        lastIndex = lastIndex + 1;
+        
+                    lab_normal = 1;
+        
+                    assert(currentTerm == old_term);
+                    assert(old_lab_election == lab_election);
+                    assert(commitIndex == old_commit);
+                    assert(old_lab_normal == 0 || old_lab_normal == 1);
+                    assert(lastIndex >= old_LLI);
+        
+                    old_term = currentTerm;
+                    old_lab_election = lab_election;
+                    old_commit = commitIndex;
+                    old_lab_normal = lab_normal;
+                    old_LLI = lastIndex;
+                    
         retry = random;
     }
 }
