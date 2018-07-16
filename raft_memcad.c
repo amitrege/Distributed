@@ -1138,6 +1138,74 @@ void follower_election (int pid, int num) {
     int old_commit = 0;
     int old_lab_normal = 0;
     int old_LLI = 0; 
+    while (1) {
+        if (state == CANDIDATE) {
+            // Since candidate votes for itself instantaneously, we don't need to consider others asking for its vote
+            currentTerm = currentTerm + 1;
+
+            votedFor = pid; // vote for itself
+
+            // labels should be immidiately before sends/receives
+            lab_election = 1;
+
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            old_term = currentTerm;
+            old_lab_election = lab_election;
+            old_commit = commitIndex;
+            old_lab_normal = lab_normal;
+            old_LLI = lastIndex;
+
+            // Ask for votes
+            // send(term, c_id, lastLogIndex, lastLogTerm)
+
+            lab_election = 2;
+
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            old_term = currentTerm;
+            old_lab_election = lab_election;
+            old_commit = commitIndex;
+            old_lab_normal = lab_normal;
+            old_LLI = lastIndex;
+
+            // Empty mbox
+            num_mbox_vote = 0;
+
+            // receive votes
+            retry = random;
+            while(retry && num_mbox_vote < (num/2)) {
+                if (m_vote.term > currentTerm) {
+                    state = FOLLOWER;
+                    currentTerm = m_vote.term;
+
+                    break;
+                }
+
+                if(filter_vote(&m_vote, currentTerm)) {
+                    // mbox_vote[num_mbox_vote] = m_vote;
+                    num_mbox_vote = num_mbox_vote + 1;
+                }
+
+                if(num_mbox_vote >= num/2)
+                    break;
+  
+                retry = random;
+            }
+
+            timeout = random;
+            if (timeout) {
+                state = CANDIDATE;
+            }
+
+            if(num_mbox_vote >= num/2) {
+                state = LEADER;
+
+                // when entering a different machine
+                old_lab_normal = 0;
+            }
+            else {
+                // Not required?
+            }
+        }
 
         if (state == FOLLOWER) {
             lab_election = 1;
@@ -1191,6 +1259,7 @@ void follower_election (int pid, int num) {
                 // when entering a different machine
                 old_lab_normal = 0; 
 
+                break;
                 /*
                 if (mbox_reqVote[0].lastLogTerm > log.lastTerm) {
                     send vote with success = 1;
@@ -1214,7 +1283,7 @@ void follower_election (int pid, int num) {
                 state = CANDIDATE;
             }
         }
-    
+    }
 }
 
 int main() {
