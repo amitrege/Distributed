@@ -970,7 +970,7 @@ void test(int pid, int num) {
 
 int main() {
     //Raft(0,5);
-    follower_normal(0,5);
-   // test_2();
+    //follower_normal(0,5);
+    test(0,5);
     return 0;
 }
