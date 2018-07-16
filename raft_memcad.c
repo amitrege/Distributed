@@ -32,7 +32,7 @@ typedef struct _msg_AE {
     int prevLogIndex;
     int prevLogTerm;
     int leaderCommit;
-    int entries[100];
+    //int entries[100];
 } msg_AE;
 
 int filter_AE(msg_AE m, int currentTerm, int lastIndex, int lastTerm) {
