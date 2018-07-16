@@ -1250,7 +1250,7 @@ void follower_election (int pid, int num) {
                 state = CANDIDATE;
             }
 
-            if (num_mbox_reqVote >= 1) {
+            if (num_mbox_reqVote >= 1 && state == FOLLOWER) {
                 lab_election = 2;
 
                 assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
@@ -1288,6 +1288,13 @@ void follower_election (int pid, int num) {
             }
             else {
                 state = CANDIDATE;
+
+                // when entering a different machine
+                old_term = 0;
+                old_lab_election = 0;
+                old_commit = 0;
+                old_lab_normal = 0;
+                old_LLI = 0;
             }
         }
 
