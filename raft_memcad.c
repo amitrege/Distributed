@@ -562,7 +562,8 @@ void test (int pid, int num) {
             num_mbox_AE_ack = 0;
         }
         else {
-            break;
+            currentTerm = currentTerm + 1;
+            //break;
         }
     }
 }
