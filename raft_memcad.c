@@ -562,7 +562,7 @@ void test (int pid, int num) {
             num_mbox_AE_ack = 0;
         }
         else {
-            state = CANDIDATE;
+            currentTerm = currentTerm + 1;
         }
     }
 }
