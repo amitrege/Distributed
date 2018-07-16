@@ -52,6 +52,7 @@ int filter_AE_ack(msg_AE_ack m, int term) {
     return 0;
 }
 
+/*
 void Raft(int pid, int num) {
     int state = FOLLOWER;
     int currentTerm = 0;
@@ -236,7 +237,7 @@ void Raft(int pid, int num) {
                     }
                 }
                 */
-            }
+/*            }
             else {
                 state = CANDIDATE;
             }
@@ -292,7 +293,7 @@ void Raft(int pid, int num) {
                 num_mbox_AE_ack = 0;
                 */
 
-                retry = random;
+/*                retry = random;
                 while (retry) {
                     if (m_AE_ack.term > currentTerm) {
                         state = FOLLOWER;
@@ -421,6 +422,8 @@ void Raft(int pid, int num) {
         }
     }
 }
+
+*/
 
 void test (int pid, int num) {
     int state = FOLLOWER;
