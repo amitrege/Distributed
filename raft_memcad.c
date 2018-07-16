@@ -640,7 +640,7 @@ void test_2 () {
 
 int main() {
     //Raft(0,5);
-    //test(0,5);
-    test_2();
+    test(0,5);
+   // test_2();
     return 0;
 }

@@ -22,9 +22,8 @@ void test () {
         lab_normal = 1;
         
         assert(old_lab_normal == 0 || old_lab_normal == 1);
-
         old_lab_normal = lab_normal;
-        
+
         retry = random;
     }
 }
