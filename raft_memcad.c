@@ -591,7 +591,7 @@ void test_2 () {
         if (cmd == 0) {   // Empty command (HeartBeat)
             lab_normal = 1;
 
-            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term && lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term && lab_election == old_lab_election && commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term && lab_election == old_lab_election && commitIndex == old_commit && lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
             old_term = currentTerm;
             old_lab_election = lab_election;
             old_commit = commitIndex;
@@ -605,7 +605,7 @@ void test_2 () {
 
             lab_normal = 1;
 
-            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term && lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term && lab_election == old_lab_election && commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term && lab_election == old_lab_election && commitIndex == old_commit && lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
             old_term = currentTerm;
             old_lab_election = lab_election;
             old_commit = commitIndex;
@@ -620,6 +620,7 @@ void test_2 () {
 
 int main() {
     //Raft(0,5);
-    test(0,5);
+    //test(0,5);
+    test_2();
     return 0;
 }
