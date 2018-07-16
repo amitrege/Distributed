@@ -46,7 +46,7 @@ void test () {
             assert(currentTerm == old_term);
             assert(old_lab_election == lab_election);
             assert(commitIndex == old_commit);
-            assert(old_lab_normal >= 0);
+            assert(old_lab_normal >= 1);
             assert(lastIndex >= old_LLI);
 
             old_term = currentTerm;
