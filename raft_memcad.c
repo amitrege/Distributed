@@ -558,9 +558,6 @@ void test (int pid, int num) {
                 num_mbox_AE_ack = num_mbox_AE_ack + 1;
             }*/
             num_mbox_AE_ack = num_mbox_AE_ack + 1;
-            if (num_mbox_AE_ack >= num/2) {
-                break;
-            }
     
             retry = random;
         }
@@ -569,9 +566,6 @@ void test (int pid, int num) {
     
         if (num_mbox_AE_ack >= num/2) {
             commitIndex = commitIndex + 1;
-    
-            // Empty mbox
-            num_mbox_AE_ack = 0;
         }
         else {
             currentTerm = currentTerm + 1;
