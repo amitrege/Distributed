@@ -1090,7 +1090,7 @@ int candidate_election (int pid, int num) {
 } 
 
 void follower_election (int pid, int num) {
-    int state = CANDIDATE;
+    int state = FOLLOWER;
     int currentTerm = 0;
     int votedFor = pid;
     //int log[1000];
