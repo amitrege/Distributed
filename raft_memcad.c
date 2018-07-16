@@ -547,11 +547,11 @@ void test (int pid, int num) {
                 // old_lab_election = 0;
                 
                 break;
-            }*/
+            }
     
             if (m_AE_ack.success == 0 && m_AE_ack.term == currentTerm) {
                 // set next index one by one
-            }
+            }*/
     
             if (m_AE_ack.term == currentTerm && m_AE_ack.success == 1) {
                 // mbox_AE_ack[num_mbox_AE_ack] = m_AE_ack;
