@@ -622,7 +622,7 @@ void test_2 () {
             assert(currentTerm == old_term);
             assert(old_lab_election == lab_election);
             assert(commitIndex == old_commit);
-            assert(lab_normal == 1 || old_lab_normal == 1);
+            assert(old_lab_normal == 0 || old_lab_normal == 1);
             assert(lastIndex >= old_LLI);
 
             assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
