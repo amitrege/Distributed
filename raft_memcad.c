@@ -512,6 +512,7 @@ void test (int pid, int num) {
     
         lab_normal = 2;
     
+        assert(old_lab_election == lab_election);
         assert(lab_normal >= old_lab_normal);
         //assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
         old_term = currentTerm;
