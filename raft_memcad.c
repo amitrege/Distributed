@@ -529,7 +529,7 @@ void test (int pid, int num) {
                 currentTerm = m_AE_ack.term;
                 
                 // Just to make sure
-                // assert(currentTerm > old_term);
+                assert(currentTerm > old_term);
     
                 // when entering a different machine
                 old_lab_election = 0;
@@ -553,6 +553,7 @@ void test (int pid, int num) {
             retry = random;
         }
 
+        assert ((lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
         // Leader can't timeout
     
         if (num_mbox_AE_ack >= num/2) {
