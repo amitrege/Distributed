@@ -536,7 +536,7 @@ void test (int pid, int num) {
         
         retry = random;
         while (retry && num_mbox_AE_ack < (num/2)) {
-            /*if (m_AE_ack.term > currentTerm) {
+            if (m_AE_ack.term > currentTerm) {
                 state = FOLLOWER;
                 currentTerm = m_AE_ack.term;
                 
@@ -556,8 +556,7 @@ void test (int pid, int num) {
             if (m_AE_ack.term == currentTerm && m_AE_ack.success == 1) {
                 // mbox_AE_ack[num_mbox_AE_ack] = m_AE_ack;
                 num_mbox_AE_ack = num_mbox_AE_ack + 1;
-            }*/
-            num_mbox_AE_ack = num_mbox_AE_ack + 1;
+            }
     
             retry = random;
         }
