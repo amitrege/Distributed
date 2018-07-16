@@ -492,7 +492,7 @@ void test (int pid, int num) {
                 // send(term, leaderId, prevLogIndex, entries[], leaderCommit) with empty entries
             }
             else {
-                lastIndex++;
+                lastIndex = lastIndex + 1;
     
                 lab_normal = 1;
     
@@ -543,7 +543,7 @@ void test (int pid, int num) {
     
             if (filter_AE_ack(m_AE_ack, currentTerm)) {
                 // mbox_AE_ack[num_mbox_AE_ack] = m_AE_ack;
-                num_mbox_AE_ack++;
+                num_mbox_AE_ack = num_mbox_AE_ack + 1;
             }
     
             if (num_mbox_AE_ack >= num/2) {
@@ -556,7 +556,7 @@ void test (int pid, int num) {
         // Leader can't timeout
     
         if (num_mbox_AE_ack >= num/2) {
-            commitIndex++;
+            commitIndex = commitIndex + 1;
     
             // Empty mbox
             num_mbox_AE_ack = 0;
