@@ -36,7 +36,7 @@ typedef struct _msg_AE {
 } msg_AE;
 
 int filter_AE(msg_AE* m, int currentTerm, int lastIndex, int lastTerm) {
-    if (m->term = currentTerm && m->prevLogIndex == lastIndex && m->prevLogTerm == lastTerm)
+    if (m->term == currentTerm && m->prevLogIndex == lastIndex && m->prevLogTerm == lastTerm)
         return 1;
     return 0;
 }
@@ -733,7 +733,6 @@ void follower_normal (int pid, int num) {
                     // mbox_AE[num_mbox_AE] = m_AE;
                     num_mbox_AE = num_mbox_AE + 1;
                 }
-                assert(0==0);
     
                 retry = random;
             }
