@@ -495,7 +495,7 @@ void test (int pid, int num) {
                 old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
 
-                // assert((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
+                assert((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
     
                 // send(term, leaderId, prevLogIndex, entries[], leaderCommit) with empty entries
             }
@@ -504,7 +504,7 @@ void test (int pid, int num) {
     
                 lab_normal = 1;
     
-                //assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
                 old_term = currentTerm;
                 old_lab_election = lab_election;
                 old_commit = commitIndex;
@@ -517,19 +517,19 @@ void test (int pid, int num) {
         }
     
         lab_normal = 2;
-/*    
+ 
         assert(currentTerm >= old_term);
         assert(old_lab_election == lab_election);
         assert(commitIndex >= old_commit);
         assert(lab_normal >= old_lab_normal);
-        //assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+        assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
         old_term = currentTerm;
         old_lab_election = lab_election;
         old_commit = commitIndex;
         old_lab_normal = lab_normal;
         old_LLI = lastIndex;
     
-        //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
+/*        //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
         // Empty mbox
         //memset(mbox_AE_ack,0,sizeof(mbox_AE_ack));
         num_mbox_AE_ack = 0;
