@@ -475,6 +475,10 @@ void test (int pid, int num) {
     
     while (state != CANDIDATE) {
         assert(currentTerm >= old_term);
+        assert(old_lab_election == lab_election);
+        assert(commitIndex >= old_commit);
+        assert(lab_normal >= old_lab_normal);
+        
         retry = random;
         
         while (retry) {
