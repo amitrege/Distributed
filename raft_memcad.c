@@ -702,78 +702,77 @@ void follower_normal (int pid, int num) {
         }
 
         if (state == FOLLOWER) {
-            lab_normal = 1;
-            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
-            old_term = currentTerm;
-            old_lab_election = lab_election;
-            old_commit = commitIndex;
-            old_lab_normal = lab_normal;
-            old_LLI = lastIndex;
-            
-            // Empty mbox
-            num_mbox_AE = 0;
-    
-            // receive
             retry = random;
-            while (retry && num_mbox_AE < 1) {
-                if (m_AE_ack.term > currentTerm) {
-                    state = FOLLOWER;
-                    currentTerm = m_AE_ack.term;
-    
-                    // Just to make sure
-                    assert(currentTerm > old_term);
-    
-                    // when entering a different machine
-                    //old_lab_election = 0;
-    
-                    break;
-                }
-    
-                if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
-                    // mbox_AE[num_mbox_AE] = m_AE;
-                    num_mbox_AE = num_mbox_AE + 1;
-                }
-    
-                retry = random;
-            }
-    
-            timeout = random;
-            if (timeout) {
-                state = CANDIDATE;
-    
-                break;
-            }
-    
-            if (num_mbox_AE >= 1) {
-                assert(num_mbox_AE >= 1);
-                if (leaderCommit > commitIndex) {
-                    commitIndex = leaderCommit;
-                    assert(commitIndex > old_commit);
-                    // Commit all terms till min(commitIndex, lastIndex)
-                }
-    
-                lab_normal = 2;
-    
+            while (retry) {
+                lab_normal = 1;
                 assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
                 old_term = currentTerm;
                 old_lab_election = lab_election;
                 old_commit = commitIndex;
                 old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
+                
+                // Empty mbox
+                num_mbox_AE = 0;
+        
+                // receive
+                retry = random;
+                while (retry && num_mbox_AE < 1) {
+                    if (m_AE_ack.term > currentTerm) {
+                        state = FOLLOWER;
+                        currentTerm = m_AE_ack.term;
+        
+                        // Just to make sure
+                        assert(currentTerm > old_term);
+        
+                        // when entering a different machine
+                        //old_lab_election = 0;
+        
+                        break;
+                    }
+        
+                    if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
+                        // mbox_AE[num_mbox_AE] = m_AE;
+                        num_mbox_AE = num_mbox_AE + 1;
+                    }
+        
+                    retry = random;
+                }
+        
+                timeout = random;
+                if (timeout) {
+                    state = CANDIDATE;
+        
+                    break;
+                }
     
-                // send(term, success) to leader
+                if (num_mbox_AE >= 1) {
+                    if (leaderCommit > commitIndex) {
+                        commitIndex = leaderCommit;
+                        assert(commitIndex > old_commit);
+                        // Commit all terms till min(commitIndex, lastIndex)
+                    }
     
-                // need to do this after the send to prove invarinat 
-                lastIndex = lastIndex + 1;
+                    lastIndex = lastIndex + 1;
+                }
+                else {
+                    state = CANDIDATE;
+                    break;
+                }
             }
-            else {
-                state = CANDIDATE;
     
-                // when entering a different machine
-                // old_lab_election = 0;
+            lab_normal = 2;
+            
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            old_term = currentTerm;
+            old_lab_election = lab_election;
+            old_commit = commitIndex;
+            old_lab_normal = lab_normal;
+            old_LLI = lastIndex;
     
-                break;
-            }
+            // send(term, success) to leader
+    
+            commitIndex = commitIndex + 1;
         }
     }
 }
@@ -970,7 +969,7 @@ void test(int pid, int num) {
 
 int main() {
     //Raft(0,5);
-    //follower_normal(0,5);
-    test(0,5);
+    follower_normal(0,5);
+    // test(0,5);
     return 0;
 }
