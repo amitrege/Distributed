@@ -474,6 +474,8 @@ void test (int pid, int num) {
     int old_LLI = 0;
     
     while (state != CANDIDATE) {
+        assert(old_lab_election == lab_election);
+        assert(old_LLI = lastIndex);
         retry = random;
         
         while (retry) {
@@ -521,12 +523,6 @@ void test (int pid, int num) {
         // Empty mbox
         //memset(mbox_AE_ack,0,sizeof(mbox_AE_ack));
         num_mbox_AE_ack = 0;
-    
-
-        assert (lab_election == old_lab_election);
-        assert(commitIndex == old_commit);
-        assert(lab_normal == old_lab_normal); 
-        assert(lastIndex == old_LLI);
         
         retry = random;
         while (retry) {
@@ -559,7 +555,6 @@ void test (int pid, int num) {
             retry = random;
         }
 
-        assert ((lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
         // Leader can't timeout
     
         if (num_mbox_AE_ack >= num/2) {
