@@ -478,11 +478,12 @@ void test (int pid, int num) {
         retry = random;
         
         while (retry) {
-            assert(currentTerm >= old_term);
             // receive command from client
             cmd = random;
             if (cmd == 0) {   // Empty command (HeartBeat)
                 lab_normal = 1;
+
+                assert(currentTerm >= old_term);
     
                 //assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
                 old_term = currentTerm;
@@ -499,6 +500,8 @@ void test (int pid, int num) {
                 lastIndex = lastIndex + 1;
     
                 lab_normal = 1;
+
+                assert(currentTerm >= old_term);
     
                 //assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
                 old_term = currentTerm;
