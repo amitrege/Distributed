@@ -562,7 +562,7 @@ void test (int pid, int num) {
             num_mbox_AE_ack = 0;
         }
         else {
-            break;
+            state = CANDIDATE;
         }
     }
 }
@@ -620,7 +620,6 @@ void test_2 () {
 
 int main() {
     //Raft(0,5);
-    // test(0,5);
-    test_2();
+    test(0,5);
     return 0;
 }
