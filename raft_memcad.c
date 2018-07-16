@@ -682,7 +682,7 @@ void follower_normal (int pid, int num) {
                     // set next index one by one
                 }
         
-                if (m_AE_ack.term == currentTerm && m_AE_ack.success == 1) {
+                if (filter_AE_ack(&m_AE_ack, currentTerm)) {
                     // mbox_AE_ack[num_mbox_AE_ack] = m_AE_ack;
                     num_mbox_AE_ack = num_mbox_AE_ack + 1;
                 }
