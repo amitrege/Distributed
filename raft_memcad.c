@@ -482,6 +482,7 @@ void test (int pid, int num) {
         retry = random;
         
         while (retry) {
+            assert(currentTerm >= old_term);
             // receive command from client
             cmd = random;
             if (cmd == 0) {   // Empty command (HeartBeat)
@@ -512,12 +513,11 @@ void test (int pid, int num) {
                     
                 // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
             }
-            assert(currentTerm >= old_term);
             retry = random;
         }
     
         lab_normal = 2;
-    
+/*    
         assert(currentTerm >= old_term);
         assert(old_lab_election == lab_election);
         assert(commitIndex >= old_commit);
@@ -578,7 +578,7 @@ void test (int pid, int num) {
             //break;
         }
 
-        assert(currentTerm >= old_term);        
+        assert(currentTerm >= old_term);   */   
     }
 }
 
