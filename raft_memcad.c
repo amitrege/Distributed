@@ -734,10 +734,6 @@ void follower_normal (int pid, int num) {
                     num_mbox_AE = num_mbox_AE + 1;
                 }
     
-                if (num_mbox_AE >= 1) {
-                    break;
-                }
-    
                 retry = random;
             }
     
