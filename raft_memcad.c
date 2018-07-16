@@ -478,7 +478,7 @@ void test (int pid, int num) {
         assert(old_lab_election == lab_election);
         assert(commitIndex >= old_commit);
         assert(lab_normal >= old_lab_normal);
-        
+
         retry = random;
         
         while (retry) {
@@ -493,8 +493,6 @@ void test (int pid, int num) {
                 old_commit = commitIndex;
                 old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
-
-                assert(currentTerm >= old_term);
 
                 // assert((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
     
@@ -511,11 +509,10 @@ void test (int pid, int num) {
                 old_commit = commitIndex;
                 old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
-
-                assert(currentTerm >= old_term);
                     
                 // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
             }
+            assert(currentTerm >= old_term);
             retry = random;
         }
     
