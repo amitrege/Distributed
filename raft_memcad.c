@@ -843,7 +843,7 @@ void test_2 () {
     }
 }
 
-void test() {
+void test(int pid, int num) {
     int state = FOLLOWER;
     int currentTerm = 0;
     int votedFor = pid;
