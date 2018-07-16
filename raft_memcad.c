@@ -488,14 +488,14 @@ void test (int pid, int num) {
             if (cmd == 0) {   // Empty command (HeartBeat)
                 lab_normal = 1;
     
-                //assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
                 old_term = currentTerm;
                 old_lab_election = lab_election;
                 old_commit = commitIndex;
                 old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
 
-                assert((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
+                // assert((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
     
                 // send(term, leaderId, prevLogIndex, entries[], leaderCommit) with empty entries
             }
@@ -529,11 +529,11 @@ void test (int pid, int num) {
         old_lab_normal = lab_normal;
         old_LLI = lastIndex;
     
-/*        //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
+       //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
         // Empty mbox
         //memset(mbox_AE_ack,0,sizeof(mbox_AE_ack));
-        num_mbox_AE_ack = 0;
-        
+        num_mbox_AE_ack = random;
+/*        
         retry = random;
         while (retry) {
             if (m_AE_ack.term > currentTerm) {
@@ -566,7 +566,7 @@ void test (int pid, int num) {
         }
 
         // Leader can't timeout
-    
+    */
         if (num_mbox_AE_ack >= num/2) {
             commitIndex = commitIndex + 1;
     
@@ -576,9 +576,7 @@ void test (int pid, int num) {
         else {
             currentTerm = currentTerm + 1;
             //break;
-        }
-
-        assert(currentTerm >= old_term);   */   
+        }  
     }
 }
 
