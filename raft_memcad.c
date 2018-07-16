@@ -426,7 +426,7 @@ void test (int pid, int num) {
     int state = FOLLOWER;
     int currentTerm = 0;
     int votedFor = pid;
-    int log[1000];
+    //int log[1000];
 
     int lastIndex = 0;
     int lastTerm = 0;
@@ -436,22 +436,22 @@ void test (int pid, int num) {
     int commitIndex = 0;
     int lastApplied = 0;
 
-    int nextIndex[100];
-    int matchIndex[100];
+    //int nextIndex[100];
+    //int matchIndex[100];
 
-    msg_reqVote mbox_reqVote[200];
+    //msg_reqVote mbox_reqVote[200];
     int num_mbox_reqVote = 0;
     msg_reqVote m_reqVote;
 
-    msg_vote mbox_vote[200];
+   // msg_vote mbox_vote[200];
     int num_mbox_vote = 0;
     msg_vote m_vote;
 
-    msg_AE mbox_AE[200];
+    //msg_AE mbox_AE[200];
     int num_mbox_AE = 0;
     msg_AE m_AE;
 
-    msg_AE_ack mbox_AE_ack[200];
+    //msg_AE_ack mbox_AE_ack[200];
     int num_mbox_AE_ack = 0;
     msg_AE_ack m_AE_ack;
 
