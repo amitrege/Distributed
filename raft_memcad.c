@@ -521,8 +521,9 @@ void test (int pid, int num) {
         // Empty mbox
         //memset(mbox_AE_ack,0,sizeof(mbox_AE_ack));
         num_mbox_AE_ack = 0;
+    
 
-        assert ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
+        assert ((lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
         
         retry = random;
         while (retry) {
