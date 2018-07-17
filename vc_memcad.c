@@ -222,7 +222,7 @@ int VC(int pid, int num)
 { 
     int v = 0;
     int lab_vc = 0;
-    int old_v = 0; 
+    int old_v = v - 1; 
     int old_lab_vc = 0;
     
     int n;
