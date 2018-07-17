@@ -1571,7 +1571,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
             
             retry = random;
             while (retry && num_mbox_AE_ack < (num/2)) {
-                if (m_AE_ack.term > currentTerm) {
+                if (m_AE_ack.term > *currentTerm) {
                     *state = FOLLOWER;
                     *currentTerm = m_AE_ack.term;
                     
