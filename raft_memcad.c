@@ -1905,12 +1905,31 @@ void election(int pid, int num) {
             }
         } 
 
+        if(state != CANDIDATE) {
+            if(state == LEADER) {
+                state = FOLLOWER;
+                currentTerm = currentTerm + 1;
+            }
+
+            if (state == FOLLOWER) {
+                int r = random;
+                if (r) {
+                    state = CANDIDATE;
+                }
+                else {
+                    state = FOLLOWER;
+                    currentTerm = currentTerm + 1;
+                }
+            }
+        }
+/*
         if (state != CANDIDATE) {
             NormalOp(pid, num, &state, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
             assert(state == CANDIDATE || state == FOLLOWER);
             assert((state == CANDIDATE) || ((state == FOLLOWER) && (currentTerm > old_term)));
         }
     }
+*/
 }
 
 int main() {
