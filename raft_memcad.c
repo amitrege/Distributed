@@ -1512,6 +1512,10 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
 
     volatile int random;
 
+    *old_commit = 0;
+    *old_lab_normal = 0;
+    *old_LLI = 0;
+
     while (*state != CANDIDATE) {
         if (*state == LEADER) {
             retry = random;
@@ -1639,7 +1643,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
                         //old_lab_election = 0;
         
                         // no return ? remains in normalop?
-                        // return;
+                        return;
                     }
         
                     if (filter_AE(&m_AE, *currentTerm, *lastIndex, lastTerm)) {
@@ -1857,8 +1861,6 @@ void election(int pid, int num) {
                 old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
 
-                currentTerm = currentTerm + 1;
-
                 /*
                 if (mbox_reqVote[0].lastLogTerm > log.lastTerm) {
                     send vote with success = 1;
@@ -1900,6 +1902,10 @@ void election(int pid, int num) {
                 */
             }
         } 
+
+        if (state != CANDIDATE) {
+            NormalOp(pid, num, &state, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
+        }
     }
 }
 
