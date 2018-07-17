@@ -1666,7 +1666,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
                 if (num_mbox_AE >= 1) {
                     if (leaderCommit > *commitIndex) {
                         *commitIndex = leaderCommit;
-                        assert(*commitIndex > *old_commit);
+                        // assert(*commitIndex > *old_commit);
                         // Commit all terms till min(commitIndex, lastIndex)
                     }
     
