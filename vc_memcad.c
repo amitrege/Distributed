@@ -218,11 +218,12 @@ int NormalOp(int pid, int leader, int* v, int* n, int* k, int num, int *log)
 }
 */
 // Tag (v, lab_vc)
-int VC(int pid, int num, int v)
+int VC(int pid, int num)
 { 
-    int lab_vc;
-    int old_v; 
-    int old_lab_vc;
+    int v = 0;
+    int lab_vc = 0;
+    int old_v = 0; 
+    int old_lab_vc = 0;
     
     int n;
     int *log;
