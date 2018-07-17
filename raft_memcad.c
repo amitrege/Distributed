@@ -1906,7 +1906,7 @@ void election(int pid, int num) {
         if (state != CANDIDATE) {
             NormalOp(pid, num, &state, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
             assert(state == CANDIDATE || state == FOLLOWER);
-            assert((state == CANDIDATE) || ((state == FOLLOWER) && (currentTerm > old_term));
+            assert((state == CANDIDATE) || ((state == FOLLOWER) && (currentTerm > old_term)));
         }
     }
 }
