@@ -1791,10 +1791,6 @@ void election(int pid, int num) {
                 state = CANDIDATE;
             }
 
-            if(state == FOLLOWER) {
-                assert(currentTerm > old_term);;
-            }
-
             if(num_mbox_vote >= num/2) {
                 state = LEADER;
 
@@ -1815,7 +1811,7 @@ void election(int pid, int num) {
         if (state == FOLLOWER) {
             lab_election = 1;
 
-            //assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
             old_term = currentTerm;
             old_lab_election = lab_election;
             old_commit = commitIndex;
