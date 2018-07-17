@@ -1928,8 +1928,9 @@ void election(int pid, int num) {
             assert(state == CANDIDATE || state == FOLLOWER);
             assert((state == CANDIDATE) || ((state == FOLLOWER) && (currentTerm > old_term)));
         }
-    }
 */
+    }
+
 }
 
 int main() {
