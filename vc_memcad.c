@@ -32,7 +32,7 @@ typedef struct _msg_startView {
 } msg_startView;
 
 int filter_startView (msg_startView* m, int v) {
-    if (m->v > v) {
+    if (m->v == v) {
         return 1;
     }
     return 0; 
@@ -72,6 +72,7 @@ int vc_msg (msg m, int v) {
 }
 */
 
+/*
 int NormalOp(int pid, int leader, int* v, int* n, int* k, int num, int *log)
 {
     int lab;
@@ -215,7 +216,7 @@ int NormalOp(int pid, int leader, int* v, int* n, int* k, int num, int *log)
         }
     }    
 }
-
+*/
 // Tag (v, lab_vc)
 int VC(int pid, int num, int v)
 { 
