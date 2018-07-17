@@ -1791,6 +1791,10 @@ void election(int pid, int num) {
                 state = CANDIDATE;
             }
 
+            if(state == FOLLOWER) {
+                assert(currentTerm > old_term);;
+            }
+
             if(num_mbox_vote >= num/2) {
                 state = LEADER;
 
