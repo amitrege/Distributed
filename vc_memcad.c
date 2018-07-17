@@ -376,5 +376,5 @@ int VC(int pid, int num)
 }
 
 int main(){
-    VC(0,5,0);
+    VC(0,5);
 }
