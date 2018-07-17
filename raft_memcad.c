@@ -1599,7 +1599,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
             if (num_mbox_AE_ack >= num/2) {
                 *commitIndex = *commitIndex + 1;
 
-                continue;
+                //continue;
             }
             else {
                 //currentTerm = currentTerm + 1;
