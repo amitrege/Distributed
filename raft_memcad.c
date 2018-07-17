@@ -1857,7 +1857,7 @@ void election(int pid, int num) {
                 old_lab_normal = lab_normal;
                 old_LLI = lastIndex;
 
-                commitIndex = commitIndex + 1;
+                currentTerm = currentTerm + 1;
 
                 /*
                 if (mbox_reqVote[0].lastLogTerm > log.lastTerm) {
