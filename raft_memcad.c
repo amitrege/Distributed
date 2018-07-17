@@ -1639,7 +1639,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
                         *currentTerm = m_AE_ack.term;
         
                         // Just to make sure
-                        // assert(*currentTerm > *old_term);
+                        assert(*currentTerm > *old_term);
         
                         // when entering a different machine
                         //old_lab_election = 0;
@@ -1666,7 +1666,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
                 if (num_mbox_AE >= 1) {
                     if (leaderCommit > *commitIndex) {
                         *commitIndex = leaderCommit;
-                        // assert(*commitIndex > *old_commit);
+                        assert(*commitIndex > *old_commit);
                         // Commit all terms till min(commitIndex, lastIndex)
                     }
     
@@ -1697,7 +1697,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
 int main() {
     //Raft(0,5);
     //follower_normal(0,5);
-    int state = FOLLOWER;
+    int state = LEADER;
     int old_term = 0;
     int old_lab_election = 0;
     int old_commit = 0;
