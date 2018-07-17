@@ -1689,7 +1689,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
 }
 
 void election(int pid, int num) {
-    int state = LEADER;
+    int state = CANDIDATE;
     int currentTerm = 0;
     int votedFor = pid;
     //int log[1000];
