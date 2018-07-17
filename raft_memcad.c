@@ -1710,6 +1710,6 @@ int main() {
     int lab_normal = 0;
     int lastIndex = 0;
 
-    NormalOp(0,5, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
+    NormalOp(0,5, &state, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
     return 0;
 }
