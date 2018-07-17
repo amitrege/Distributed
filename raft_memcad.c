@@ -1697,7 +1697,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
 int main() {
     //Raft(0,5);
     //follower_normal(0,5);
-    int state = CANDIDATE;
+    int state = FOLLOWER;
     int old_term = 0;
     int old_lab_election = 0;
     int old_commit = 0;
