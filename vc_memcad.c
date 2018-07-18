@@ -270,12 +270,16 @@ int VC(int pid, int num)
 { 
     int v = 0;
     int lab_vc = 0;
+    int k = 0;
+    int lab = 0;
+    int n = 0;
+    int *log;
+
     int old_v = v - 1; 
     int old_lab_vc = 0;
-    
-    int n;
-    int *log;
-    int k;
+    int old_k = 0;
+    int old_lab = 0;
+    int old_n = 0;
 
     int retry;
 
@@ -367,7 +371,7 @@ int VC(int pid, int num)
                     old_lab_vc = lab_vc;
 
                     // send <startView v, l, n, k> to all
-                    // NormalOp(pid,leader,v,n,k,num,log);
+                    NormalOp(pid, num, leader, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
                     v = v + 1;                    
                 }
                 else { // if leader does not receive enough doVC msgs
@@ -409,7 +413,7 @@ int VC(int pid, int num)
                     // k = mbox_startView[0].log_k;
                     // v = mbox_startView[0].v;
 
-                    // NormalOp(pid,leader,v,n,k,num,log);
+                    NormalOp(pid, num, leader, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
                     v = v + 1;
                 }
                 else {
@@ -436,6 +440,6 @@ int main(){
     int old_lab = 0;
     int old_n = 0;
 
-    // VC(0,5);
-    NormalOp(1,5,0, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+    VC(0,5);
+    // NormalOp(1,5,0, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
 }
