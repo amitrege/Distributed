@@ -243,6 +243,8 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                 else {
                     return 0;
                 }
+
+                retry = random;
             }
             
             lab = 2;
