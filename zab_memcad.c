@@ -504,17 +504,14 @@ int main_thread(int pid, int num){
                     }
                     else {
                         p = p + 1;
-                        continue;
                     } 
                 }
                 else {
                     p = p + 1;
-                    continue;
                 } 
             }
             else {
                 p = p + 1;
-                continue;
             }
         }
     /*    else {
