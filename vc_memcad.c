@@ -148,8 +148,8 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                 *old_v = *v;
                 *old_lab_vc = *lab_vc;
                 *old_k = *k;
-                // *old_lab = *lab;
-                *old_n = *n;
+                *old_lab = *lab;
+                // *old_n = *n;
                 retry = random;
             }
 
