@@ -186,7 +186,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                 // failure = 1;
                 return 0;
             }
-        }/*
+        }
        else {
             retry = random;
             while (retry) {
@@ -262,7 +262,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
         }
     
     
-    */}    
+    }    
 }
 
 // Tag (v, lab_vc)
