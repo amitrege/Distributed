@@ -126,7 +126,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                     n = n + 1;
                     //log[n] = cmd;
 
-                    lab = 1; // Prepare
+                    *lab = 1; // Prepare
                     
                     assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
                     *old_v = *v;
@@ -140,7 +140,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
             }
 
 
-            lab = 2;  // PrepareOK
+            *lab = 2;  // PrepareOK
 
             assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
             *old_v = *v;
@@ -177,7 +177,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
 
             if (num_mbox_prepOK >= num/2) { 
                 // out()
-                k = k + 1;
+                *k = *k + 1;
                     
             }
             else {
