@@ -137,6 +137,8 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
 
                     // send prep
                 }
+
+                retry = random;
             }
 
 
