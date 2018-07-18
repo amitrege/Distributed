@@ -308,27 +308,27 @@ int main_thread(int pid, int num){
 
     int leader;
 
-    msg_curr_e* mbox_curr_e[200];
+    // msg_curr_e* mbox_curr_e[200];
     int num_mbox_curr_e = 0;
     msg_curr_e m_curr_e;
 
-    msg_new_e* mbox_new_e[200];
+    // msg_new_e* mbox_new_e[200];
     int num_mbox_new_e = 0;
     msg_new_e m_new_e;
 
-    msg_ack_e* mbox_ack_e[200];
+    // msg_ack_e* mbox_ack_e[200];
     int num_mbox_ack_e = 0;
     msg_ack_e m_ack_e;
 
-    msg_new_l* mbox_new_l[200];
+    // msg_new_l* mbox_new_l[200];
     int num_mbox_new_l = 0;
     msg_new_l m_new_l;
 
-    msg_ack_l* mbox_ack_l[200];
+    // msg_ack_l* mbox_ack_l[200];
     int num_mbox_ack_l = 0;
     msg_ack_l m_ack_l;
 
-    msg_com* mbox_com[200];
+    // msg_com* mbox_com[200];
     int num_mbox_com = 0;
     msg_com m_com;
 

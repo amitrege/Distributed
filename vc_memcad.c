@@ -305,9 +305,12 @@ int VC(int pid, int num)
         lab_vc = 1; // startVC
     
         // (v, lab_vc) > (old_v, old_lab_vc)
-        assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)));
+        assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k > old_k)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab > old_lab)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab == old_lab) && (n >= old_n)));
         old_v = v;
         old_lab_vc = lab_vc;
+        old_k = k;
+        old_lab = lab;
+        old_n = n;
     
         // send <startVC v, i> to all
     
@@ -334,9 +337,12 @@ int VC(int pid, int num)
             lab_vc = 2; // doVC
     
             // (v, lab_vc) > (old_v, old_lab_vc)
-            assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)));            
+            assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k > old_k)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab > old_lab)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab == old_lab) && (n >= old_n)));
             old_v = v;
             old_lab_vc = lab_vc;
+            old_k = k;
+            old_lab = lab;
+            old_n = n;
     
             if (pid == leader) {
                 // empty mbox
@@ -366,9 +372,12 @@ int VC(int pid, int num)
                     lab_vc = 3;  // startView
 
                     // (v, lab_vc) > (old_v, old_lab_vc)
-                    assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)));                                
+                    assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k > old_k)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab > old_lab)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab == old_lab) && (n >= old_n)));
                     old_v = v;
                     old_lab_vc = lab_vc;
+                    old_k = k;
+                    old_lab = lab;
+                    old_n = n;
 
                     // send <startView v, l, n, k> to all
                     NormalOp(pid, num, leader, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
@@ -384,9 +393,12 @@ int VC(int pid, int num)
                 lab_vc = 3;  // startView
                 
                 // (v, lab_vc) > (old_v, old_lab_vc)
-                assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)));                            
+                assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k > old_k)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab > old_lab)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab == old_lab) && (n >= old_n)));
                 old_v = v;
                 old_lab_vc = lab_vc;
+                old_k = k;
+                old_lab = lab;
+                old_n = n;
 
                 // Empty mbox
                 // memset(mbox_startView,0,sizeof(mbox_startView));
