@@ -149,7 +149,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                 *old_lab_vc = *lab_vc;
                 *old_k = *k;
                 *old_lab = *lab;
-                // *old_n = *n;
+                *old_n = *n;
                 retry = random;
             }
 
@@ -199,7 +199,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                 return 0;
             }
         }
-        else {
+    /*    else {
             retry = random;
             while (retry) {
                 *lab = 1; // Prepare
@@ -272,7 +272,9 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
 
             *k = *k + 1;
         }
-    }    
+    
+    
+    */}    
 }
 
 // Tag (v, lab_vc)
