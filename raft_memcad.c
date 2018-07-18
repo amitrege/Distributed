@@ -1664,6 +1664,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
                 }
     
                 if (num_mbox_AE >= 1) {
+                    // We use leaderCommit since array are not allowed (yet)
                     if (leaderCommit > *commitIndex) {
                         *commitIndex = leaderCommit;
                         assert(*commitIndex > *old_commit);

@@ -72,16 +72,16 @@ int vc_msg (msg m, int v) {
 }
 */
 
-/*
-int NormalOp(int pid, int leader, int* v, int* n, int* k, int num, int *log)
+// The case where messages have higher view number is ignored for now (recovery)
+int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab, int* n, int* old_v, int* old_lab_vc, int* old_k, int* old_lab, int* old_n)
 {
-    int lab;
     int retry;
     int timeout;
     int mbox;
+    
     int cmd; // Declaration for incoming command
+    
     int vc_msg;
-    int failure = 0;
 
     // msg_prep mbox_prep[2*num];
     int num_mbox_prep = 0;
@@ -93,6 +93,13 @@ int NormalOp(int pid, int leader, int* v, int* n, int* k, int num, int *log)
 
     volatile int random;
 
+    int leaderCommit;
+
+    // new machine entrance
+    *old_k = 0;
+    *old_lab = 0;
+    *old_n = 0;
+
     while (1) {
         if (pid == leader) {
             retry = random;
@@ -103,10 +110,14 @@ int NormalOp(int pid, int leader, int* v, int* n, int* k, int num, int *log)
                 // Command is empty
                 if (cmd == 0)
                 {
-                    lab = 1; // Prepare
+                    *lab = 1; // Prepare
 
-                    // assert
-                    // failure = 0;
+                    assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= old_n)));
+                    *old_v = *v;
+                    *old_lab_vc = *lab_vc;
+                    *old_k = *k;
+                    *old_lab = *lab;
+                    *old_n = *n;
 
                     // send empty prepare with commit number
                 }
@@ -116,18 +127,34 @@ int NormalOp(int pid, int leader, int* v, int* n, int* k, int num, int *log)
                     //log[n] = cmd;
 
                     lab = 1; // Prepare
-                    // assert
-                    // failure = 0;
+                    
+                    assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= old_n)));
+                    *old_v = *v;
+                    *old_lab_vc = *lab_vc;
+                    *old_k = *k;
+                    *old_lab = *lab;
+                    *old_n = *n;
 
                     // send prep
                 }
             }
 
 
-            lab = 2;
+            lab = 2;  // PrepareOK
+
+            assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= old_n)));
+            *old_v = *v;
+            *old_lab_vc = *lab_vc;
+            *old_k = *k;
+            *old_lab = *lab;
+            *old_n = *n;
+
+            // Empty mbox
+            // memset(mbox_prepOK,0,sizeof(mbox_prepOK));
+            num_mbox_prepOK = 0;
 
             retry = random;
-            while (retry) {
+            while (retry && num_mbox_prepOK < (num/2)) {
             
                 timeout = random;
                 if (timeout) {
@@ -138,20 +165,7 @@ int NormalOp(int pid, int leader, int* v, int* n, int* k, int num, int *log)
                 if(filter_prepOK(&m_prepOK, v, k)) {
                     // mbox_prepOK[num_mbox_prepOK] = m_prepOK;
                     num_mbox_prepOK = num_mbox_prepOK + 1;
-                } 
-
-                if (num_mbox_prepOK >= num/2) { 
-                    // out()
-                    k = k + 1;
-                        
-                    // Empty mbox
-                    // memset(mbox_prepOK,0,sizeof(mbox_prepOK));
-                    num_mbox_prepOK = 0;
                 }
-                else {
-                    failure = 1;
-                }
-            
 
                 vc_msg = random;
                 if (vc_msg) {             // if msg is startVC or doVC
@@ -160,17 +174,36 @@ int NormalOp(int pid, int leader, int* v, int* n, int* k, int num, int *log)
 
                 retry = random;
             }
+
+            if (num_mbox_prepOK >= num/2) { 
+                // out()
+                k = k + 1;
+                    
+            }
+            else {
+                // failure = 1;
+                return 0;
+            }
         }
         else {
             retry = random;
             while (retry) {
+                *lab = 1; // Prepare
+                
+                assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= old_n)));
+                *old_v = *v;
+                *old_lab_vc = *lab_vc;
+                *old_k = *k;
+                *old_lab = *lab;
+                *old_n = *n;
+
                 // Empty mbox
                 // memset(mbox_prep,0,sizeof(mbox_prep));
-                num_mbox_prep = 0;   
-    
+                num_mbox_prep = 0;  
+
                 // receive Transaction
                 retry = random;
-                while(retry){
+                while(retry && num_mbox_prep < 1){
                     if(filter_prep(&m_prep, v, n)) {
                         // mbox_prep[num_mbox_prep] = m_prep;
                         num_mbox_prep = num_mbox_prep + 1;
@@ -186,37 +219,46 @@ int NormalOp(int pid, int leader, int* v, int* n, int* k, int num, int *log)
                     if (vc_msg) {              // if msg is startVC or doVC
                         return 0; // to VC
                     }
+
+                    retry = random;
                 }
-    
+
                 timeout = random;
                 if (timeout)  {
                     return 0;
                 }
-                
-                if (num_mbox_prep >= 1) {
-                    if (pid != leader) {
-                        n = n + 1;
-                        //log[n] = m.req;
-                        if (mbox_prep[0].k > k) {
-                            if (mbox_prep[0].k > n)
-                            {
-                                // State transfer
-                            }
-                            k = mbox_prep[0].k;
-                            // Commit all requests < k
-                        }
-                    }
-                    
-                    lab = 2;
 
-                    // send Ack
-                                    
+                if (num_mbox_prep >= 1) {
+                    // We use leaderCommit since array are not allowed (yet)
+                    if (leaderCommit > *k) {
+                        *k = leaderCommit;
+                        assert(*k > *old_k);
+                        // Commit all terms till min(commitIndex, lastIndex)
+                    }
+    
+                    *n = *n + 1; 
+                }
+                else {
+                    return 0;
                 }
             }
+            
+            lab = 2;
+            
+            assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= old_n)));
+            *old_v = *v;
+            *old_lab_vc = *lab_vc;
+            *old_k = *k;
+            *old_lab = *lab;
+            *old_n = *n;
+
+            // send Ack
+
+            *k = *k + 1;
         }
     }    
 }
-*/
+
 // Tag (v, lab_vc)
 int VC(int pid, int num)
 { 
@@ -311,7 +353,7 @@ int VC(int pid, int num)
                     // n = mbox_doVC[0].log_top;
                     // k = mbox_doVC[0].log_k;
 
-                    lab_vc++;  // startView
+                    lab_vc = 3;  // startView
 
                     // (v, lab_vc) > (old_v, old_lab_vc)
                     assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)));                                
@@ -376,5 +418,18 @@ int VC(int pid, int num)
 }
 
 int main(){
-    VC(0,5);
+    int v = 0;
+    int lab_vc = 0;
+    int k = 0;
+    int lab = 0;
+    int n = 0;
+
+    int old_v = 0;
+    int old_lab_vc = 0;
+    int old_k = 0;
+    int old_lab = 0;
+    int old_n = 0;
+
+    // VC(0,5);
+    NormalOp(0,5,0, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
 }
