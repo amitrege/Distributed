@@ -437,5 +437,5 @@ int main(){
     int old_n = 0;
 
     // VC(0,5);
-    NormalOp(0,5,0, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+    NormalOp(1,5,0, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
 }
