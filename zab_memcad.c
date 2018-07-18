@@ -343,8 +343,8 @@ int main_thread(int pid, int num){
 
         lab = 1; // Curr_E
 
-        //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
-        assert((p > old_p));
+        assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+        // assert((p > old_p));
         old_p = p;
         old_lab = lab;
         old_i = i;
@@ -390,8 +390,8 @@ int main_thread(int pid, int num){
 
                 lab = 2; // new_e
 
-                //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                        
-                assert(lab > old_lab);
+                assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+                // assert(lab > old_lab);
                 old_p = p;
                 old_lab = lab;
                 old_i = i;
@@ -401,8 +401,8 @@ int main_thread(int pid, int num){
 
                 lab = 3; // ack_e
 
-                //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                        
-                assert(lab > old_lab);
+                assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+                // assert(lab > old_lab);
                 old_p = p;
                 old_lab = lab;
                 old_i = i;
@@ -436,8 +436,8 @@ int main_thread(int pid, int num){
 
                     lab = 4; // new_l
 
-                    //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                            
-                    assert(lab > old_lab);
+                    assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+                    // assert(lab > old_lab);
                     old_p = p;
                     old_lab = lab;
                     old_i = i;
@@ -447,8 +447,8 @@ int main_thread(int pid, int num){
 
                     lab = 5; // ack_l
 
-                    //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                            
-                    assert(lab > old_lab);
+                    assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+                    // assert(lab > old_lab);
                     old_p = p;
                     old_lab = lab;
                     old_i = i;
@@ -480,8 +480,8 @@ int main_thread(int pid, int num){
                     if (num_mbox_ack_l >= num/2) {
                         lab = 6; // cmt
 
-                        //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                
-                        assert(lab > old_lab);
+                        assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+                        // assert(lab > old_lab);
                         old_p = p;
                         old_lab = lab;
                         old_i = i;
@@ -517,11 +517,11 @@ int main_thread(int pid, int num){
                 continue;
             }
         }
-        else {
+    /*    else {
             lab = 2; // New_E
 
-            //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                    
-            assert(lab > old_lab);
+            assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+            // assert(lab > old_lab);
             old_p = p;
             old_lab = lab;
             old_i = i;
@@ -563,8 +563,8 @@ int main_thread(int pid, int num){
 
                 lab = 3; // ack_e
 
-                //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                    
-                assert(lab > old_lab);
+                assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+                // assert(lab > old_lab);
                 old_p = p;
                 old_lab = lab;
                 old_i = i;
@@ -574,8 +574,8 @@ int main_thread(int pid, int num){
 
                 lab = 4; // new_l
 
-                //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                    
-                assert(lab > old_lab);
+                assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+                // assert(lab > old_lab);
                 old_p = p;
                 old_lab = lab;
                 old_i = i;
@@ -610,8 +610,8 @@ int main_thread(int pid, int num){
 
                     lab = 5; // ack_l
 
-                    //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                        
-                    assert(lab > old_lab);
+                    assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+                    // assert(lab > old_lab);
                     old_p = p;
                     old_lab = lab;
                     old_i = i;
@@ -621,8 +621,8 @@ int main_thread(int pid, int num){
 
                     lab = 6; // cmt
 
-                    //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                        
-                    assert(lab > old_lab);
+                    assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
+                    // assert(lab > old_lab);
                     old_p = p;
                     old_lab = lab;
                     old_i = i;
@@ -682,7 +682,7 @@ int main_thread(int pid, int num){
                 p = p + 1;
                 continue;
             }
-        }
+        }*/
     }
 }
 
@@ -1226,6 +1226,6 @@ int test(int num) {
 
 int main() {
     //sendingThread(0, 0, 0, 0);
-    //main_thread(0, 5); // pid, num
-    leadership(5);
+    main_thread(0, 5); // pid, num
+    // leadership(5);
 }
