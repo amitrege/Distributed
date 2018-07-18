@@ -105,7 +105,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
         if (pid == leader) {
             retry = random;
             while (retry) {
-                /*
+                
                 // cmd = in()
                 cmd = random;
 
@@ -139,19 +139,6 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
 
                     // send prep
                 }
-                */
-                n = n + 1;
-                //log[n] = cmd;
-
-                *lab = 1; // Prepare
-                
-                assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
-                *old_v = *v;
-                *old_lab_vc = *lab_vc;
-                *old_k = *k;
-                *old_lab = *lab;
-                *old_n = *n;
-                retry = random;
             }
 
 
