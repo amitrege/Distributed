@@ -125,7 +125,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                 }
                 else
                 {
-                    n = n + 1;
+                    *n = *n + 1;
                     //log[n] = cmd;
 
                     *lab = 1; // Prepare
