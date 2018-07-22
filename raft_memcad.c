@@ -1912,8 +1912,8 @@ void election(int pid, int num) {
 
         if (state != CANDIDATE) {
             NormalOp(pid, num, &state, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
-            assert(state == CANDIDATE || state == FOLLOWER);
-            assert((state == CANDIDATE) || ((state == FOLLOWER) && (currentTerm > old_term)));
+            // assert(state == CANDIDATE || state == FOLLOWER);
+            // assert((state == CANDIDATE) || ((state == FOLLOWER) && (currentTerm > old_term)));
         }
     }
 
@@ -1935,9 +1935,9 @@ int main() {
     int lab_normal = 0;
     int lastIndex = 0;
 
-    NormalOp(0,5, &state, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
-    assert(state == CANDIDATE);
+    //NormalOp(0,5, &state, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
+    //assert(state == CANDIDATE);
     //assert((state == CANDIDATE) || ((state == FOLLOWER) && (currentTerm > old_term)));
-    // election(0,5);
+    election(0,5);
     return 0;
 }
