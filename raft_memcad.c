@@ -1922,7 +1922,7 @@ void election(int pid, int num) {
 int main() {
     //Raft(0,5);
     //follower_normal(0,5);
-    int state = FOLLOWER;
+    int state = LEADER;
     int old_term = 0;
     int old_lab_election = 0;
     int old_commit = 0;
