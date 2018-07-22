@@ -1512,11 +1512,10 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
 
     volatile int random;
 
-    /*
     *old_commit = 0;
     *old_lab_normal = 0;
     *old_LLI = 0;
-*/
+
     while (*state != CANDIDATE) {
         if (*state == LEADER) {
             retry = random;
