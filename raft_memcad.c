@@ -1512,10 +1512,11 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
 
     volatile int random;
 
+    /*
     *old_commit = 0;
     *old_lab_normal = 0;
     *old_LLI = 0;
-
+*/
     while (*state != CANDIDATE) {
         if (*state == LEADER) {
             retry = random;
@@ -1579,7 +1580,8 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
                     // when entering a different machine
                     // old_lab_election = 0;
                     
-                    return;
+                    // return;
+                    break;
                 }
         
                 if (m_AE_ack.success == 0 && m_AE_ack.term == *currentTerm) {
@@ -1596,25 +1598,27 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
     
             // Leader can't timeout
         
-            if (num_mbox_AE_ack >= num/2) {
-                *commitIndex = *commitIndex + 1;
-
-                continue;
+            if(*state == LEADER) {
+                if (num_mbox_AE_ack >= num/2) {
+                    *commitIndex = *commitIndex + 1;
+    
+                    continue;
+                }
+                else {
+                    //currentTerm = currentTerm + 1;
+                    *state = CANDIDATE;
+    
+                    /*
+                    // when entering a different machine
+                    old_term = 0;
+                    old_lab_election = 0;
+                    old_commit = 0;
+                    old_lab_normal = 0;
+                    old_LLI = 0;
+                    */
+                    return;
+                }  
             }
-            else {
-                //currentTerm = currentTerm + 1;
-                *state = CANDIDATE;
-
-                /*
-                // when entering a different machine
-                old_term = 0;
-                old_lab_election = 0;
-                old_commit = 0;
-                old_lab_normal = 0;
-                old_LLI = 0;
-                */
-                return;
-            }  
         }
 
         if (*state == FOLLOWER) {
@@ -1645,7 +1649,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
                         //old_lab_election = 0;
         
                         // no return ? remains in normalop?
-                        return;
+                        // return;
                     }
         
                     if (filter_AE(&m_AE, *currentTerm, *lastIndex, lastTerm)) {
@@ -1931,9 +1935,9 @@ int main() {
     int lab_normal = 0;
     int lastIndex = 0;
 
-    //NormalOp(0,5, &state, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
+    NormalOp(0,5, &state, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
     //assert(state == CANDIDATE || state == FOLLOWER);
     //assert((state == CANDIDATE) || ((state == FOLLOWER) && (currentTerm > old_term)));
-    election(0,5);
+    // election(0,5);
     return 0;
 }
