@@ -1,4 +1,5 @@
 #include "assert.h"
+#include<stdlib.h>
 
 typedef struct _msg_est {
     int pid;
@@ -51,6 +52,7 @@ int filter_commit(msg_commit* m) {
     return 1;
 }
 
+/*
 int rand() {
     int r;
     if(r) {
@@ -60,6 +62,7 @@ int rand() {
         return 1;
     }
 } 
+*/
 
 int propose(int pid, int num, int estimate) {
     int state = 0; // 0 -> undecided, 1 -> decided

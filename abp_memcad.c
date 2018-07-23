@@ -6,14 +6,14 @@ typedef struct _msg {
 } msg;
 
 int filter_msg_0(msg* m, int count) {
-    if (m->req == 0 && m->count == count) {
+    if (m->req == 0 && m->count >= count) {
         return 1;
     }
     return 0;
 }
 
 int filter_msg_1(msg* m, int count) {
-    if (m->count == count && m->req == 1) {
+    if (m->count >= count && m->req == 1) {
         return 1;
     }
     return 0;
@@ -25,14 +25,14 @@ typedef struct _ack {
 } ack;
 
 int filter_ack_0 (ack* m, int count) {
-    if (m->count == count && m->req == 0) {
+    if (m->count >= count && m->req == 0) {
         return 1;
     }
     return 0;
 }
 
 int filter_ack_1 (ack* m, int count) {
-    if (m->count == count && m->req == 1) {
+    if (m->count >= count && m->req == 1) {
         return 1;
     }
     return 0;

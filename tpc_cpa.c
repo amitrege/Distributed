@@ -1,4 +1,5 @@
 #include "assert.h"
+#include<stdlib.h>
 
 int filter_cr1 (int* m) {
     if ((*m) == 1) {
@@ -28,6 +29,7 @@ int filter_c2 (int* m) {
     return 0;
 }
 
+/*
 int rand() {
     int r;
     if(r) {
@@ -37,6 +39,7 @@ int rand() {
         return 1;
     }
 } 
+*/
 
 void TwoPhaseCommit(int pid, int leader, int num) {
     int commit = 0;

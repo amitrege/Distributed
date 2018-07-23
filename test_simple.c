@@ -1,4 +1,5 @@
 #include "assert.h"
+#include <stdlib.h>
 
 typedef struct _msg {
     int count;
@@ -38,6 +39,7 @@ int filter_ack_1 (ack* m, int count) {
     return 0;
 }
 
+/*
 int rand() {
     int r;
     if(r) {
@@ -47,6 +49,7 @@ int rand() {
         return 1;
     }
 } 
+*/
 
 int main() {
     int lab = 0;

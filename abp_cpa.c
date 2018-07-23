@@ -1,4 +1,5 @@
 #include "assert.h"
+#include<stdlib.h>
 // Assumption - network delay is bounded
 
 typedef struct _msg {
@@ -39,6 +40,7 @@ int filter_ack_1 (ack* m, int count) {
     return 0;
 }
 
+/*
 int rand() {
     int r;
     if(r) {
@@ -48,7 +50,7 @@ int rand() {
         return 1;
     }
 } 
-
+*/
 
 int AlternatingBit(int id) {
     int lab = 0;

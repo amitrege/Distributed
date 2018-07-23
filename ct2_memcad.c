@@ -6,7 +6,7 @@ typedef struct _msg_est {
 } msg_est;
 
 int filter_est(msg_est* m, int round) {
-    if (m->round == round) {
+    if (m->round >= round) {
         return 1;
     }
     return 0;
@@ -19,7 +19,7 @@ typedef struct _msg_propose {
 } msg_propose;
 
 int filter_propose(msg_propose* m, int round) {
-    if (m->round == round) {
+    if (m->round >= round) {
         return 1;
     }
     return 0;
@@ -32,7 +32,7 @@ typedef struct _msg_ack {
 } msg_ack;
 
 int filter_ack (msg_ack* m, int round) {
-    if (m->round == round) {
+    if (m->round >= round) {
         return 1;
     }
     return 0;

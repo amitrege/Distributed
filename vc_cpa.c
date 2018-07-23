@@ -1,10 +1,13 @@
+#include "assert.h"
+#include<stdlib.h>
+
 typedef struct _msg_startVC {
     int v;
     int pid;
 } msg_startVC;
 
 int filter_startVC (msg_startVC* m, int v) {
-    if (m->v >= v) { 
+    if (m->v == v) { 
         return 1;
     }
     return 0; 
@@ -18,7 +21,7 @@ typedef struct _msg_doVC {
 } msg_doVC;
 
 int filter_doVC (msg_doVC* m, int v) {
-    if (m->v >= v)  {
+    if (m->v == v)  {
         return 1;
     }
     return 0; 
@@ -32,7 +35,7 @@ typedef struct _msg_startView {
 } msg_startView;
 
 int filter_startView (msg_startView* m, int v) {
-    if (m->v >= v) {
+    if (m->v == v) {
         return 1;
     }
     return 0; 
@@ -45,7 +48,7 @@ typedef struct _msg_prep {
 } msg_prep;
 
 int filter_prep (msg_prep* m, int n, int v) {
-    if (m->v >= v && m->n == n+1) { 
+    if (m->v == v && m->n == n+1) { 
         return 1;
     }
     return 0; 
@@ -58,7 +61,7 @@ typedef struct _msg_prepOK {
 } msg_prepOK;
 
 int filter_prepOK (msg_prepOK* m, int v, int k) {
-    if (m->n == k+1 && m->v >= v) {
+    if (m->n == k+1 && m->v == v) {
         return 1;
     }
     return 0; 
@@ -77,6 +80,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
 {
     int retry;
     int timeout;
+
     int mbox;
     
     int cmd; // Declaration for incoming command
@@ -91,8 +95,6 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
     int num_mbox_prepOK = 0;
     msg_prepOK m_prepOK;
 
-    volatile int random;
-
     int leaderCommit;
 
     // new machine entrance
@@ -103,11 +105,11 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
     
     while (1) {
         if (pid == leader) {
-            retry = random;
+            retry = rand();
             while (retry) {
                 
                 // cmd = in()
-                cmd = random;
+                cmd = rand();
 
                 // Command is empty
                 if (cmd == 0)
@@ -155,10 +157,10 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
             // memset(mbox_prepOK,0,sizeof(mbox_prepOK));
             num_mbox_prepOK = 0;
 
-            retry = random;
+            retry = rand();
             while (retry && num_mbox_prepOK < (num/2)) {
             
-                timeout = random;
+                timeout = rand();
                 if (timeout) {
                     return 0;
                 }
@@ -169,12 +171,12 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                     num_mbox_prepOK = num_mbox_prepOK + 1;
                 }
 
-                vc_msg = random;
+                vc_msg = rand();
                 if (vc_msg) {             // if msg is startVC or doVC
                     return 0; // to VC
                 }
 
-                retry = random;
+                retry = rand();
             }
 
             if (num_mbox_prepOK >= num/2) { 
@@ -187,8 +189,8 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                 return 0;
             }
         }
-       else {
-            retry = random;
+        else {
+            retry = rand();
             while (retry) {
                 *lab = 1; // Prepare
                 
@@ -204,7 +206,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                 num_mbox_prep = 0;  
 
                 // receive Transaction
-                retry = random;
+                retry = rand();
                 while(retry && num_mbox_prep < 1){
                     if(filter_prep(&m_prep, v, n)) {
                         // mbox_prep[num_mbox_prep] = m_prep;
@@ -215,17 +217,17 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                         break; 
                     }
 
-                    retry = random;
+                    retry = rand();
     
-                    vc_msg = random;
+                    vc_msg = rand();
                     if (vc_msg) {              // if msg is startVC or doVC
                         return 0; // to VC
                     }
 
-                    retry = random;
+                    retry = rand();
                 }
 
-                timeout = random;
+                timeout = rand();
                 if (timeout)  {
                     return 0;
                 }
@@ -244,7 +246,7 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                     return 0;
                 }
 
-                retry = random;
+                retry = rand();
             }
             
             lab = 2;
@@ -295,8 +297,6 @@ int VC(int pid, int num)
     int num_mbox_startView = 0;
     msg_startView m_startView;
     
-    volatile int random;
-    
     while (1) { 
     // loop invariant v > old_v
         
@@ -319,7 +319,7 @@ int VC(int pid, int num)
         num_mbox_startVC = 0;   
 
         // receive Transaction
-        retry = random;
+        retry = rand();
         while(retry && num_mbox_startVC < (num/2)){
             if(filter_startVC(&m_startVC, v)) {
                 // mbox_startVC[num_mbox_startVC] = m_startVC;
@@ -330,7 +330,7 @@ int VC(int pid, int num)
                 break; 
             }
 
-            retry = random;
+            retry = rand();
         }
 
         if (num_mbox_startVC >= num/2) {             
@@ -350,7 +350,7 @@ int VC(int pid, int num)
                 num_mbox_doVC = 0;
 
                 // receive doVC messages
-                retry = random;
+                retry = rand();
                 while(retry && num_mbox_doVC < (num/2)){
                     if(filter_doVC(&m_doVC, v)) {
                         // mbox_doVC[num_mbox_doVC] = m_doVC;
@@ -361,7 +361,7 @@ int VC(int pid, int num)
                         break; 
                     }
 
-                    retry = random;
+                    retry = rand();
                 }
 
                 if (num_mbox_doVC >= num/2) { // check m.msg = doVC, m.v = v and cardinality > num/2
@@ -405,7 +405,7 @@ int VC(int pid, int num)
                 num_mbox_startView = 0;   
 
                 // receive Transaction
-                retry = random;
+                retry = rand();
                 while(retry) {
                     if(filter_startView(&m_startView, v)) {
                         // mbox_startView[num_mbox_startView] = m_startView;
@@ -416,7 +416,7 @@ int VC(int pid, int num)
                         break; 
                     }
 
-                    retry = random;
+                    retry = rand();
                 }
 
                 if (num_mbox_startView >= 1) { // m.msg = startView, m.v > v
@@ -452,6 +452,6 @@ int main(){
     int old_lab = 0;
     int old_n = 0;
 
-    VC(0,5);
-    // NormalOp(1,5,0, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+    //VC(0,5);
+    NormalOp(1,5,0, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
 }

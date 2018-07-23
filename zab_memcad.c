@@ -10,7 +10,7 @@ typedef struct _msg_propose {
 } msg_propose;
 
 int filter_propose (msg_propose* m, int p, int i) {
-    if (m->p == p && m->i == i)
+    if (m->p >= p && m->i >= i)
         return 1;
     return 0;
 }
@@ -24,7 +24,7 @@ typedef struct _msg_ack_p {
 } msg_ack_p;
 
 int filter_ack_p (msg_ack_p* m, int p, int lab, int i, int labr) {
-    if (m->p == p && m->lab == lab && m->i == i && m->labr == labr)
+    if (m->p >= p && m->lab == lab && m->i >= i && m->labr == labr)
         return 1;
     return 0;
 }
@@ -36,7 +36,7 @@ typedef struct _msg_cmt {
 } msg_cmt;
 
 int filter_cmt (msg_cmt* m, int p, int i, int labr) {
-    if (m->p == p && m->i == i && m->labr == labr)
+    if (m->p >= p && m->i >= i && m->labr == labr)
         return 1;
     return 0;
 }
@@ -47,7 +47,7 @@ typedef struct _msg_curr_e {
 } msg_curr_e;
 
 int filter_curr_e (msg_curr_e* m, int p, int lab) {
-    if (m->p == p && m->lab == lab)
+    if (m->p >= p && m->lab >= lab)
         return 1;
     return 0;
 }
@@ -58,7 +58,7 @@ typedef struct _msg_new_e {
 } msg_new_e;
 
 int filter_new_e (msg_new_e* m, int p, int lab) {
-    if (m->p == p && m->lab == lab)
+    if (m->p >= p && m->lab == lab)
         return 1;
     return 0;
 }
@@ -70,7 +70,7 @@ typedef struct _msg_ack_e {
 } msg_ack_e;
 
 int filter_ack_e (msg_ack_e* m, int p, int lab) {
-    if (m->p == p && m->lab == lab)
+    if (m->p >= p && m->lab == lab)
         return 1;
     return 0;
 }
@@ -82,7 +82,7 @@ typedef struct _msg_new_l {
 } msg_new_l;
 
 int filter_new_l (msg_new_l* m, int p, int lab) {
-    if (m->p == p && m->lab == lab)
+    if (m->p >= p && m->lab == lab)
         return 1;
     return 0;
 }
@@ -106,7 +106,7 @@ typedef struct _msg_com {
 } msg_com;
 
 int filter_com (msg_com* m, int p, int lab) {
-    if (m->p == p && m->lab == lab)
+    if (m->p >= p && m->lab >= lab)
         return 1;
     return 0;
 }
