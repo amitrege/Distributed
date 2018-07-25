@@ -1568,7 +1568,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
             num_mbox_AE_ack = 0;
             
             retry = random;
-            while (retry && num_mbox_AE_ack < (num/2)) {
+            while (retry && num_mbox_AE_ack < ((num+1)/2)) {
                 if (m_AE_ack.term > *currentTerm) {
                     *state = FOLLOWER;
                     *currentTerm = m_AE_ack.term;
@@ -1585,11 +1585,16 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
         
                 if (m_AE_ack.success == 0 && m_AE_ack.term == *currentTerm) {
                     // set next index one by one
+                    // nextIndex = m.
                 }
         
                 if (filter_AE_ack(&m_AE_ack, *currentTerm)) {
                     // mbox_AE_ack[num_mbox_AE_ack] = m_AE_ack;
                     num_mbox_AE_ack = num_mbox_AE_ack + 1;
+                }
+
+                if(num_mbox_AE_ack < ((num+1)/2)) {
+                    break;
                 }
         
                 retry = random;
@@ -1598,7 +1603,7 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
             // Leader can't timeout
         
             if(*state == LEADER) {
-                if (num_mbox_AE_ack >= num/2) {
+                if (num_mbox_AE_ack >= (num+1)/2) {
                     *commitIndex = *commitIndex + 1;
     
                     continue;
@@ -1654,6 +1659,10 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
                     if (filter_AE(&m_AE, *currentTerm, *lastIndex, lastTerm)) {
                         // mbox_AE[num_mbox_AE] = m_AE;
                         num_mbox_AE = num_mbox_AE + 1;
+                    }
+
+                    if(num_mbox_AE < 1) {
+                        break;
                     }
         
                     retry = random;
@@ -1775,7 +1784,7 @@ void election(int pid, int num) {
 
             // receive votes
             retry = random;
-            while(retry && num_mbox_vote < (num/2)) {
+            while(retry && num_mbox_vote < ((num+1)/2)) {
                 if (m_vote.term > currentTerm) {
                     state = FOLLOWER;
                     currentTerm = m_vote.term;
@@ -1789,7 +1798,7 @@ void election(int pid, int num) {
                     num_mbox_vote = num_mbox_vote + 1;
                 }
 
-                if(num_mbox_vote >= num/2) {
+                if(num_mbox_vote >= (num+1)/2) {
                     break;
                 }
   
@@ -1801,7 +1810,7 @@ void election(int pid, int num) {
                 state = CANDIDATE;
             }
 
-            if(num_mbox_vote >= num/2) {
+            if(num_mbox_vote >= (num+1)/2) {
                 state = LEADER;
 
                 /*

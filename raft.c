@@ -150,6 +150,30 @@ void Raft(int pid, int num) {
             // Ask for votes
             // send(term, c_id, lastLogIndex, lastLogTerm)
 
+            // Receive 
+            num_mbox_vote = 0;
+            
+            retry = random;
+            while(retry) {
+                // m = receive()
+                if (m.type == 1) {   // reqVote
+                    if(filter_reqVote(&m_reqVote, currentTerm)) {
+                        if(m_reqVote.term > currentTerm) {
+                            currentTerm = m_reqVote.term;
+                            state = FOLLOWER;
+                            break;
+                        }
+                        num_mbox_vote = num_mbox_vote + 1;
+                    }
+    
+                    if(num_mbox_vote >= 1) {
+                        break;
+                    }
+                }
+
+                retry = random;
+            }
+
             lab_election = 2;
 
             // assert currentTerm > old_term || (currentTerm == old_term) ==> lab_election > old_lab_election || (currentTerm == old_term && lab_election == old_lab_election) ==> commitIndex > old_commit || (currentTerm == old_term && lab_election == old_lab_election && commitIndex == old_commit) ==> lab_normal > old_lab_normal || (currentTerm == old_term && lab_election == old_lab_election && commitIndex == old_commit && lab_normal == old_lab_normal) ==> lastLogIndex >= old_LLI;            

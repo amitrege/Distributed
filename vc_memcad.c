@@ -141,6 +141,43 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                 }
             }
 
+            // Receive startVC or doVC
+            num_mbox_doVC = 0;
+            num_mbox_startVC = 0;
+
+            retry = random;
+            while (1) {
+                // m = receive()
+                timeout = random;
+                if (timeout) {
+                    return 0;
+                }
+
+                if(m.type == 1) { // startVC
+                    if(filter_startVC(&m_startVC, v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        num_mbox_startVC = num_mbox_startVC + 1;
+                    } 
+        
+                    if(num_mbox_startVC >= 1) {
+                        return 0; 
+                    }
+                }
+
+                if(m.type == 2) { // doVC
+                    if(filter_doVC(&m_doVC, v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        num_mbox_doVC = num_mbox_doVC + 1;
+                    } 
+        
+                    if(num_mbox_doVC >= 1) {
+                        return 0; 
+                    }
+                }
+
+                retry = random;
+            }
+
 
             *lab = 2;  // PrepareOK
 
@@ -154,30 +191,55 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
             // Empty mbox
             // memset(mbox_prepOK,0,sizeof(mbox_prepOK));
             num_mbox_prepOK = 0;
+            num_mbox_doVC = 0;
+            num_mbox_startVC = 0;
 
             retry = random;
-            while (retry && num_mbox_prepOK < (num/2)) {
+            while (1) {
             
                 timeout = random;
                 if (timeout) {
                     return 0;
                 }
 
-                // receive Transaction
-                if(filter_prepOK(&m_prepOK, v, k)) {
-                    // mbox_prepOK[num_mbox_prepOK] = m_prepOK;
-                    num_mbox_prepOK = num_mbox_prepOK + 1;
+                if(m.type == 5) {  // prepOK
+                    // receive Transaction
+                    if(filter_prepOK(&m_prepOK, v, k)) {
+                        // mbox_prepOK[num_mbox_prepOK] = m_prepOK;
+                        num_mbox_prepOK = num_mbox_prepOK + 1;
+                    }
+
+                    if(num_mbox_prepOK >= (num+1)/2) {
+                        break;
+                    }
                 }
 
-                vc_msg = random;
-                if (vc_msg) {             // if msg is startVC or doVC
-                    return 0; // to VC
+                if(m.type == 1) { // startVC
+                    if(filter_startVC(&m_startVC, v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        num_mbox_startVC = num_mbox_startVC + 1;
+                    } 
+        
+                    if(num_mbox_startVC >= 1) {
+                        return 0; 
+                    }
+                }
+
+                if(m.type == 2) { // doVC
+                    if(filter_doVC(&m_doVC, v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        num_mbox_doVC = num_mbox_doVC + 1;
+                    } 
+        
+                    if(num_mbox_doVC >= 1) {
+                        return 0; 
+                    }
                 }
 
                 retry = random;
             }
 
-            if (num_mbox_prepOK >= num/2) { 
+            if (num_mbox_prepOK >= (num+1)/2) { 
                 // out()
                 *k = *k + 1;
                     
@@ -202,32 +264,51 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
                 // Empty mbox
                 // memset(mbox_prep,0,sizeof(mbox_prep));
                 num_mbox_prep = 0;  
+                num_mbox_doVC = 0;
+                num_mbox_startVC = 0;
 
                 // receive Transaction
                 retry = random;
                 while(retry && num_mbox_prep < 1){
-                    if(filter_prep(&m_prep, v, n)) {
-                        // mbox_prep[num_mbox_prep] = m_prep;
-                        num_mbox_prep = num_mbox_prep + 1;
-                    } 
-
-                    if(num_mbox_prep >= 1) {
-                        break; 
-                    }
-
-                    retry = random;
+                    if(m.type == 4) {
+                        if(filter_prep(&m_prep, v, n)) {
+                            // mbox_prep[num_mbox_prep] = m_prep;
+                            num_mbox_prep = num_mbox_prep + 1;
+                        } 
     
-                    vc_msg = random;
-                    if (vc_msg) {              // if msg is startVC or doVC
-                        return 0; // to VC
+                        if(num_mbox_prep >= 1) {
+                            break; 
+                        }
+                    }
+
+                    if(m.type == 1) { // startVC
+                        if(filter_startVC(&m_startVC, v)) {
+                            // mbox_startVC[num_mbox_startVC] = m_startVC;
+                            num_mbox_startVC = num_mbox_startVC + 1;
+                        } 
+            
+                        if(num_mbox_startVC >= 1) {
+                            return 0; 
+                        }
+                    }
+    
+                    if(m.type == 2) { // doVC
+                        if(filter_doVC(&m_doVC, v)) {
+                            // mbox_startVC[num_mbox_startVC] = m_startVC;
+                            num_mbox_doVC = num_mbox_doVC + 1;
+                        } 
+            
+                        if(num_mbox_doVC >= 1) {
+                            return 0; 
+                        }
+                    }
+
+                    timeout = random;
+                    if (timeout)  {
+                        return 0;
                     }
 
                     retry = random;
-                }
-
-                timeout = random;
-                if (timeout)  {
-                    return 0;
                 }
 
                 if (num_mbox_prep >= 1) {
@@ -259,6 +340,43 @@ int NormalOp(int pid, int num, int leader, int* v, int* lab_vc, int* k, int* lab
             // send Ack
 
             *k = *k + 1;
+
+            // Receive startVC or doVC
+            num_mbox_doVC = 0;
+            num_mbox_startVC = 0;
+
+            retry = random;
+            while (1) {
+            
+                timeout = random;
+                if (timeout) {
+                    return 0;
+                }
+
+                if(m.type == 1) { // startVC
+                    if(filter_startVC(&m_startVC, v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        num_mbox_startVC = num_mbox_startVC + 1;
+                    } 
+        
+                    if(num_mbox_startVC >= 1) {
+                        return 0; 
+                    }
+                }
+
+                if(m.type == 2) { // doVC
+                    if(filter_doVC(&m_doVC, v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        num_mbox_doVC = num_mbox_doVC + 1;
+                    } 
+        
+                    if(num_mbox_doVC >= 1) {
+                        return 0; 
+                    }
+                }
+
+                retry = random;
+            }
         }
     
     
@@ -320,20 +438,20 @@ int VC(int pid, int num)
 
         // receive Transaction
         retry = random;
-        while(retry && num_mbox_startVC < (num/2)){
+        while(retry && num_mbox_startVC < ((num+1)/2)){
             if(filter_startVC(&m_startVC, v)) {
                 // mbox_startVC[num_mbox_startVC] = m_startVC;
                 num_mbox_startVC = num_mbox_startVC + 1;
             } 
 
-            if(num_mbox_startVC >= num/2) {
+            if(num_mbox_startVC >= (num+1)/2) {
                 break; 
             }
 
             retry = random;
         }
 
-        if (num_mbox_startVC >= num/2) {             
+        if (num_mbox_startVC >= (num+1)/2) {             
             lab_vc = 2; // doVC
     
             // (v, lab_vc) > (old_v, old_lab_vc)
@@ -351,20 +469,20 @@ int VC(int pid, int num)
 
                 // receive doVC messages
                 retry = random;
-                while(retry && num_mbox_doVC < (num/2)){
+                while(retry && num_mbox_doVC < ((num+1)/2)){
                     if(filter_doVC(&m_doVC, v)) {
                         // mbox_doVC[num_mbox_doVC] = m_doVC;
                         num_mbox_doVC = num_mbox_doVC + 1;
                     } 
 
-                    if(num_mbox_doVC >= num/2) { 
+                    if(num_mbox_doVC >= (num+1)/2) { 
                         break; 
                     }
 
                     retry = random;
                 }
 
-                if (num_mbox_doVC >= num/2) { // check m.msg = doVC, m.v = v and cardinality > num/2
+                if (num_mbox_doVC >= (num+1)/2) { // check m.msg = doVC, m.v = v and cardinality > num/2
                     // log = largest_log(mbox);
                     // n = mbox_doVC[0].log_top;
                     // k = mbox_doVC[0].log_k;

@@ -1,88 +1,76 @@
 #include "assert.h"
 #include <stdlib.h>
 
-typedef struct _msg {
-    int count;
-    int req;
-} msg;
+void follower_normal (int pid, int num) {
+    int currentTerm = 0;
+    int lastIndex = 0;
+    int lastTerm = 0;
 
-int filter_msg_0(msg* m, int count) {
-    if (m->req == 0 && m->count == count) {
-        return 1;
-    }
-    return 0;
-}
+    int cmd;
 
-int filter_msg_1(msg* m, int count) {
-    if (m->count == count && m->req == 1) {
-        return 1;
-    }
-    return 0;
-}
-
-typedef struct _ack {
-    int count;
-    int req;
-} ack;
-
-int filter_ack_0 (ack* m, int count) {
-    if (m->count == count && m->req == 0) {
-        return 1;
-    }
-    return 0;
-}
-
-int filter_ack_1 (ack* m, int count) {
-    if (m->count == count && m->req == 1) {
-        return 1;
-    }
-    return 0;
-}
-
-/*
-int rand() {
-    int r;
-    if(r) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
-} 
-*/
-
-int main() {
-    int lab = 0;
-    int count = 0;
-
-    int old_lab = 0;
-    int old_count = count - 1;  // needed for first assertion
-    
-    msg* mbox_msg[2];
-    msg m1;
-    msg m2;
-    int num_mbox_msg;
-
-    ack* mbox_ack[2];
-    ack m_ack;
-    int num_mbox_ack;
+    int commitIndex = 0;
+    int lab_election = 0;
+    int lab_normal = 0;
 
     int retry;
+    int timeout;
+    int election;
 
-    while (count < 10) {
-        lab = 1;
-
-        assert(count > old_count || ((count == old_count) && (lab > old_lab)));
-        old_count = count;
-        old_lab = lab;
-
-        retry = rand();
-        while(retry) {
-            assert(0 == 0);
+    int old_term = 0;
+    int old_lab_election = 0;
+    int old_commit = 0;
+    int old_lab_normal = 0;
+    int old_LLI = 0;
+    
+    while (1) {
             retry = rand();
-        }
-
-        count = count + 1;
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));                        
+            while (retry) {
+                // receive command from client
+                cmd = rand();
+                if (cmd == 0) {   // Empty command (HeartBeat)
+                    lab_normal = 1;
+        
+                    // assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                    old_term = currentTerm;
+                    old_lab_election = lab_election;
+                    old_commit = commitIndex;
+                    old_lab_normal = lab_normal;
+                    old_LLI = lastIndex;
+            
+                    // send(term, leaderId, prevLogIndex, entries[], leaderCommit) with empty entries
+                }
+                else {
+                    lastIndex = lastIndex + 1;
+        
+                    lab_normal = 1;
+        
+                    // assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                    old_term = currentTerm;
+                    old_lab_election = lab_election;
+                    old_commit = commitIndex;
+                    old_lab_normal = lab_normal;
+                    old_LLI = lastIndex;
+                        
+                    // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
+                }
+                retry = rand();
+            }
+        
+            lab_normal = 2;
+     
+            // assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            old_term = currentTerm;
+            old_lab_election = lab_election;
+            old_commit = commitIndex;
+            old_lab_normal = lab_normal;
+            old_LLI = lastIndex;
+        
+            
+            commitIndex = commitIndex + 1;
     }
-    return 0;
+}
+
+int main() {
+    follower_normal(0,5);
 }

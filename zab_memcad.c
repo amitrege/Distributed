@@ -176,8 +176,12 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
             // receive propose
             // retry = rand() % 2;
             rand(&retry);
-            while(retry && num_mbox_propose < 1) {    
+            while(retry && num_mbox_propose < 1) {   
                 if(filter_propose(&m_propose, *p, *i)) {
+                    if(m_propose->p > *p) {
+                        // Skip forward
+                        *p = m_propose->p;
+                    }
                     mbox_propose[num_mbox_propose] = &m_propose;
                     num_mbox_propose = num_mbox_propose + 1;
                 }
@@ -218,6 +222,10 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
 
                 while(retry && num_mbox_cmt < 1) {
                     if(filter_cmt(&m_cmt, *p, *i, *labr)) {
+                        if(m_cmt->p > *p) {
+                            // Skip forward
+                            *p = m_cmt->p;
+                        }
                         mbox_cmt[num_mbox_cmt] = &m_cmt;
                         num_mbox_cmt = num_mbox_cmt + 1;
                     }
@@ -260,8 +268,12 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
             // retry = rand() % 2;
             rand(&retry);
 
-            while(retry && (num_mbox_ack_p < (num/2))) {
+            while(retry && (num_mbox_ack_p < ((num + 1)/2))) {
                 if(filter_ack_p(&m_ack_p, *p, *lab, *i, *labr)) {
+                    if(m_ack_p->p > *p) {
+                        // Skip forward
+                        *p = m_ack_p->p;
+                    }
                     mbox_ack_p[num_mbox_ack_p] = &m_ack_p;
                     num_mbox_ack_p = num_mbox_ack_p + 1;
                 }
@@ -274,7 +286,7 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
                 rand(&retry);
             }
 
-            if (num_mbox_ack_p >= num/2) {
+            if (num_mbox_ack_p >= (num+1)/2) {
                 *labr = 3; // Commit
 
                 assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));                
@@ -361,20 +373,20 @@ int main_thread(int pid, int num){
             // retry = rand() % 2;
             // rand(&retry);
             retry = random;
-            while(retry && (num_mbox_curr_e < (num/2))) {
+            while(retry && (num_mbox_curr_e < ((num+1)/2))) {
                 if(filter_curr_e(&m_curr_e, p, lab)) {
                     //mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
                     num_mbox_curr_e = num_mbox_curr_e + 1;
                 }
     
-                if (num_mbox_curr_e >= num/2) {
+                if (num_mbox_curr_e >= (num+1)/2) {
                     break;
                 }
     
                 retry = random;
             }
             
-            if (num_mbox_curr_e >= num/2) {
+            if (num_mbox_curr_e >= (num+1)/2) {
                 // Update set Q which is the set of pids in mbox
                 // get max p in mbox and add 1
 
@@ -416,13 +428,13 @@ int main_thread(int pid, int num){
                 // retry = rand() % 2;
                 // rand(&retry);
                 retry = random;
-                while(retry && (num_mbox_ack_e < (num/2))) {
+                while(retry && (num_mbox_ack_e < ((num+1)/2))) {
                     if(filter_ack_e(&m_ack_e, p, lab)) {
                         //mbox_ack_e[num_mbox_ack_e] = &m_ack_e;
                         num_mbox_ack_e = num_mbox_ack_e + 1;
                     }
         
-                    if (num_mbox_ack_e >= num/2) {
+                    if (num_mbox_ack_e >= (num+1)/2) {
                         break;
                     }
         
@@ -431,7 +443,7 @@ int main_thread(int pid, int num){
                     retry = random;
                 }
 
-                if(num_mbox_ack_e >= num/2) {
+                if(num_mbox_ack_e >= (num+1)/2) {
                     // Update history
 
                     lab = 4; // new_l
@@ -462,13 +474,13 @@ int main_thread(int pid, int num){
                     // retry = rand() % 2;
                     // rand(&retry);
                     retry = random;
-                    while(retry && (num_mbox_ack_l < (num/2))) {
+                    while(retry && (num_mbox_ack_l < ((num+1)/2))) {
                         if(filter_ack_l(&m_ack_l, p, lab)) {
                             //mbox_ack_l[num_mbox_ack_l] = &m_ack_l;
                             num_mbox_ack_l = num_mbox_ack_l + 1;
                         }
             
-                        if (num_mbox_ack_l >= num/2) {
+                        if (num_mbox_ack_l >= (num+1)/2) {
                             break;
                         }
             
@@ -477,7 +489,7 @@ int main_thread(int pid, int num){
                         retry = random;
                     }
                     
-                    if (num_mbox_ack_l >= num/2) {
+                    if (num_mbox_ack_l >= (num+1)/2) {
                         lab = 6; // cmt
 
                         assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
@@ -514,7 +526,7 @@ int main_thread(int pid, int num){
                 p = p + 1;
             }
         }
-    /*    else {
+        else {
             lab = 2; // New_E
 
             assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
@@ -534,6 +546,10 @@ int main_thread(int pid, int num){
             retry = random;
             while(retry && num_mbox_new_e < 1) {
                 if(filter_new_e(&m_new_e, p, lab)) {
+                    if(m_new_e.p > p) {
+                        // Skip forward
+                        p = m_new_e.p;
+                    }
                     //mbox_new_e[num_mbox_new_e] = &m_new_e;
                     num_mbox_new_e = num_mbox_new_e + 1;
                 }
@@ -588,6 +604,10 @@ int main_thread(int pid, int num){
                 retry = random;
                 while(retry && num_mbox_new_l < 1) {
                     if(filter_new_l(&m_new_l, p, lab)) {
+                        if(m_new_l.p > p) {
+                            // Skip forward
+                            p = m_new_l.p;
+                        }
                         //mbox_new_l[num_mbox_new_l] = &m_new_l;
                         num_mbox_new_l = num_mbox_new_l + 1;
                     }
@@ -635,6 +655,10 @@ int main_thread(int pid, int num){
                     retry = random;
                     while(retry && num_mbox_com < 1) {
                         if(filter_com(&m_com, p, lab)) {
+                            if(m_new_l.p > p) {
+                                // Skip forward
+                                p = m_new_l.p;
+                            }
                             //mbox_com[num_mbox_com] = &m_com;
                             num_mbox_com = num_mbox_com + 1;
                         }
@@ -679,7 +703,7 @@ int main_thread(int pid, int num){
                 p = p + 1;
                 continue;
             }
-        }*/
+        }
     }
 }
 
@@ -738,20 +762,20 @@ int leadership (int num) {
     
         // receive curr_e
         retry = random;
-        while(retry && (2*num_mbox_curr_e < (num))) {
+        while(retry && (num_mbox_curr_e < ((num+1)/2))) {
             if(filter_curr_e(&m_curr_e, p, lab)) {
                 // mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
                 num_mbox_curr_e = num_mbox_curr_e + 1;
             }
     
-            if (num_mbox_curr_e > num/2) {
+            if (num_mbox_curr_e > ((num+1)/2)) {
                 break;
             }
     
             retry = random;
         }
         
-        if (2* num_mbox_curr_e >= num+1) {
+        if (num_mbox_curr_e >= ((num+1)/2)) {
             // Update set Q which is the set of pids in mbox
             // get max p in mbox and add 1
     
@@ -792,7 +816,7 @@ int leadership (int num) {
                     num_mbox_ack_e = num_mbox_ack_e + 1;
                 }
     
-                if (2*num_mbox_ack_e >= num+1) {
+                if (num_mbox_ack_e >= ((num+1)/2)) {
                     break;
                 }
     
@@ -830,14 +854,14 @@ int leadership (int num) {
                         num_mbox_ack_l = num_mbox_ack_l + 1;
                     }
         
-                    if (2* num_mbox_ack_l >= num + 1) {
+                    if (num_mbox_ack_l >= ((num+1)/2)) {
                         break;
                     }
         
                     retry = random;
                 }
                 
-                if (2*num_mbox_ack_l >= num+1) {
+                if (num_mbox_ack_l >= ((num+1)/2)) {
                     lab = 6; // cmt
     
                     //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                

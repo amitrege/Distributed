@@ -1,6 +1,3 @@
-#include "assert.h"
-#include<stdlib.h>
-
 #define FOLLOWER 1
 #define CANDIDATE 2
 #define LEADER 3
@@ -607,26 +604,24 @@ void follower_normal (int pid, int num) {
     int timeout;
     int election;
 
-    int old_term = 0;
+    volatile int random;
+
+    int old_term = currentTerm - 1;
     int old_lab_election = 0;
     int old_commit = 0;
     int old_lab_normal = 0;
     int old_LLI = 0;
-    
-    assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
 
-    while (1) {
-            retry = rand();
+    while (state != CANDIDATE) {
+        if (state == LEADER) {
+            retry = random;
             
-            //assert(commitIndex > old_commit || currentTerm > old_term);
             while (retry) {
                 // receive command from client
-                cmd = rand();
+                cmd = random;
                 if (cmd == 0) {   // Empty command (HeartBeat)
                     lab_normal = 1;
         
-                    // assert(old_lab_election = lab_election);
-                    // assert(old_LLI = lastIndex);
                     assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
                     old_term = currentTerm;
                     old_lab_election = lab_election;
@@ -643,8 +638,7 @@ void follower_normal (int pid, int num) {
         
                     lab_normal = 1;
         
-                    // assert(old_lab_election = lab_election);
-                    // assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                    assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
                     old_term = currentTerm;
                     old_lab_election = lab_election;
                     old_commit = commitIndex;
@@ -653,31 +647,30 @@ void follower_normal (int pid, int num) {
                         
                     // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
                 }
-                retry = rand();
+                retry = random;
             }
         
             lab_normal = 2;
      
-            // assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
             old_term = currentTerm;
             old_lab_election = lab_election;
             old_commit = commitIndex;
             old_lab_normal = lab_normal;
             old_LLI = lastIndex;
         
-            /*
             //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
             // Empty mbox
             num_mbox_AE_ack = 0;
             
-            retry = rand();
+            retry = random;
             while (retry && num_mbox_AE_ack < (num/2)) {
                 if (m_AE_ack.term > currentTerm) {
-                    // state = FOLLOWER;
+                    state = FOLLOWER;
                     currentTerm = m_AE_ack.term;
                     
                     // Just to make sure
-                    // assert(1 > 0);
+                    assert(currentTerm > old_term);
         
                     // when entering a different machine
                     // old_lab_election = 0;
@@ -694,7 +687,7 @@ void follower_normal (int pid, int num) {
                     num_mbox_AE_ack = num_mbox_AE_ack + 1;
                 }
         
-                retry = rand();
+                retry = random;
             }
     
             // Leader can't timeout
@@ -703,19 +696,90 @@ void follower_normal (int pid, int num) {
                 commitIndex = commitIndex + 1;
             }
             else {
-                currentTerm = currentTerm + 1;
-                // break;
-            }
-            */
-            commitIndex = commitIndex + 1;
-            assert(commitIndex > old_commit);
+                //currentTerm = currentTerm + 1;
+                break;
+            }  
+        }
 
+        if (state == FOLLOWER) {
+            retry = random;
+            while (retry) {
+                lab_normal = 1;
+                assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                old_term = currentTerm;
+                old_lab_election = lab_election;
+                old_commit = commitIndex;
+                old_lab_normal = lab_normal;
+                old_LLI = lastIndex;
+                
+                // Empty mbox
+                num_mbox_AE = 0;
+        
+                // receive
+                retry = random;
+                while (retry && num_mbox_AE < 1) {
+                    if (m_AE_ack.term > currentTerm) {
+                        state = FOLLOWER;
+                        currentTerm = m_AE_ack.term;
+        
+                        // Just to make sure
+                        assert(currentTerm > old_term);
+        
+                        // when entering a different machine
+                        //old_lab_election = 0;
+        
+                        break;
+                    }
+        
+                    if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
+                        // mbox_AE[num_mbox_AE] = m_AE;
+                        num_mbox_AE = num_mbox_AE + 1;
+                    }
+        
+                    retry = random;
+                }
+        
+                timeout = random;
+                if (timeout) {
+                    state = CANDIDATE;
+        
+                    break;
+                }
+    
+                if (num_mbox_AE >= 1) {
+                    if (leaderCommit > commitIndex) {
+                        commitIndex = leaderCommit;
+                        assert(commitIndex > old_commit);
+                        // Commit all terms till min(commitIndex, lastIndex)
+                    }
+    
+                    lastIndex = lastIndex + 1;
+                }
+                else {
+                    state = CANDIDATE;
+                    break;
+                }
+            }
+    
+            lab_normal = 2;
+            
+            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            old_term = currentTerm;
+            old_lab_election = lab_election;
+            old_commit = commitIndex;
+            old_lab_normal = lab_normal;
+            old_LLI = lastIndex;
+    
+            // send(term, success) to leader
+    
+            commitIndex = commitIndex + 1;
+        }
     }
 }
 
 void test_2 () { 
     int retry;
-
+    volatile int random;
     int cmd;
     int currentTerm = 0;
     int lab_election = 0;
@@ -723,21 +787,27 @@ void test_2 () {
     int lab_normal = 0;
     int lastIndex = 0;
 
-    int old_term = currentTerm - 1;
+    int old_term = 0;
     int old_lab_election = 0;
     int old_commit = 0;
     int old_lab_normal = 0;
     int old_LLI = 0;
 
-    retry = rand();
+    retry = random;
     
     while (retry) {
         // receive command from client
-        cmd = rand();
+        cmd = random;
         if (cmd == 0) {   // Empty command (HeartBeat)
             lab_normal = 1;
 
-            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            assert(currentTerm == old_term);
+            assert(old_lab_election == lab_election);
+            assert(commitIndex == old_commit);
+            assert(old_lab_normal == 0 || old_lab_normal == 1);
+            assert(lastIndex >= old_LLI);
+
+            //assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
             old_term = currentTerm;
             old_lab_election = lab_election;
             old_commit = commitIndex;
@@ -753,7 +823,13 @@ void test_2 () {
 
             lab_normal = 1;
 
-            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+            assert(currentTerm == old_term);
+            assert(old_lab_election == lab_election);
+            assert(commitIndex == old_commit);
+            assert(old_lab_normal == 0 || old_lab_normal == 1);
+            assert(lastIndex >= old_LLI);
+
+            //assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
             old_term = currentTerm;
             old_lab_election = lab_election;
             old_commit = commitIndex;
@@ -762,17 +838,8 @@ void test_2 () {
                 
             // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
         }
-        retry = rand();
+        retry = random;
     }
-
-    lab_normal = 2;
-    
-    assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
-    old_term = currentTerm;
-    old_lab_election = lab_election;
-    old_commit = commitIndex;
-    old_lab_normal = lab_normal;
-    old_LLI = lastIndex;
 }
 
 void test(int pid, int num) {
@@ -942,6 +1009,8 @@ int candidate_election (int pid, int num) {
     int timeout;
     int election;
 
+    volatile int random;
+
     int old_term = currentTerm - 1;
     int old_lab_election = 0;
     int old_commit = 0;
@@ -982,7 +1051,7 @@ int candidate_election (int pid, int num) {
             num_mbox_vote = 0;
 
             // receive votes
-            retry = rand();
+            retry = random;
             while(retry && num_mbox_vote < (num/2)) {
                 if (m_vote.term > currentTerm) {
                     state = FOLLOWER;
@@ -999,10 +1068,10 @@ int candidate_election (int pid, int num) {
                 if(num_mbox_vote >= num/2)
                     break;
   
-                retry = rand();
+                retry = random;
             }
 
-            timeout = rand();
+            timeout = random;
             if (timeout) {
                 state = CANDIDATE;
             }
@@ -1415,7 +1484,7 @@ void follower_election (int pid, int num) {
     }
 }
 
-void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election, int* commitIndex, int* lab_normal, int* lastIndex, int* old_term, int* old_lab_election, int* old_commit, int* old_lab_normal, int* old_LLI) {
+void NormalOp(int pid, int num, int *voting, int* state, int* currentTerm, int* lab_election, int* commitIndex, int* lab_normal, int* lastIndex, int* old_term, int* old_lab_election, int* old_commit, int* old_lab_normal, int* old_LLI) {
     //int log[1000];
 
     int lastTerm = 0;
@@ -1441,93 +1510,152 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
     int timeout;
     int election;
 
+    volatile int random;
+
     *old_commit = 0;
     *old_lab_normal = 0;
     *old_LLI = 0;
 
     while (*state != CANDIDATE) {
         if (*state == LEADER) {
-            retry = rand();
+            if(*voting != 2){
+                if(*voting != 1) {
+                    retry = random;
+                    
+                    
+                    while (retry) {
+                        // receive command from client
+                        cmd = random;
+                        if (cmd == 0) {   // Empty command (HeartBeat)
+                            *lab_normal = 1;
+                
+                            assert ((*currentTerm > *old_term) || ((*currentTerm == *old_term) && (*lab_election > *old_lab_election)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex > *old_commit)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal > *old_lab_normal)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal == *old_lab_normal) && (*lastIndex >= *old_LLI)));            
+                            *old_term = *currentTerm;
+                            *old_lab_election = *lab_election;
+                            *old_commit = *commitIndex;
+                            *old_lab_normal = *lab_normal;
+                            *old_LLI = *lastIndex;
             
-            while (retry) {
-                // receive command from client
-                cmd = rand();
-                if (cmd == 0) {   // Empty command (HeartBeat)
-                    *lab_normal = 1;
+                            // assert((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
+                
+                            // send(term, leaderId, prevLogIndex, entries[], leaderCommit) with empty entries
+                        }
+                        else {
+                            *lastIndex = *lastIndex + 1;
+                
+                            *lab_normal = 1;
+                            
+                            assert ((*currentTerm > *old_term) || ((*currentTerm == *old_term) && (*lab_election > *old_lab_election)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex > *old_commit)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal > *old_lab_normal)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal == *old_lab_normal) && (*lastIndex >= *old_LLI)));            
+                            *old_term = *currentTerm;
+                            *old_lab_election = *lab_election;
+                            *old_commit = *commitIndex;
+                            *old_lab_normal = *lab_normal;
+                            *old_LLI = *lastIndex;
+                                
+                            // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
+                        }
+                        retry = random;
+                    }
         
-                    // assert ((*currentTerm > *old_term) || ((*currentTerm == *old_term) && (*lab_election > *old_lab_election)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex > *old_commit)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal > *old_lab_normal)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal == *old_lab_normal) && (*lastIndex >= *old_LLI)));            
-                    *old_term = *currentTerm;
-                    *old_lab_election = *lab_election;
-                    *old_commit = *commitIndex;
-                    *old_lab_normal = *lab_normal;
-                    *old_LLI = *lastIndex;
+                    // Receive 
+        
+                    // Empty mbox
+                    num_mbox_reqVote = 0;
+                    num_mbox_AE = 0;
+                }
+                
+                retry = random;
+                while(retry) {
+                    // m = receive()
+                    if (m.type == 1) {   // reqVote
+                        if(filter_reqVote(&m_reqVote, *currentTerm)) {
+                            if(m_reqVote.term > *currentTerm) {
+                                *currentTerm = m_reqVote.term;
+                                *state = FOLLOWER;
+                                *voting = 1;
+                                return;
+                            }
+                            num_mbox_reqVote = num_mbox_reqVote + 1;
+                        }
+        
+                        if(num_mbox_reqVote >= 1) {
+                            break;
+                        }
+                    }
     
-                    // assert((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex == old_LLI));
-        
-                    // send(term, leaderId, prevLogIndex, entries[], leaderCommit) with empty entries
+                    // Leader does not respond to Append Entries RPC
+    
+                    retry = random;
                 }
-                else {
-                    *lastIndex = *lastIndex + 1;
-        
-                    *lab_normal = 1;
-                    
-                    //assert ((*currentTerm > *old_term) || ((*currentTerm == *old_term) && (*lab_election > *old_lab_election)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex > *old_commit)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal > *old_lab_normal)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal == *old_lab_normal) && (*lastIndex >= *old_LLI)));            
-                    *old_term = *currentTerm;
-                    *old_lab_election = *lab_election;
-                    *old_commit = *commitIndex;
-                    *old_lab_normal = *lab_normal;
-                    *old_LLI = *lastIndex;
-                        
-                    // send(term, leaderId, prevLogIndex, entries[], leaderCommit)
-                }
-                retry = rand();
-            }
-        
-            *lab_normal = 2;
-     
-            // assert ((*currentTerm > *old_term) || ((*currentTerm == *old_term) && (*lab_election > *old_lab_election)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex > *old_commit)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal > *old_lab_normal)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal == *old_lab_normal) && (*lastIndex >= *old_LLI)));            
-            *old_term = *currentTerm;
-            *old_lab_election = *lab_election;
-            *old_commit = *commitIndex;
-            *old_lab_normal = *lab_normal;
-            *old_LLI = *lastIndex;
-        
-            //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
-            // Empty mbox
-            num_mbox_AE_ack = 0;
             
-            retry = rand();
-            while (retry && num_mbox_AE_ack < (num/2)) {
-                if (m_AE_ack.term > *currentTerm) {
-                    *state = FOLLOWER;
-                    *currentTerm = m_AE_ack.term;
-                    
-                    // Just to make sure
-                    // assert(*currentTerm > *old_term);
-        
-                    // when entering a different machine
-                    // old_lab_election = 0;
-                    
-                    // return;
-                    break;
+                *lab_normal = 2;
+                
+                assert ((*currentTerm > *old_term) || ((*currentTerm == *old_term) && (*lab_election > *old_lab_election)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex > *old_commit)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal > *old_lab_normal)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal == *old_lab_normal) && (*lastIndex >= *old_LLI)));            
+                *old_term = *currentTerm;
+                *old_lab_election = *lab_election;
+                *old_commit = *commitIndex;
+                *old_lab_normal = *lab_normal;
+                *old_LLI = *lastIndex;
+            
+                //  MBOX to be emptied after getting enough msgs (however we assume here that send s have been shifted leftward)
+                // Empty mbox
+                num_mbox_AE_ack = 0;
+                num_mbox_reqVote = 0;
+                num_mbox_AE = 0;
+            }
+            
+            retry = random;
+            while (retry && num_mbox_AE_ack < ((num+1)/2)) {
+                if(m.type == 4) {    // Ack for Append Entries
+                    if (m_AE_ack.term > *currentTerm) {
+                        *state = FOLLOWER;
+                        *currentTerm = m_AE_ack.term;
+            
+                        // when entering a different machine
+                        // old_lab_election = 0;
+                
+                        break;
+                    }
+            
+                    if (m_AE_ack.success == 0 && m_AE_ack.term == *currentTerm) {
+                        // set next index one by one
+                    }
+            
+                    if (filter_AE_ack(&m_AE_ack, *currentTerm)) {
+                        // mbox_AE_ack[num_mbox_AE_ack] = m_AE_ack;
+                        num_mbox_AE_ack = num_mbox_AE_ack + 1;
+                    }
+    
+                    if(num_mbox_AE_ack < ((num+1)/2)) {
+                        break;
+                    }
                 }
-        
-                if (m_AE_ack.success == 0 && m_AE_ack.term == *currentTerm) {
-                    // set next index one by one
+
+                if (m.type == 1) {   // reqVote
+                    if(filter_reqVote(&m_reqVote, *currentTerm)) {
+                        if(m_reqVote.term > *currentTerm) {
+                            *currentTerm = m_reqVote.term;
+                            *state = FOLLOWER;
+                            *voting = 2;
+                            return;
+                        }
+                        num_mbox_reqVote = num_mbox_reqVote + 1;
+                    }
+    
+                    if(num_mbox_reqVote >= 1) {
+                        break;
+                    }
                 }
+
+                // Leader does not respond to Append Entries RPC           
         
-                if (filter_AE_ack(&m_AE_ack, *currentTerm)) {
-                    // mbox_AE_ack[num_mbox_AE_ack] = m_AE_ack;
-                    num_mbox_AE_ack = num_mbox_AE_ack + 1;
-                }
-        
-                retry = rand();
+                retry = random;
             }
     
             // Leader can't timeout
         
             if(*state == LEADER) {
-                if (num_mbox_AE_ack >= num/2) {
+                if (num_mbox_AE_ack >= (num+1)/2) {
                     *commitIndex = *commitIndex + 1;
     
                     continue;
@@ -1550,80 +1678,148 @@ void NormalOp(int pid, int num, int* state, int* currentTerm, int* lab_election,
         }
 
         if (*state == FOLLOWER) {
-            retry = rand();
-            while (retry) {
-                *lab_normal = 1;
-                // assert ((*currentTerm > *old_term) || ((*currentTerm == *old_term) && (*lab_election > *old_lab_election)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex > *old_commit)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal > *old_lab_normal)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal == *old_lab_normal) && (*lastIndex >= *old_LLI)));            
+            if (*voting != 2) {
+                retry = random;
+                while (retry) {
+                    *lab_normal = 1;
+                    assert ((*currentTerm > *old_term) || ((*currentTerm == *old_term) && (*lab_election > *old_lab_election)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex > *old_commit)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal > *old_lab_normal)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal == *old_lab_normal) && (*lastIndex >= *old_LLI)));            
+                    *old_term = *currentTerm;
+                    *old_lab_election = *lab_election;
+                    *old_commit = *commitIndex;
+                    *old_lab_normal = *lab_normal;
+                    *old_LLI = *lastIndex;
+                    
+                    // Empty mbox
+                    num_mbox_AE = 0;
+                    num_mbox_reqVote = 0;
+            
+                    // receive
+                    retry = random;
+                    while (retry) {
+                        if (m.type == 3) {
+                            if (m_AE_ack.term > *currentTerm) {
+                                *state = FOLLOWER;
+                                *currentTerm = m_AE_ack.term;
+                
+                                // Just to make sure
+                                assert(*currentTerm > *old_term);
+                
+                                // when entering a different machine
+                                //old_lab_election = 0;
+                
+                            }
+                
+                            if (filter_AE(&m_AE, *currentTerm, *lastIndex, lastTerm)) {
+                                // mbox_AE[num_mbox_AE] = m_AE;
+                                num_mbox_AE = num_mbox_AE + 1;
+                            }
+        
+                            if(num_mbox_AE < 1) {
+                                break;
+                            }
+                
+                            retry = random;
+                        }
+    
+                        if (m.type == 1) {   // reqVote
+                            if(filter_reqVote(&m_reqVote, *currentTerm)) {
+                                if(m_reqVote.term > *currentTerm) {
+                                    *currentTerm = m_reqVote.term;
+                                    *state = FOLLOWER;
+                                    *voting = 1;
+                                    return;
+                                }
+                                num_mbox_reqVote = num_mbox_reqVote + 1;
+                            }
+            
+                            if(num_mbox_reqVote >= 1) {
+                                break;
+                            }
+                        }
+                    }
+            
+                    timeout = random;
+                    if (timeout) {
+                        *state = CANDIDATE;
+            
+                        return;
+                    }
+        
+                    if (num_mbox_AE >= 1) {
+                        // We use leaderCommit since array are not allowed (yet)
+                        if (leaderCommit > *commitIndex) {
+                            *commitIndex = leaderCommit;
+                            assert(*commitIndex > *old_commit);
+                            // Commit all terms till min(commitIndex, lastIndex)
+                        }
+        
+                        *lastIndex = *lastIndex + 1;
+                    }
+                    else {
+                        *state = CANDIDATE;
+                        return;
+                    }
+                }
+        
+                *lab_normal = 2;
+                
+                assert ((*currentTerm > *old_term) || ((*currentTerm == *old_term) && (*lab_election > *old_lab_election)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex > *old_commit)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal > *old_lab_normal)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal == *old_lab_normal) && (*lastIndex >= *old_LLI)));            
                 *old_term = *currentTerm;
                 *old_lab_election = *lab_election;
                 *old_commit = *commitIndex;
                 *old_lab_normal = *lab_normal;
                 *old_LLI = *lastIndex;
-                
+        
+                // send(term, success) to leader
+        
+                *commitIndex = *commitIndex + 1;
+    
                 // Empty mbox
                 num_mbox_AE = 0;
-                // assert(num_mbox_AE == 0);
-        
-                // receive
-                retry = rand();
-                while (retry && num_mbox_AE < 1) {
+                num_mbox_reqVote = 0;
+            }
+    
+            // receive
+            retry = random;
+            while (retry) {
+                if (m.type == 3) {
                     if (m_AE_ack.term > *currentTerm) {
                         *state = FOLLOWER;
                         *currentTerm = m_AE_ack.term;
         
-                        // Just to make sure
-                        assert(1 == 1);
-        
                         // when entering a different machine
                         //old_lab_election = 0;
         
-                        // no return ? remains in normalop?
-                        // return;
                     }
         
                     if (filter_AE(&m_AE, *currentTerm, *lastIndex, lastTerm)) {
                         // mbox_AE[num_mbox_AE] = m_AE;
                         num_mbox_AE = num_mbox_AE + 1;
                     }
+
+                    if(num_mbox_AE < 1) {
+                        break;
+                    }
         
-                    retry = rand();
+                    retry = random;
                 }
-        
-                timeout = rand();
-                if (timeout) {
-                    *state = CANDIDATE;
-        
-                    return;
-                }
-    
-                if (num_mbox_AE >= 1) {
-                    // We use leaderCommit since array are not allowed (yet)
-                    if (leaderCommit > *commitIndex) {
-                        *commitIndex = leaderCommit;
-                        // assert(*commitIndex > *old_commit);
-                        // Commit all terms till min(commitIndex, lastIndex)
+
+                if (m.type == 1) {   // reqVote
+                    if(filter_reqVote(&m_reqVote, *currentTerm)) {
+                        if(m_reqVote.term > *currentTerm) {
+                            *currentTerm = m_reqVote.term;
+                            *state = FOLLOWER;
+                            *voting = 2;
+                            return;
+                        }
+                        num_mbox_reqVote = num_mbox_reqVote + 1;
                     }
     
-                    *lastIndex = *lastIndex + 1;
-                }
-                else {
-                    *state = CANDIDATE;
-                    return;
+                    if(num_mbox_reqVote >= 1) {
+                        break;
+                    }
                 }
             }
-    
-            *lab_normal = 2;
-            
-            // assert ((*currentTerm > *old_term) || ((*currentTerm == *old_term) && (*lab_election > *old_lab_election)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex > *old_commit)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal > *old_lab_normal)) || ((*currentTerm == *old_term) && (*lab_election == *old_lab_election) && (*commitIndex == *old_commit) && (*lab_normal == *old_lab_normal) && (*lastIndex >= *old_LLI)));            
-            *old_term = *currentTerm;
-            *old_lab_election = *lab_election;
-            *old_commit = *commitIndex;
-            *old_lab_normal = *lab_normal;
-            *old_LLI = *lastIndex;
-    
-            // send(term, success) to leader
-    
-            *commitIndex = *commitIndex + 1;
         }
     }
 }
@@ -1691,60 +1887,140 @@ void election(int pid, int num) {
             // Ask for votes
             // send(term, c_id, lastLogIndex, lastLogTerm)
 
-            lab_election = 2;
-
-            assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
-            old_term = currentTerm;
-            old_lab_election = lab_election;
-            old_commit = commitIndex;
-            old_lab_normal = lab_normal;
-            old_LLI = lastIndex;
+            // Receive 
 
             // Empty mbox
             num_mbox_vote = 0;
-
-            // receive votes
+            num_mbox_AE = 0;
+            
             retry = random;
-            while(retry && num_mbox_vote < (num/2)) {
-                if (m_vote.term > currentTerm) {
-                    state = FOLLOWER;
-                    currentTerm = m_vote.term;
-                    assert(currentTerm > old_term);
-
-                    break;
+            while(retry) {
+                // m = receive()
+                if (m.type == 1) {   // reqVote
+                    if(filter_reqVote(&m_reqVote, currentTerm)) {
+                        if(m_reqVote.term > currentTerm) {
+                            currentTerm = m_reqVote.term;
+                            state = FOLLOWER;
+                            break;
+                        }
+                        num_mbox_reqVote = num_mbox_reqVote + 1;
+                    }
+    
+                    if(num_mbox_reqVote >= 1) {
+                        break;
+                    }
                 }
 
-                if(filter_vote(&m_vote, currentTerm)) {
-                    // mbox_vote[num_mbox_vote] = m_vote;
-                    num_mbox_vote = num_mbox_vote + 1;
+                if(m.type == 3) {   // appendEntries
+                
+                    if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
+                        if (m_AE_ack.term > currentTerm) {
+                            state = FOLLOWER;
+                            currentTerm = m_AE_ack.term;
+                            break;
+                        }
+                        // mbox_AE[num_mbox_AE] = m_AE;
+                        num_mbox_AE = num_mbox_AE + 1;
+                    }
+
+                    if(num_mbox_AE >= 1) {
+                        break;
+                    }
                 }
 
-                if(num_mbox_vote >= num/2) {
-                    break;
-                }
-  
                 retry = random;
             }
 
-            timeout = random;
-            if (timeout) {
-                state = CANDIDATE;
-            }
+            if(state == CANDIDATE) {
+                lab_election = 2;
+                
+                assert ((currentTerm > old_term) || ((currentTerm == old_term) && (lab_election > old_lab_election)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex > old_commit)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal > old_lab_normal)) || ((currentTerm == old_term) && (lab_election == old_lab_election) && (commitIndex == old_commit) && (lab_normal == old_lab_normal) && (lastIndex >= old_LLI)));            
+                old_term = currentTerm;
+                old_lab_election = lab_election;
+                old_commit = commitIndex;
+                old_lab_normal = lab_normal;
+                old_LLI = lastIndex;
+    
+                // Empty mbox
+                num_mbox_vote = 0;
+    
+                // receive votes
+                retry = random;
+                while(retry) {
+                    if(m.type = 2) {  // Vote
+                        if (m_vote.term > currentTerm) {
+                            state = FOLLOWER;
+                            currentTerm = m_vote.term;
+                            assert(currentTerm > old_term);
+        
+                            break;
+                        }
+        
+                        if(filter_vote(&m_vote, currentTerm)) {
+                            // mbox_vote[num_mbox_vote] = m_vote;
+                            num_mbox_vote = num_mbox_ + 1;
+                        }
+        
+                        if(num_mbox_vote >= (num+1)/2) {
+                            break;
+                        }
+                    }
 
-            if(num_mbox_vote >= num/2) {
-                state = LEADER;
-
-                /*
-                // when entering a different machine
-                old_term = 0;
-                old_lab_election = 0;
-                old_commit = 0;
-                old_lab_normal = 0;
-                old_LLI = 0;
-                */
-            }
-            else {
-                // Not required?
+                    if (m.type == 1) {   // reqVote
+                        if(filter_reqVote(&m_reqVote, currentTerm)) {
+                            if(m_reqVote.term > currentTerm) {
+                                currentTerm = m_reqVote.term;
+                                state = FOLLOWER;
+                                break;
+                            }
+                            num_mbox_reqVote = num_mbox_reqVote + 1;
+                        }
+        
+                        if(num_mbox_reqVote >= 1) {
+                            break;
+                        }
+                    }
+    
+                    if(m.type == 3) {   // appendEntries
+                    
+                        if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
+                            if (m_AE_ack.term > currentTerm) {
+                                state = FOLLOWER;
+                                currentTerm = m_AE_ack.term;
+                                break;
+                            }
+                            // mbox_AE[num_mbox_AE] = m_AE;
+                            num_mbox_AE = num_mbox_AE + 1;
+                        }
+    
+                        if(num_mbox_AE >= 1) {
+                            break;
+                        }
+                    }    
+      
+                    retry = random;
+                }
+    
+                timeout = random;
+                if (timeout) {
+                    state = CANDIDATE;
+                }
+    
+                if(num_mbox_vote >= (num+1)/2) {
+                    state = LEADER;
+    
+                    /*
+                    // when entering a different machine
+                    old_term = 0;
+                    old_lab_election = 0;
+                    old_commit = 0;
+                    old_lab_normal = 0;
+                    old_LLI = 0;
+                    */
+                }
+                else {
+                    // Not required?
+                }
             }
         }
 
@@ -1758,28 +2034,50 @@ void election(int pid, int num) {
             old_lab_normal = lab_normal;
             old_LLI = lastIndex;
 
-            // Empty mbox
-            num_mbox_reqVote = 0;
-
-            // receive
-            retry = random;
-            while (retry && num_mbox_reqVote < 1) {
-                if (m_vote.term > currentTerm) {
-                    state = FOLLOWER;
-                    currentTerm = m_vote.term;
-                    break;
-                }
-
-                if (filter_reqVote(&m_reqVote,currentTerm)) {
-                    // mbox_reqVote[num_mbox_reqVote] = m_reqVote;
-                    num_mbox_reqVote = num_mbox_reqVote + 1;
-                }
-
-                if (num_mbox_vote >= 1) {
-                    break;
-                }
-
+            if(voting != 0) { // Case where leader rcvs reqVote in round 1 
+                // Empty mbox
+                num_mbox_reqVote = 0;
+                num_mbox_AE = 0;
+    
+                // receive
                 retry = random;
+                while (retry && num_mbox_reqVote < 1) {
+                    if(m.type == 1) {
+                        if (m_vote.term > currentTerm) {
+                            state = FOLLOWER;
+                            currentTerm = m_vote.term;
+                            break;
+                        }
+        
+                        if (filter_reqVote(&m_reqVote,currentTerm)) {
+                            // mbox_reqVote[num_mbox_reqVote] = m_reqVote;
+                            num_mbox_reqVote = num_mbox_reqVote + 1;
+                        }
+        
+                        if (num_mbox_reqVote >= 1) {
+                            break;
+                        }
+                    }
+    
+                    if(m.type == 3) {   // appendEntries
+                        
+                        if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
+                            if (m_AE_ack.term > currentTerm) {
+                                state = FOLLOWER;
+                                currentTerm = m_AE_ack.term;
+                                break;
+                            }
+                            // mbox_AE[num_mbox_AE] = m_AE;
+                            num_mbox_AE = num_mbox_AE + 1;
+                        }
+    
+                        if(num_mbox_AE >= 1) {
+                            break;
+                        }
+                    }
+    
+                    retry = random;
+                }
             }
 
             timeout = random;
@@ -1809,6 +2107,7 @@ void election(int pid, int num) {
                         if (mbox_reqVote[0].lastLogIndex > log.lastIndex) {
                             send vote with success = 1;
                             votedFor = mbox_reqVote[0].candidateId;
+                            voting = 0;
                         }
                         else
                             send vote with success = 0;
@@ -1823,7 +2122,51 @@ void election(int pid, int num) {
                 old_commit = 0;
                 old_lab_normal = 0;
                 old_LLI = 0;
-                */ 
+                */
+
+                // Empty mbox
+                num_mbox_reqVote = 0;
+                num_mbox_AE = 0;
+    
+                // receive
+                retry = random;
+                while (retry && num_mbox_reqVote < 1) {
+                    if(m.type == 1) {
+                        if (m_vote.term > currentTerm) {
+                            state = FOLLOWER;
+                            currentTerm = m_vote.term;
+                            break;
+                        }
+        
+                        if (filter_reqVote(&m_reqVote,currentTerm)) {
+                            // mbox_reqVote[num_mbox_reqVote] = m_reqVote;
+                            num_mbox_reqVote = num_mbox_reqVote + 1;
+                        }
+        
+                        if (num_mbox_reqVote >= 1) {
+                            break;
+                        }
+                    }
+    
+                    if(m.type == 3) {   // appendEntries
+                        
+                        if (filter_AE(&m_AE, currentTerm, lastIndex, lastTerm)) {
+                            if (m_AE_ack.term > currentTerm) {
+                                state = FOLLOWER;
+                                currentTerm = m_AE_ack.term;
+                                break;
+                            }
+                            // mbox_AE[num_mbox_AE] = m_AE;
+                            num_mbox_AE = num_mbox_AE + 1;
+                        }
+    
+                        if(num_mbox_AE >= 1) {
+                            break;
+                        }
+                    }
+    
+                    retry = random;
+                }
             }
             else {
                 state = CANDIDATE;
@@ -1851,7 +2194,7 @@ void election(int pid, int num) {
 int main() {
     //Raft(0,5);
     //follower_normal(0,5);
-    int state = FOLLOWER;
+    int state = LEADER;
     int old_term = 0;
     int old_lab_election = 0;
     int old_commit = 0;
@@ -1867,8 +2210,6 @@ int main() {
     //NormalOp(0,5, &state, &currentTerm, &lab_election, &commitIndex, &lab_normal, &lastIndex, &old_term, &old_lab_election, &old_commit, &old_lab_normal, &old_LLI);
     //assert(state == CANDIDATE);
     //assert((state == CANDIDATE) || ((state == FOLLOWER) && (currentTerm > old_term)));
-    // election(0,5);
-    // test_2();
-    follower_normal(0,5);
+    election(0,5);
     return 0;
 }
