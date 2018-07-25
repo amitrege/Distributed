@@ -134,6 +134,7 @@ int propose(int pid, int num, int estimate) {
             while(1){
                 // m = receive()
                 if(m.lab == 4) {   // Commit Received
+                    assert(m.lab == 4);
                     if(filter_commit(&m)) {
                         //mbox_commit[num_mbox_commit] = &m_commit;
                         num_mbox_commit = num_mbox_commit + 1;
