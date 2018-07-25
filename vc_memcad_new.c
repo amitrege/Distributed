@@ -409,7 +409,7 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
     }    
 }
 
-/*
+
 // Tag (v, lab_vc)
 int VC(int pid, int num)
 { 
@@ -540,7 +540,7 @@ int VC(int pid, int num)
             old_n = n;
 
             // send <startView v, l, n, k> to all
-            NormalOp(pid, num, leader, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+            // NormalOp(pid, num, leader, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
             v = v + 1;
         }
         else {
@@ -588,12 +588,12 @@ int VC(int pid, int num)
             // k = mbox_startView[0].log_k;
             // v = mbox_startView[0].v;
 
-            NormalOp(pid, num, leader, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+            // NormalOp(pid, num, leader, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
             v = v + 1; 
         }
     }
 }
-*/
+
 int main(){
     int v = 0;
     int lab_vc = 0;
@@ -610,6 +610,6 @@ int main(){
     int num_mbox_doVC = 0;
     int num_mbox_startVC = 0;
 
-    // VC(0,5);
-    NormalOp(0,5,0, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+    VC(0,5);
+    //NormalOp(0,5,0, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
 }
