@@ -258,7 +258,7 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
         }
     }
 }
-
+/*
 int main_thread(int pid, int num){
     int lab = 0;
     int p = 0;
@@ -1196,7 +1196,7 @@ int test(int num) {
         p = p + 1;
     }
 }
-
+*/
 
 int main() {
     int p = 0;
@@ -1210,5 +1210,5 @@ int main() {
     //sendingThread(0, 0, 0, 0);
     // main_thread(0, 5); // pid, num
     // leadership(5);
-    Broadcast(5,0,0,&p,&lab,&i,&labr,&old_p,&old_lab,&old_i,&old_labr)
+    Broadcast(5,0,0,&p,&lab,&i,&labr,&old_p,&old_lab,&old_i,&old_labr);
 }
