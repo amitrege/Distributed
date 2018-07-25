@@ -49,7 +49,7 @@ int AlternatingBit(int id) {
 
     int retry;
 
-    while (count < 10000) {
+    while (1) {
         lab = 1;
 
         assert((count > old_count) || ((count == old_count) && (lab > old_lab)));

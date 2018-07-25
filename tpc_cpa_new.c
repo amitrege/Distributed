@@ -1,3 +1,6 @@
+#include "assert.h"
+#include<stdlib.h>
+
 typedef struct _msg {
     int count;
     int lab;
@@ -39,8 +42,6 @@ void TwoPhaseCommit(int pid, int leader, int num) {
     int num_mbox = 0;
     int num_acks = 0;
     
-    volatile int random;
-    
     int retry;
 
     int lab = 1;
@@ -51,7 +52,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
     msg m;
     msg* mbox[200];  // memcad doesn't handle variable size
 
-    while (1) {
+    while (count < 10000) {
         // New Transaction
 
         lab = 1; // Commit Request 1
@@ -74,7 +75,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             num_mbox = 0;
             num_acks = 0;
 
-            retry = random;
+            retry = rand();
             while(1){
                 // m = receive()
                 if(m.lab == 2) {
@@ -98,7 +99,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                     }
                 }   
 
-                retry = random;             
+                retry = rand();             
             }
 
             if (num_acks == num) {
@@ -132,7 +133,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             // Empty mbox
             num_mbox = 0;
             
-            retry = random;            
+            retry = rand();            
 
             while(1){
                 // m = receive()
@@ -153,7 +154,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                     }
                 }   
 
-                retry = random;    
+                retry = rand();    
             } 
             
             count = count + 1;
@@ -163,7 +164,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             // Empty mbox
             num_mbox = 0;
             
-            retry = random;  
+            retry = rand();  
 
             while(1) { 
                 // m = receive()
@@ -184,7 +185,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                     }
                 }   
                 
-                retry = random;    
+                retry = rand();    
             }
 
             lab = 2; // Commit Request 2
@@ -205,7 +206,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             // Empty mbox
             num_mbox = 0;
         
-            retry = random;    
+            retry = rand();    
 
             while(1){
                 // m = receive()
@@ -226,7 +227,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                     }
                 }
                 
-                retry = random;    
+                retry = rand();    
             }
 
             // Do something depending on whether the msg is commit or rollback
