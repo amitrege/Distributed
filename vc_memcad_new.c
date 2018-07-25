@@ -409,7 +409,7 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
     }    
 }
 
-
+/*
 // Tag (v, lab_vc)
 int VC(int pid, int num)
 { 
@@ -593,7 +593,7 @@ int VC(int pid, int num)
         }
     }
 }
-
+*/
 int main(){
     int v = 0;
     int lab_vc = 0;
