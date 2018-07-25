@@ -46,7 +46,7 @@ int filter_prepOK (msg* m, int v, int k) {
 }
 
 // The case where messages have higher view number is ignored for now (recovery)
-void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_startVC, int* v, int* lab_vc, int* k, int* lab, int* n, int* old_v, int* old_lab_vc, int* old_k, int* old_lab, int* old_n)
+void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_doVC, int* v, int* lab_vc, int* k, int* lab, int* n, int* old_v, int* old_lab_vc, int* old_k, int* old_lab, int* old_n)
 {
     int retry;
     int timeout;
@@ -409,7 +409,7 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
     }    
 }
 
-/*
+
 // Tag (v, lab_vc)
 int VC(int pid, int num)
 { 
@@ -430,21 +430,19 @@ int VC(int pid, int num)
 
     // msg_startVC mbox_startVC[2*num];
     int num_mbox_startVC = 0;
-    msg_startVC m_startVC;
+    msg m_startVC;
 
     // msg_doVC mbox_doVC[2*num];
     int num_mbox_doVC = 0;
-    msg_doVC m_doVC;
+    msg m_doVC;
 
     // msg_startView mbox_startView[2*num];
     int num_mbox_startView = 0;
-    msg_startView m_startView;
+    msg m_startView;
     
     volatile int random;
     
-    while (1) { 
-    // loop invariant v > old_v
-        
+    while (1) {         
         int leader = v % num; // num = no of processes
         
         lab_vc = 1; // startVC
@@ -459,28 +457,80 @@ int VC(int pid, int num)
     
         // send <startVC v, i> to all
     
-        // Empty mbox
-        // memset(mbox_startVC,0,sizeof(mbox_startVC));
-        num_mbox_startVC = 0;   
+        if(num_mbox_doVC == 1 || num_mbox_startVC == 1) {
+            // Empty mbox        
+            // memset(mbox_startVC,0,sizeof(mbox_startVC));
+            num_mbox_startVC = 0;
+        }   
 
         // receive Transaction
         retry = random;
-        while(retry && num_mbox_startVC < ((num+1)/2)){
-            if(filter_startVC(&m_startVC, v)) {
-                // mbox_startVC[num_mbox_startVC] = m_startVC;
-                num_mbox_startVC = num_mbox_startVC + 1;
-            } 
+        while(1){
+            // m = receive()
+            if(m_startVC.lab_vc == 1 && m_startVC.type == 1) { // startVC
+                if(filter_startVC(&m_startVC, v)) {
+                    if(m_startVC.v > v) {
+                        v = m_startVC.v;
 
-            if(num_mbox_startVC >= (num+1)/2) {
-                break; 
+                        // Empty Mbox
+                        num_mbox_startVC = 0;
+                    }
+                    // mbox_startVC[num_mbox_startVC] = m_startVC;
+                    num_mbox_startVC = num_mbox_startVC + 1;
+                } 
+    
+                if(num_mbox_startVC >= (num+1)/2) {
+                    break; 
+                }
             }
 
             retry = random;
         }
 
-        if (num_mbox_startVC >= (num+1)/2) {             
-            lab_vc = 2; // doVC
-    
+        lab_vc = 2; // doVC
+        
+        // (v, lab_vc) > (old_v, old_lab_vc)
+        assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k > old_k)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab > old_lab)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab == old_lab) && (n >= old_n)));
+        old_v = v;
+        old_lab_vc = lab_vc;
+        old_k = k;
+        old_lab = lab;
+        old_n = n;
+
+        if (pid == leader) {
+            // empty mbox
+            //memset(mbox_doVC,0,sizeof(mbox_doVC));
+            num_mbox_doVC = 0;
+
+            // receive doVC messages
+            retry = random;
+            while(1){
+                if(m_doVC.lab_vc == 2 && m_doVC.type == 1) { // doVC
+                    if(filter_doVC(&m_doVC, v)) {
+                        if(m_doVC.v > v) {
+                            v = m_doVC.v;
+
+                            // Empty Mbox
+                            num_mbox_doVC = 0;
+                        }
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        num_mbox_doVC = num_mbox_doVC + 1;
+                    } 
+        
+                    if(num_mbox_doVC >= (num+1)/2) {
+                        break; 
+                    }
+                }
+
+                retry = random;
+            }
+
+            // log = largest_log(mbox);
+            // n = mbox_doVC[0].log_top;
+            // k = mbox_doVC[0].log_k;
+
+            lab_vc = 3;  // startView
+            
             // (v, lab_vc) > (old_v, old_lab_vc)
             assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k > old_k)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab > old_lab)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab == old_lab) && (n >= old_n)));
             old_v = v;
@@ -488,102 +538,62 @@ int VC(int pid, int num)
             old_k = k;
             old_lab = lab;
             old_n = n;
-    
-            if (pid == leader) {
-                // empty mbox
-                //memset(mbox_doVC,0,sizeof(mbox_doVC));
-                num_mbox_doVC = 0;
 
-                // receive doVC messages
-                retry = random;
-                while(retry && num_mbox_doVC < ((num+1)/2)){
-                    if(filter_doVC(&m_doVC, v)) {
-                        // mbox_doVC[num_mbox_doVC] = m_doVC;
-                        num_mbox_doVC = num_mbox_doVC + 1;
-                    } 
+            // send <startView v, l, n, k> to all
+            NormalOp(pid, num, leader, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+            v = v + 1;
+        }
+        else {
+            //send <doVC v,l,v',n,k,i> to leader
 
-                    if(num_mbox_doVC >= (num+1)/2) { 
-                        break; 
-                    }
+            lab_vc = 3;  // startView
+            
+            // (v, lab_vc) > (old_v, old_lab_vc)
+            assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k > old_k)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab > old_lab)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab == old_lab) && (n >= old_n)));
+            old_v = v;
+            old_lab_vc = lab_vc;
+            old_k = k;
+            old_lab = lab;
+            old_n = n;
 
-                    retry = random;
-                }
+            // Empty mbox
+            // memset(mbox_startView,0,sizeof(mbox_startView));
+            num_mbox_startView = 0;   
 
-                if (num_mbox_doVC >= (num+1)/2) { // check m.msg = doVC, m.v = v and cardinality > num/2
-                    // log = largest_log(mbox);
-                    // n = mbox_doVC[0].log_top;
-                    // k = mbox_doVC[0].log_k;
-
-                    lab_vc = 3;  // startView
-
-                    // (v, lab_vc) > (old_v, old_lab_vc)
-                    assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k > old_k)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab > old_lab)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab == old_lab) && (n >= old_n)));
-                    old_v = v;
-                    old_lab_vc = lab_vc;
-                    old_k = k;
-                    old_lab = lab;
-                    old_n = n;
-
-                    // send <startView v, l, n, k> to all
-                    NormalOp(pid, num, leader, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
-                    v = v + 1;                    
-                }
-                else { // if leader does not receive enough doVC msgs
-                    v = v + 1;
-                }
-            }
-            else {
-                //send <doVC v,l,v',n,k,i> to leader
-
-                lab_vc = 3;  // startView
-                
-                // (v, lab_vc) > (old_v, old_lab_vc)
-                assert((v > old_v) || ((v == old_v) && (lab_vc > old_lab_vc)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k > old_k)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab > old_lab)) || ((v == old_v) && (lab_vc == old_lab_vc) && (k == old_k) && (lab == old_lab) && (n >= old_n)));
-                old_v = v;
-                old_lab_vc = lab_vc;
-                old_k = k;
-                old_lab = lab;
-                old_n = n;
-
-                // Empty mbox
-                // memset(mbox_startView,0,sizeof(mbox_startView));
-                num_mbox_startView = 0;   
-
-                // receive Transaction
-                retry = random;
-                while(retry) {
+            // receive Transaction
+            retry = random;
+            while(retry) {
+                if(m_startView.lab_vc == 3 && m_startView.type == 1) { // doVC
                     if(filter_startView(&m_startView, v)) {
-                        // mbox_startView[num_mbox_startView] = m_startView;
+                        if(m_startView.v > v) {
+                            v = m_startView.v;
+
+                            // Empty Mbox
+                            num_mbox_startView = 0;
+                        }
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
                         num_mbox_startView = num_mbox_startView + 1;
                     } 
-
-                    if(num_mbox_startView >= 1) {
+        
+                    if(num_mbox_doVC >= 1) {
                         break; 
                     }
-
-                    retry = random;
                 }
 
-                if (num_mbox_startView >= 1) { // m.msg = startView, m.v > v
-                    // log = m.log;
-                    // n = mbox_startView[0].log_top;
-                    // k = mbox_startView[0].log_k;
-                    // v = mbox_startView[0].v;
-
-                    NormalOp(pid, num, leader, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
-                    v = v + 1;
-                }
-                else {
-                    v = v + 1;
-                }    
+                retry = random;
             }
-        }
-        else { // if not enough startVC msgs
-            v = v + 1;
+
+            // log = m.log;
+            // n = mbox_startView[0].log_top;
+            // k = mbox_startView[0].log_k;
+            // v = mbox_startView[0].v;
+
+            NormalOp(pid, num, leader, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+            v = v + 1; 
         }
     }
 }
-*/
+
 int main(){
     int v = 0;
     int lab_vc = 0;
