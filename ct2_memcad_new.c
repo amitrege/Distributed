@@ -403,5 +403,5 @@ int propose(int pid, int num, int estimate) {
 }
 
 int main() {
-    propose(0, 5, 10); // pid, num, estimate
+    propose(2, 5, 10); // pid, num, estimate
 }
