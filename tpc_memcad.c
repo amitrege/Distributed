@@ -1,26 +1,32 @@
-int filter_cr1 (int* m) {
-    if ((*m) == 1) {
+typedef struct _msg {
+    int count;
+    int lab;
+    int response; // for Commit Request 2 (0 -> abort, 1 -> commit)
+} msg;
+
+int filter_cr1 (msg* m, int count) {
+    if (m->count >= count) {
         return 1;
     }
     return 0;
 }
 
-int filter_cr2 (int* m) {
-    if ((*m) == 2) {
+int filter_cr2 (msg* m, int count) {
+    if (m->count >= count) {
         return 1;
     }
     return 0;
 }
 
-int filter_c1 (int* m) {
-    if ((*m) == 3) {
+int filter_c1 (msg* m, int count) {
+    if (m->count >= count) {
         return 1;
     }
     return 0;
 }
 
-int filter_c2 (int* m) {
-    if ((*m) == 4) {
+int filter_c2 (msg* m, int count) {
+    if (m->count >= count) {
         return 1;
     }
     return 0;
@@ -29,7 +35,9 @@ int filter_c2 (int* m) {
 void TwoPhaseCommit(int pid, int leader, int num) {
     int commit = 0;
     int count = 1;
+
     int num_mbox = 0;
+    int num_acks = 0;
     
     volatile int random;
     
@@ -40,8 +48,8 @@ void TwoPhaseCommit(int pid, int leader, int num) {
     int old_count = count - 1;
     int old_lab = 0;
 
-    int m;
-    int* mbox[200];  // memcad doesn't handle variable size
+    msg m;
+    msg* mbox[200];  // memcad doesn't handle variable size
 
     while (count < 10000) {
         // New Transaction
@@ -64,22 +72,36 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             // receive msgs in mbox
             // Empty mbox
             num_mbox = 0;
+            num_acks = 0;
 
             retry = random;
-            while(retry && num_mbox < num){
-                if(filter_cr2(&m)) {
-                    mbox[num_mbox] = &m;
-                    num_mbox++;
-                }
-                
-                if(num_mbox == num) {
-                    break;
+            while(1){
+                // m = receive()
+                if(m.lab == 2) {
+                    if(filter_cr2(&m, count)) {
+                        if (m.count > count) {
+                            count = m.count;
+
+                            // Empty Mbox
+                            num_mbox = 0;
+                            num_acks = 0;
+                        }
+                        if(m.response == 1) {
+                            num_acks = num_acks + 1;
+                        }
+                        // mbox[num_mbox] = &m;
+                        num_mbox = num_mbox + 1;
+                    }
+                    
+                    if(num_mbox == num) {
+                        break;
+                    }
                 }   
-                
+
                 retry = random;             
             }
 
-            if (num_mbox == num) {
+            if (num_acks == num) {
                 commit = 1;  // Move to Commit Phase
                 lab = 3; // Commit Phase 1
 
@@ -112,25 +134,29 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             
             retry = random;            
 
-            while(retry && num_mbox < num){
-                if(filter_c2(&m)) {
-                    mbox[num_mbox] = &m;
-                    num_mbox++;
-                }  
-                if(num_mbox == num) {
-                    break;
-                } 
+            while(1){
+                // m = receive()
+                if(m.lab == 4) {
+                    if(filter_c2(&m, count)) {
+                        if (m.count > count) {
+                            count = m.count;
+
+                            // Empty Mbox
+                            num_mbox = 0;
+                        }
+                        // mbox[num_mbox] = &m;
+                        num_mbox = num_mbox + 1;
+                    }
+                    
+                    if(num_mbox == num) {
+                        break;
+                    }
+                }   
 
                 retry = random;    
             } 
             
-            if (num_mbox == num) {
-                // Complete Transaction
-                count = count + 1;
-            }
-            else {
-                count = count + 1;
-            }
+            count = count + 1;
         }
         else {
             // receive Transaction
@@ -139,72 +165,82 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             
             retry = random;  
 
-            while(retry && num_mbox < 1) { 
-                if(filter_cr1(&m)) {
-                    mbox[num_mbox] = &m;
-                    num_mbox++;
-                } 
+            while(1) { 
+                // m = receive()
+                if(m.lab == 1) {
+                    if(filter_cr1(&m, count)) {
+                        if (m.count > count) {
+                            count = m.count;
 
-                if(num_mbox >= 1) {
-                    break;
-                } 
-                
-                retry = random;    
-            }
-
-            if (num_mbox >= 1) {
-                lab = 2; // Commit Request 2
-    
-                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
-                old_count = count;
-                old_lab = lab;
-            
-                // send agreement/ abort to leader
-
-                lab = 3;
-                
-                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
-                old_count = count;
-                old_lab = lab;
-
-                // receive
-                // Empty mbox
-                num_mbox = 0;
-            
-                retry = random;    
-
-                while(retry && num_mbox < 1){
-                    if(filter_c1(&m)) {
-                        mbox[num_mbox] = &m;
-                        num_mbox++;
-                    }  
-
-                    if(num_mbox >= 1) {
-                        break;
+                            // Empty Mbox
+                            num_mbox = 0;
+                        }
+                        // mbox[num_mbox] = &m;
+                        num_mbox = num_mbox + 1;
                     }
                     
-                    retry = random;    
-                }
-
-                if (num_mbox >= 1) {
-                    // Complete Transaction
-                    lab = 4; // Commit Phase 2
+                    if(num_mbox == 1) {
+                        break;
+                    }
+                }   
                 
-                    assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
-                    old_count = count;
-                    old_lab = lab;
-
-                    // send ack
-
-                    count = count + 1;
-                }
-                else {
-                    count = count + 1;
-                }
+                retry = random;    
             }
-            else {
-                count = count + 1;
+
+            lab = 2; // Commit Request 2
+            
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+            old_count = count;
+            old_lab = lab;
+        
+            // send agreement/ abort to leader
+
+            lab = 3;
+            
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+            old_count = count;
+            old_lab = lab;
+
+            // receive
+            // Empty mbox
+            num_mbox = 0;
+        
+            retry = random;    
+
+            while(1){
+                // m = receive()
+                if(m.lab == 3) {
+                    if(filter_c1(&m, count)) {
+                        if (m.count > count) {
+                            count = m.count;
+
+                            // Empty Mbox
+                            num_mbox = 0;
+                        }
+                        // mbox[num_mbox] = &m;
+                        num_mbox = num_mbox + 1;
+                    }
+                    
+                    if(num_mbox == 1) {
+                        break;
+                    }
+                }
+                
+                retry = random;    
             }
+
+            // Do something depending on whether the msg is commit or rollback
+
+            // Complete Transaction
+            lab = 4; // Commit Phase 2
+            
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+            old_count = count;
+            old_lab = lab;
+
+            // send ack
+
+            count = count + 1;
         } 
     }
 }

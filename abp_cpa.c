@@ -1,56 +1,41 @@
 #include "assert.h"
 #include<stdlib.h>
+
 // Assumption - network delay is bounded
 
 typedef struct _msg {
+    int lab;
     int count;
     int req;
 } msg;
 
 int filter_msg_0(msg* m, int count) {
-    if (m->req == 0 && m->count == count) {
+    if (m->req == 0 && m->count >= count) {
         return 1;
     }
     return 0;
 }
 
 int filter_msg_1(msg* m, int count) {
-    if (m->count == count && m->req == 1) {
+    if (m->count >= count && m->req == 1) {
         return 1;
     }
     return 0;
 }
 
-typedef struct _ack {
-    int count;
-    int req;
-} ack;
-
-int filter_ack_0 (ack* m, int count) {
-    if (m->count == count && m->req == 0) {
+int filter_ack_0 (msg* m, int count) {
+    if (m->count >= count && m->req == 0) {
         return 1;
     }
     return 0;
 }
 
-int filter_ack_1 (ack* m, int count) {
-    if (m->count == count && m->req == 1) {
+int filter_ack_1 (msg* m, int count) {
+    if (m->count >= count && m->req == 1) {
         return 1;
     }
     return 0;
 }
-
-/*
-int rand() {
-    int r;
-    if(r) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
-} 
-*/
 
 int AlternatingBit(int id) {
     int lab = 0;
@@ -60,28 +45,23 @@ int AlternatingBit(int id) {
     int old_count = count - 1;  // needed for first assertion
     
     msg* mbox_msg[2];
-    msg m1;
-    msg m2;
+    msg m;
     int num_mbox_msg;
-
-    ack* mbox_ack[2];
-    ack m_ack;
-    int num_mbox_ack;
 
     int retry;
 
-    while (count < 1000) {
+    while (count < 10000) {
         lab = 1;
 
         assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
-        old_count = count;
+	    old_count = count;
         old_lab = lab;
 
         if (id == 1) { // Process is A
 
             retry = rand();
             while (retry) {
-                // send 0
+                // send 0 to B
 
                 retry = rand();
             }
@@ -94,72 +74,79 @@ int AlternatingBit(int id) {
 
             // Recieve ack for 0
             // Empty mbox
-            num_mbox_ack = 0;
+            num_mbox_msg = 0;
 
             retry = rand();
 
-            while (retry && num_mbox_ack < 1) {
-                if (filter_ack_0(&m_ack, count)) {
-                    // mbox_ack[num_mbox_ack] = &m_ack;
-                    num_mbox_ack = num_mbox_ack + 1;
-                }
+            while (1) {
+                // m = receive()
+                if (m.lab == 2) {  // Ack for 0
+                    if (filter_ack_0(&m, count)) {
+                        if(m.count > count) {
+                            count = m.count;
 
-                if (num_mbox_ack >= 1) {
-                    break;
-                }
-
-                retry = rand();
-            }
-
-            if (num_mbox_ack >= 1) {
-                lab = 3;
-
-                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
-                old_count = count;
-                old_lab = lab;
-
-                retry = rand();
-                while (retry) {
-                    // send 1 to B
-
-                    retry = rand();
-                }
-
-                lab = 4;
-
-                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
-                old_count = count;
-                old_lab = lab;
-
-                // Recieve ack for 0
-                // Empty mbox
-                num_mbox_ack = 0;
-
-                retry = rand();
-
-                while (retry && num_mbox_ack < 1) {
-                    if (filter_ack_1(&m_ack, count)) {
+                            // Empty mbox
+                            num_mbox_msg = 0;   // remove messages of the past phase
+                        }
                         // mbox_ack[num_mbox_ack] = &m_ack;
-                        num_mbox_ack = num_mbox_ack + 1;
+                        num_mbox_msg = num_mbox_msg + 1;
                     }
     
-                    if (num_mbox_ack >= 1) {
+                    if (num_mbox_msg >= 1) {
                         break;
                     }
-    
-                    retry = rand();
                 }
-    
-                if (num_mbox_ack >= 1) {
-                    count = count + 1;
-                }
-                else {
-                    count = count + 1;
-                }
-            } 
-            else {
-                count = count + 1;
+
+                retry = rand();
             }
+
+            lab = 3;
+            
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+            old_count = count;
+            old_lab = lab;
+
+            retry = rand();
+            while (retry) {
+                // send 1 to B
+
+                retry = rand();
+            }
+
+            lab = 4;
+
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+            old_count = count;
+            old_lab = lab;
+
+            // Recieve ack for 0
+            // Empty mbox
+            num_mbox_msg = 0;
+
+            retry = rand();
+
+            while (1) {
+                if(m.lab == 4) {
+                    if (filter_ack_1(&m, count)) {
+                        if(m.count > count) {
+                            count = m.count;
+
+                            // Empty mbox
+                            num_mbox_msg = 0;   // remove messages of the past phase
+                        }
+                        // mbox_ack[num_mbox_ack] = &m_ack;
+                        num_mbox_msg = num_mbox_msg + 1;
+                    }
+    
+                    if (num_mbox_msg >= 1) {
+                        break;
+                    }
+                }
+
+                retry = rand();
+            }
+
+            count = count + 1;
         }
         else {  // Process is B
             // Recieve ack for 0
@@ -168,82 +155,75 @@ int AlternatingBit(int id) {
 
             retry = rand();
 
-            while (retry && num_mbox_msg < 1) {
-                if (filter_msg_0(&m1, count)) {
-                    // mbox_msg[num_mbox_msg] = &m1;
-                    num_mbox_msg = num_mbox_msg + 1;
-                }
-
-                if (num_mbox_msg >= 1) {
-                    break;
-                }
-
-                retry = rand();
-            }
-
-            if (num_mbox_msg >= 1) {
-                lab = 2;
-
-                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
-                old_count = count;
-                old_lab = lab;
-
-                retry = rand();
-                
-                while (retry) {
-                    // send ack to A
-                    
-                    retry = rand();
-                }
-
-                lab = 3;
-
-                assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
-                old_count = count;
-                old_lab = lab;
-
-                // Recieve ack for 0
-                // Empty mbox
-                num_mbox_msg = 0;
-
-                retry = rand();
-                
-                while (retry && num_mbox_msg < 1) {
-                    if (filter_msg_1(&m2, count)) {
-                       //  mbox_msg[num_mbox_msg] = &m2;
+            while (1) {
+                if(m.lab == 1) {
+                    if (filter_msg_0(&m, count)) {
+                        // mbox_msg[num_mbox_msg] = &m1;
                         num_mbox_msg = num_mbox_msg + 1;
                     }
     
                     if (num_mbox_msg >= 1) {
                         break;
                     }
-    
-                    retry = rand();
                 }
+
+                retry = rand();
+            }
+
+            lab = 2;
+            
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+            old_count = count;
+            old_lab = lab;
+
+            retry = rand();
+            
+            while (retry) {
+                // send ack to A
                 
-                if (num_mbox_msg >= 1) {
-                    lab = 4;
-
-                    assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
-                    old_count = count;
-                    old_lab = lab;
-
-                    retry = rand();
-                    while (retry) {
-                        // send ack to A
-
-                        retry = rand();
-                    }
-                    
-                    count = count + 1;
-                }
-                else {
-                    count = count + 1;
-                }
+                retry = rand();
             }
-            else {
-                count = count + 1;
+
+            lab = 3;
+
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+            old_count = count;
+            old_lab = lab;
+
+            // Recieve ack for 0
+            // Empty mbox
+            num_mbox_msg = 0;
+
+            retry = rand();
+            
+            while (1) {
+                if(m.lab == 3) {  // Message 1
+                    if (filter_msg_1(&m, count)) {
+                        //  mbox_msg[num_mbox_msg] = &m2;
+                         num_mbox_msg = num_mbox_msg + 1;
+                     }
+     
+                     if (num_mbox_msg >= 1) {
+                         break;
+                     }
+                }
+
+                retry = rand();
             }
+            lab = 4;
+            
+            assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
+            old_count = count;
+            old_lab = lab;
+
+            retry = rand();
+            while (retry) {
+                // send ack to A
+
+                retry = rand();
+            }
+            
+            count = count + 1;
         }
     }
 }
