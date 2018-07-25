@@ -152,6 +152,7 @@ int propose(int pid, int num, int estimate) {
                 
                 retry = random;
             }
+            assert(num_mbox_commit == 0);
 
             if(num_mbox_commit >= 1) {
                 lab = 4;
