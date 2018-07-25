@@ -1210,5 +1210,5 @@ int main() {
     //sendingThread(0, 0, 0, 0);
     // main_thread(0, 5); // pid, num
     // leadership(5);
-    Broadcast(5,0,0,&p,&lab,&i,&labr,&old_p,&old_lab,&old_i,&old_labr);
+    Broadcast(5,1,0,&p,&lab,&i,&labr,&old_p,&old_lab,&old_i,&old_labr);
 }
