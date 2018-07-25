@@ -217,7 +217,7 @@ int AlternatingBit(int id) {
 }
 
 int main() {
-    AlternatingBit(0);
+    AlternatingBit(1);
     return 0;
 } 
 
