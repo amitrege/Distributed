@@ -44,6 +44,7 @@ int propose(int pid, int num, int estimate) {
     int old_round = round - 1; // for first assertion on first iteration
 
     msg m;
+    msg m1;
     msg* mbox[200];
     int num_mbox = 0;
     int num_mbox_commit = 0;
@@ -134,9 +135,9 @@ int propose(int pid, int num, int estimate) {
             while(1){
                 // m = receive()
                 assert(1 == 1);
-                if(m.lab == 4) {   // Commit Received
-                    assert(m.lab == 4);
-                    if(filter_commit(&m)) {
+                if(m1.lab == 4) {   // Commit Received
+                    assert(m1.lab == 4);
+                    if(filter_commit(&m1)) {
                         //mbox_commit[num_mbox_commit] = &m_commit;
                         num_mbox_commit = num_mbox_commit + 1;
                     }
