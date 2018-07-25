@@ -53,7 +53,7 @@ int propose(int pid, int num, int estimate) {
     msg m_4;
     msg m_5;
     msg m_6;
-    
+
     msg* mbox[200];
     int num_mbox = 0;
     int num_mbox_commit = 0;
@@ -403,5 +403,5 @@ int propose(int pid, int num, int estimate) {
 }
 
 int main() {
-    propose(1, 5, 10); // pid, num, estimate
+    propose(0, 5, 10); // pid, num, estimate
 }
