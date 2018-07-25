@@ -44,7 +44,6 @@ int AlternatingBit(int id) {
     msg* mbox_msg[2];
     msg m;
     int num_mbox_msg;
-    int num_mbox_ack;
 
     volatile int random;
 
@@ -74,7 +73,7 @@ int AlternatingBit(int id) {
 
             // Recieve ack for 0
             // Empty mbox
-            num_mbox_ack = 0;
+            num_mbox_msg = 0;
 
             retry = random;
 
@@ -82,11 +81,17 @@ int AlternatingBit(int id) {
                 // m = receive()
                 if (m.lab == 2) {  // Ack for 0
                     if (filter_ack_0(&m, count)) {
+                        if(m.count > count) {
+                            count = m.count;
+
+                            // Empty mbox
+                            num_mbox_msg = 0;   // remove messages of the past phase
+                        }
                         // mbox_ack[num_mbox_ack] = &m_ack;
-                        num_mbox_ack = num_mbox_ack + 1;
+                        num_mbox_msg = num_mbox_msg + 1;
                     }
     
-                    if (num_mbox_ack >= 1) {
+                    if (num_mbox_msg >= 1) {
                         break;
                     }
                 }
@@ -115,18 +120,24 @@ int AlternatingBit(int id) {
 
             // Recieve ack for 0
             // Empty mbox
-            num_mbox_ack = 0;
+            num_mbox_msg = 0;
 
             retry = random;
 
             while (1) {
                 if(m.lab == 4) {
                     if (filter_ack_1(&m, count)) {
+                        if(m.count > count) {
+                            count = m.count;
+
+                            // Empty mbox
+                            num_mbox_msg = 0;   // remove messages of the past phase
+                        }
                         // mbox_ack[num_mbox_ack] = &m_ack;
-                        num_mbox_ack = num_mbox_ack + 1;
+                        num_mbox_msg = num_mbox_msg + 1;
                     }
     
-                    if (num_mbox_ack >= 1) {
+                    if (num_mbox_msg >= 1) {
                         break;
                     }
                 }
