@@ -136,9 +136,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
                 }
 
                 if(m_1.lab_vc == 1 && m_1.type == 1) { // startVC
-                    if(filter_startVC(&m_1, v)) {
-                        if(m_1.v > v) {
-                            v = m_1.v;
+                    if(filter_startVC(&m_1, *v)) {
+                        if(m_1.v > *v) {
+                            *v = m_1.v;
 
                             // Empty Mbox
                             *num_mbox_startVC = 0;
@@ -153,9 +153,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
                 }
 
                 if(m_1.lab_vc == 2 && m_1.type == 1) { // doVC
-                    if(filter_doVC(&m_1, v)) {
-                        if(m_1.v > v) {
-                            v = m_1.v;
+                    if(filter_doVC(&m_1, *v)) {
+                        if(m_1.v > *v) {
+                            *v = m_1.v;
 
                             // Empty Mbox
                             *num_mbox_doVC = 0;
@@ -204,9 +204,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
                 }
 
                 if(m_2.lab_vc == 1 && m_2.type == 1) { // startVC
-                    if(filter_startVC(&m_2, v)) {
-                        if(m_2.v > v) {
-                            v = m_2.v;
+                    if(filter_startVC(&m_2, *v)) {
+                        if(m_2.v > *v) {
+                            *v = m_2.v;
 
                             // Empty Mbox
                             *num_mbox_startVC = 0;
@@ -221,9 +221,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
                 }
 
                 if(m_2.lab_vc == 2 && m_2.type == 1) { // doVC
-                    if(filter_doVC(&m_2, v)) {
-                        if(m_2.v > v) {
-                            v = m_2.v;
+                    if(filter_doVC(&m_2, *v)) {
+                        if(m_2.v > *v) {
+                            *v = m_2.v;
 
                             // Empty Mbox
                             *num_mbox_doVC = 0;
@@ -238,9 +238,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
                 }
 
                 if(m_2.lab == 2 && m_2.type == 0) { // prepOK
-                    if(filter_prepOK(&m_2, v, k)) {
-                        if(m_2.v > v) {
-                            v = m_2.v;
+                    if(filter_prepOK(&m_2, *v, *k)) {
+                        if(m_2.v > *v) {
+                            *v = m_2.v;
 
                             // Empty Mbox
                             num_mbox = 0;
@@ -284,9 +284,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
                 }
 
                 if(m_3.lab_vc == 1 && m_3.type == 1) { // startVC
-                    if(filter_startVC(&m_3, v)) {
-                        if(m_3.v > v) {
-                            v = m_3.v;
+                    if(filter_startVC(&m_3, *v)) {
+                        if(m_3.v > *v) {
+                            *v = m_3.v;
 
                             // Empty Mbox
                             *num_mbox_startVC = 0;
@@ -301,9 +301,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
                 }
 
                 if(m_3.lab_vc == 2 && m_3.type == 1) { // doVC
-                    if(filter_doVC(&m_3, v)) {
-                        if(m_3.v > v) {
-                            v = m_3.v;
+                    if(filter_doVC(&m_3, *v)) {
+                        if(m_3.v > *v) {
+                            *v = m_3.v;
 
                             // Empty Mbox
                             *num_mbox_doVC = 0;
@@ -318,9 +318,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
                 }
 
                 if(m_3.lab == 1 && m_3.type == 0) { // prep
-                    if(filter_prepOK(&m_3, v, k)) {
-                        if(m_3.v > v) {
-                            v = m_3.v;
+                    if(filter_prepOK(&m_3, *v, *k)) {
+                        if(m_3.v > *v) {
+                            *v = m_3.v;
 
                             // Empty Mbox
                             num_mbox = 0;
@@ -364,9 +364,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
                 }
 
                 if(m_4.lab_vc == 1 && m_4.type == 1) { // startVC
-                    if(filter_startVC(&m_4, v)) {
-                        if(m_4.v > v) {
-                            v = m_4.v;
+                    if(filter_startVC(&m_4, *v)) {
+                        if(m_4.v > *v) {
+                            *v = m_4.v;
 
                             // Empty Mbox
                             *num_mbox_startVC = 0;
@@ -381,9 +381,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_doVC, int* num_mbox_sta
                 }
 
                 if(m_4.lab_vc == 2 && m_4.type == 1) { // doVC
-                    if(filter_doVC(&m_4, v)) {
-                        if(m_4.v > v) {
-                            v = m_4.v;
+                    if(filter_doVC(&m_4, *v)) {
+                        if(m_4.v > *v) {
+                            *v = m_4.v;
 
                             // Empty Mbox
                             *num_mbox_doVC = 0;
