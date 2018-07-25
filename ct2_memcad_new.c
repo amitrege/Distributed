@@ -133,6 +133,7 @@ int propose(int pid, int num, int estimate) {
 
             while(1){
                 // m = receive()
+                assert(1 = 1);
                 if(m.lab == 4) {   // Commit Received
                     assert(m.lab == 4);
                     if(filter_commit(&m)) {
