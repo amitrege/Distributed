@@ -7,29 +7,29 @@ typedef struct _msg {
     int response; // for Commit Request 2 (0 -> abort, 1 -> commit)
 } msg;
 
-int filter_cr1 (msg* m, int count) {
-    if (m->count >= count) {
+int filter_cr1 (msg m, int count) {
+    if (m.count >= count) {
         return 1;
     }
     return 0;
 }
 
-int filter_cr2 (msg* m, int count) {
-    if (m->count >= count) {
+int filter_cr2 (msg m, int count) {
+    if (m.count >= count) {
         return 1;
     }
     return 0;
 }
 
-int filter_c1 (msg* m, int count) {
-    if (m->count >= count) {
+int filter_c1 (msg m, int count) {
+    if (m.count >= count) {
         return 1;
     }
     return 0;
 }
 
-int filter_c2 (msg* m, int count) {
-    if (m->count >= count) {
+int filter_c2 (msg m, int count) {
+    if (m.count >= count) {
         return 1;
     }
     return 0;
@@ -79,7 +79,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             while(1){
                 // m = receive()
                 if(m.lab == 2) {
-                    if(filter_cr2(&m, count)) {
+                    if(filter_cr2(m, count)) {
                         if (m.count > count) {
                             count = m.count;
 
@@ -138,7 +138,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             while(1){
                 // m = receive()
                 if(m.lab == 4) {
-                    if(filter_c2(&m, count)) {
+                    if(filter_c2(m, count)) {
                         if (m.count > count) {
                             count = m.count;
 
@@ -169,7 +169,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             while(1) { 
                 // m = receive()
                 if(m.lab == 1) {
-                    if(filter_cr1(&m, count)) {
+                    if(filter_cr1(m, count)) {
                         if (m.count > count) {
                             count = m.count;
 
@@ -211,7 +211,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             while(1){
                 // m = receive()
                 if(m.lab == 3) {
-                    if(filter_c1(&m, count)) {
+                    if(filter_c1(m, count)) {
                         if (m.count > count) {
                             count = m.count;
 
