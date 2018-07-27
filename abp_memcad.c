@@ -52,6 +52,7 @@ int AlternatingBit(int id) {
     while (1) {
         lab = 1;
 
+        assert(count == (old_count + 1));
         assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
 	    old_count = count;
         old_lab = lab;
@@ -65,8 +66,9 @@ int AlternatingBit(int id) {
                 retry = random;
             }
 
-            lab = 2;
+            lab = lab + 1; // lab = 2
 
+            assert((count == old_count) && (lab == (old_lab + 1)))
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
 	        old_count = count;
             old_lab = lab;
@@ -75,18 +77,10 @@ int AlternatingBit(int id) {
             // Empty mbox
             num_mbox_msg = 0;
 
-            retry = random;
-
             while (1) {
                 // m = receive()
                 if (m.lab == 2) {  // Ack for 0
                     if (filter_ack_0(&m, count)) {
-                        if(m.count > count) {
-                            count = m.count;
-
-                            // Empty mbox
-                            num_mbox_msg = 0;   // remove messages of the past phase
-                        }
                         // mbox_ack[num_mbox_ack] = &m_ack;
                         num_mbox_msg = num_mbox_msg + 1;
                     }
@@ -95,12 +89,11 @@ int AlternatingBit(int id) {
                         break;
                     }
                 }
-
-                retry = random;
             }
 
-            lab = 3;
+            lab = lab + 1; // lab = 3
             
+            assert((count == old_count) && (lab == (old_lab + 1)))            
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
@@ -112,8 +105,9 @@ int AlternatingBit(int id) {
                 retry = random;
             }
 
-            lab = 4;
-
+            lab = lab + 1; // lab = 4
+            
+            assert((count == old_count) && (lab == (old_lab + 1)))            
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
@@ -122,17 +116,9 @@ int AlternatingBit(int id) {
             // Empty mbox
             num_mbox_msg = 0;
 
-            retry = random;
-
             while (1) {
                 if(m.lab == 4) {
                     if (filter_ack_1(&m, count)) {
-                        if(m.count > count) {
-                            count = m.count;
-
-                            // Empty mbox
-                            num_mbox_msg = 0;   // remove messages of the past phase
-                        }
                         // mbox_ack[num_mbox_ack] = &m_ack;
                         num_mbox_msg = num_mbox_msg + 1;
                     }
@@ -141,8 +127,6 @@ int AlternatingBit(int id) {
                         break;
                     }
                 }
-
-                retry = random;
             }
 
             count = count + 1;
@@ -151,8 +135,6 @@ int AlternatingBit(int id) {
             // Recieve ack for 0
             // Empty mbox
             num_mbox_msg = 0;
-
-            retry = random;
 
             while (1) {
                 if(m.lab == 1) {
@@ -165,26 +147,25 @@ int AlternatingBit(int id) {
                         break;
                     }
                 }
-
-                retry = random;
             }
 
-            lab = 2;
+            lab = lab + 1; // lab = 2
             
+            assert((count == old_count) && (lab == (old_lab + 1)))            
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
 
             retry = random;
-            
             while (retry) {
                 // send ack to A
                 
                 retry = random;
             }
 
-            lab = 3;
-
+            lab = lab + 1; // lab = 3
+            
+            assert((count == old_count) && (lab == (old_lab + 1)))            
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
@@ -192,8 +173,6 @@ int AlternatingBit(int id) {
             // Recieve ack for 0
             // Empty mbox
             num_mbox_msg = 0;
-
-            retry = random;
             
             while (1) {
                 if(m.lab == 3) {  // Message 1
@@ -206,11 +185,10 @@ int AlternatingBit(int id) {
                          break;
                      }
                 }
-
-                retry = random;
             }
-            lab = 4;
+            lab = lab + 1; // lab = 4
             
+            assert((count == old_count) && (lab == (old_lab + 1)))            
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
