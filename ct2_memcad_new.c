@@ -69,7 +69,7 @@ int propose(int pid, int num, int estimate) {
 
         lab = 1;
 
-        assert(round == (old_round + 1))
+        assert(round == (old_round + 1));
         assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
         old_round = round;
         old_lab = lab;
