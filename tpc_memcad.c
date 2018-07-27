@@ -56,7 +56,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
 
         lab = 1; // Commit Request 1
         
-        assert((count == old_count + 1) || ((count == old_count) && (lab == old_lab + 1)));        
+        assert((count == (old_count + 1)) || ((count == old_count) && (lab == (old_lab + 1))));        
         assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
         old_count = count;
         old_lab = lab;
@@ -66,7 +66,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
 
             lab = 2; // Commit Request 2
 
-            assert((count == old_count + 1) || ((count == old_count) && (lab == old_lab + 1)));        
+            assert((count == (old_count + 1)) || ((count == old_count) && (lab == (old_lab + 1))));        
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
@@ -76,7 +76,6 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             num_mbox = 0;
             num_acks = 0;
 
-            retry = random;
             while(1){
                 // m = receive()
                 if(m.lab == 2) {
@@ -91,16 +90,14 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                     if(num_mbox == num) {
                         break;
                     }
-                }   
-
-                retry = random;             
+                }                
             }
 
             if (num_acks == num) {
                 commit = 1;  // Move to Commit Phase
                 lab = 3; // Commit Phase 1
 
-                assert((count == old_count + 1) || ((count == old_count) && (lab == old_lab + 1)));        
+                assert((count == (old_count + 1)) || ((count == old_count) && (lab == (old_lab + 1))));        
                 assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
@@ -111,7 +108,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 commit = 0; // Perform rollback
                 lab = 3;
 
-                assert((count == old_count + 1) || ((count == old_count) && (lab == old_lab + 1)));        
+                assert((count == (old_count + 1)) || ((count == old_count) && (lab == (old_lab + 1))));        
                 assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
                 old_count = count;
                 old_lab = lab;
@@ -121,16 +118,14 @@ void TwoPhaseCommit(int pid, int leader, int num) {
 
             lab = 4;
 
-            assert((count == old_count + 1) || ((count == old_count) && (lab == old_lab + 1)));        
+            assert((count == (old_count + 1)) || ((count == old_count) && (lab == (old_lab + 1))));        
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
 
             // receive
             // Empty mbox
-            num_mbox = 0;
-            
-            retry = random;            
+            num_mbox = 0;           
 
             while(1){
                 // m = receive()
@@ -143,9 +138,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                     if(num_mbox == num) {
                         break;
                     }
-                }   
-
-                retry = random;    
+                }       
             } 
             
             count = count + 1;
@@ -154,9 +147,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             // receive Transaction
             // Empty mbox
             num_mbox = 0;
-            
-            retry = random;  
-
+             
             while(1) { 
                 // m = receive()
                 if(m.lab == 1) {
@@ -168,14 +159,12 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                     if(num_mbox == 1) {
                         break;
                     }
-                }   
-                
-                retry = random;    
+                }    
             }
 
             lab = 2; // Commit Request 2
             
-            assert((count == old_count + 1) || ((count == old_count) && (lab == old_lab + 1)));        
+            assert((count == (old_count + 1)) || ((count == old_count) && (lab == (old_lab + 1))));        
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
@@ -184,16 +173,14 @@ void TwoPhaseCommit(int pid, int leader, int num) {
 
             lab = 3;
             
-            assert((count == old_count + 1) || ((count == old_count) && (lab == old_lab + 1)));        
+            assert((count == (old_count + 1)) || ((count == old_count) && (lab == (old_lab + 1))));        
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
 
             // receive
             // Empty mbox
-            num_mbox = 0;
-        
-            retry = random;    
+            num_mbox = 0; 
 
             while(1){
                 // m = receive()
@@ -206,9 +193,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                     if(num_mbox == 1) {
                         break;
                     }
-                }
-                
-                retry = random;    
+                }    
             }
 
             // Do something depending on whether the msg is commit or rollback
@@ -216,7 +201,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             // Complete Transaction
             lab = 4; // Commit Phase 2
             
-            assert((count == old_count + 1) || ((count == old_count) && (lab == old_lab + 1)));        
+            assert((count == (old_count + 1)) || ((count == old_count) && (lab == (old_lab + 1))));        
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
