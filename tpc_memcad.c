@@ -81,13 +81,6 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 // m = receive()
                 if(m.lab == 2) {
                     if(filter_cr2(&m, count)) {
-                        if (m.count > count) {
-                            count = m.count;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                            num_acks = 0;
-                        }
                         if(m.response == 1) {
                             num_acks = num_acks + 1;
                         }
@@ -143,12 +136,6 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 // m = receive()
                 if(m.lab == 4) {
                     if(filter_c2(&m, count)) {
-                        if (m.count > count) {
-                            count = m.count;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         // mbox[num_mbox] = &m;
                         num_mbox = num_mbox + 1;
                     }
@@ -174,12 +161,6 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 // m = receive()
                 if(m.lab == 1) {
                     if(filter_cr1(&m, count)) {
-                        if (m.count > count) {
-                            count = m.count;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         // mbox[num_mbox] = &m;
                         num_mbox = num_mbox + 1;
                     }
@@ -218,12 +199,6 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 // m = receive()
                 if(m.lab == 3) {
                     if(filter_c1(&m, count)) {
-                        if (m.count > count) {
-                            count = m.count;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         // mbox[num_mbox] = &m;
                         num_mbox = num_mbox + 1;
                     }
