@@ -123,7 +123,7 @@ int propose(int pid, int num, int estimate) {
 
             lab = lab + 1; // lab = 2
             
-            assert((round == old_round) && (lab = old_lab + 1));
+            assert((round == old_round) && (lab == (old_lab + 1)));
             assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
             old_round = round;
             old_lab = lab;
@@ -168,7 +168,7 @@ int propose(int pid, int num, int estimate) {
 
             lab = lab + 1; // lab = 3
             
-            assert((round == old_round) && (lab = old_lab + 1));
+            assert((round == old_round) && (lab == (old_lab + 1)));
             assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
             old_round = round;
             old_lab = lab;
@@ -217,7 +217,7 @@ int propose(int pid, int num, int estimate) {
 
             lab = 4; // lab = 4
             
-            assert((round == old_round) && (lab = old_lab + 1));
+            assert((round == old_round) && (lab == (old_lab + 1)));
             assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
             old_round = round;
             old_lab = lab;
@@ -257,7 +257,6 @@ int propose(int pid, int num, int estimate) {
             if(num_mbox_commit >= 1) {
                 lab = 4;
                 
-                assert((round == old_round) && (lab = old_lab + 1));
                 assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
                 old_round = round;
                 old_lab = lab;
@@ -269,7 +268,7 @@ int propose(int pid, int num, int estimate) {
 
             lab = lab + 1; // lab = 2
 
-            assert((round == old_round) && (lab = old_lab + 1));
+            assert((round == old_round) && (lab == (old_lab + 1)));
             assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
             old_round = round;
             old_lab = lab;
@@ -306,7 +305,6 @@ int propose(int pid, int num, int estimate) {
             if(num_mbox_commit >= 1) {
                 lab = 4;
                 
-                // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
                 assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
                 old_round = round;
                 old_lab = lab;
@@ -320,7 +318,7 @@ int propose(int pid, int num, int estimate) {
 
             lab = lab + 1; // lab = 3
             
-            assert((round == old_round) && (lab = old_lab + 1));
+            assert((round == old_round) && (lab == (old_lab + 1)));
             assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
             old_round = round;
             old_lab = lab;
@@ -353,7 +351,6 @@ int propose(int pid, int num, int estimate) {
             if(num_mbox_commit >= 1) {
                 lab = 4;
                 
-                // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
                 assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
                 old_round = round;
                 old_lab = lab;
