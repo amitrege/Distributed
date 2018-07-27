@@ -68,7 +68,7 @@ int AlternatingBit(int id) {
 
             lab = lab + 1; // lab = 2
 
-            assert((count == old_count) && (lab == (old_lab + 1)))
+            assert((count == old_count) && (lab == (old_lab + 1)));
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
 	        old_count = count;
             old_lab = lab;
@@ -93,7 +93,7 @@ int AlternatingBit(int id) {
 
             lab = lab + 1; // lab = 3
             
-            assert((count == old_count) && (lab == (old_lab + 1)))            
+            assert((count == old_count) && (lab == (old_lab + 1)));           
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
@@ -107,7 +107,7 @@ int AlternatingBit(int id) {
 
             lab = lab + 1; // lab = 4
             
-            assert((count == old_count) && (lab == (old_lab + 1)))            
+            assert((count == old_count) && (lab == (old_lab + 1)));            
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
@@ -151,7 +151,7 @@ int AlternatingBit(int id) {
 
             lab = lab + 1; // lab = 2
             
-            assert((count == old_count) && (lab == (old_lab + 1)))            
+            assert((count == old_count) && (lab == (old_lab + 1)));            
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
@@ -165,7 +165,7 @@ int AlternatingBit(int id) {
 
             lab = lab + 1; // lab = 3
             
-            assert((count == old_count) && (lab == (old_lab + 1)))            
+            assert((count == old_count) && (lab == (old_lab + 1)));            
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
@@ -188,7 +188,7 @@ int AlternatingBit(int id) {
             }
             lab = lab + 1; // lab = 4
             
-            assert((count == old_count) && (lab == (old_lab + 1)))            
+            assert((count == old_count) && (lab == (old_lab + 1)));            
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
