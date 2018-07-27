@@ -67,7 +67,7 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             lab = 2; // Commit Request 2
 
             assert((count == old_count));
-            assert(((count == old_count))||((count == old_count) && (lab == (old_lab + 1))));        
+            assert(0||((count == old_count) && (lab == (old_lab + 1))));        
             assert((count > old_count) || ((count == old_count) && (lab > old_lab)));
             old_count = count;
             old_lab = lab;
