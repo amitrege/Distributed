@@ -5,28 +5,28 @@ typedef struct _msg {
 } msg;
 
 int filter_cr1 (msg* m, int count) {
-    if (m->count >= count) {
+    if (m->count == count) {
         return 1;
     }
     return 0;
 }
 
 int filter_cr2 (msg* m, int count) {
-    if (m->count >= count) {
+    if (m->count == count) {
         return 1;
     }
     return 0;
 }
 
 int filter_c1 (msg* m, int count) {
-    if (m->count >= count) {
+    if (m->count == count) {
         return 1;
     }
     return 0;
 }
 
 int filter_c2 (msg* m, int count) {
-    if (m->count >= count) {
+    if (m->count == count) {
         return 1;
     }
     return 0;

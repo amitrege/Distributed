@@ -8,21 +8,21 @@ typedef struct _msg {
 } msg;
 
 int filter_est(msg* m, int round) {
-    if (m->round >= round) {
+    if (m->round == round) {
         return 1;
     }
     return 0;
 }
 
 int filter_propose(msg* m, int round) {
-    if (m->round >= round) {
+    if (m->round == round) {
         return 1;
     }
     return 0;
 }
 
 int filter_ack (msg* m, int round) {
-    if (m->round >= round) {
+    if (m->round == round) {
         return 1;
     }
     return 0;
@@ -69,6 +69,7 @@ int propose(int pid, int num, int estimate) {
 
         lab = 1;
 
+        assert(round == (old_round + 1))
         assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
         old_round = round;
         old_lab = lab;
@@ -78,18 +79,10 @@ int propose(int pid, int num, int estimate) {
             num_mbox = 0;
             num_mbox_commit = 0;
 
-            retry = random;
-
             while(1){ 
                 // m = receive()
                 if(m_1.lab == 1) {  // Estimate sent by followers to leader
                     if(filter_est(&m_1, round)) {
-                        if(m_1.round > round) {
-                            round = m_1.round;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         //mbox_est[num_mbox_est] = &m_est;
                         num_mbox = num_mbox + 1;
                     }
@@ -116,7 +109,6 @@ int propose(int pid, int num, int estimate) {
             if(num_mbox_commit >= 1) {
                 lab = 4;
                 
-                // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
                 assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
                 old_round = round;
                 old_lab = lab;
@@ -129,9 +121,9 @@ int propose(int pid, int num, int estimate) {
             // pick message with highest timestamp
             // pick estimate
 
-            lab = 2;
+            lab = lab + 1; // lab = 2
             
-            // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
+            assert((round == old_round) && (lab = old_lab + 1));
             assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
             old_round = round;
             old_lab = lab;
@@ -159,8 +151,6 @@ int propose(int pid, int num, int estimate) {
                 if(timeout) {
                     break;
                 }
-                
-                retry = random;
             }
 
             if(num_mbox_commit >= 1) {
@@ -176,9 +166,9 @@ int propose(int pid, int num, int estimate) {
                 break;
             }
 
-            lab = 3;
+            lab = lab + 1; // lab = 3
             
-            // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
+            assert((round == old_round) && (lab = old_lab + 1));
             assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
             old_round = round;
             old_lab = lab;
@@ -187,18 +177,10 @@ int propose(int pid, int num, int estimate) {
             num_mbox = 0;
             num_mbox_commit = 0;
 
-            retry = random;
-
             while(1){ 
                 // m = receive()
                 if(m_3.lab == 3) {  // Estimate sent by followers to leader
                     if(filter_ack(&m_3, round)) {
-                        if(m_3.round > round) {
-                            round = m_3.round;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         //mbox_est[num_mbox_est] = &m_est;
                         num_mbox = num_mbox + 1;
                     }
@@ -218,8 +200,6 @@ int propose(int pid, int num, int estimate) {
                         break;
                     }
                 }
-                
-                retry = random;
             }
 
             if(num_mbox_commit >= 1) {
@@ -235,9 +215,9 @@ int propose(int pid, int num, int estimate) {
                 break;
             }
 
-            lab = 4;
+            lab = 4; // lab = 4
             
-            // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
+            assert((round == old_round) && (lab = old_lab + 1));
             assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
             old_round = round;
             old_lab = lab;
@@ -272,14 +252,12 @@ int propose(int pid, int num, int estimate) {
                 if(timeout) {
                     break;
                 }
-                
-                retry = random;
             }
 
             if(num_mbox_commit >= 1) {
                 lab = 4;
                 
-                // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
+                assert((round == old_round) && (lab = old_lab + 1));
                 assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
                 old_round = round;
                 old_lab = lab;
@@ -289,9 +267,9 @@ int propose(int pid, int num, int estimate) {
                 break;
             }
 
-            lab = 2;
+            lab = lab + 1; // lab = 2
 
-            // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
+            assert((round == old_round) && (lab = old_lab + 1));
             assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
             old_round = round;
             old_lab = lab;
@@ -300,18 +278,10 @@ int propose(int pid, int num, int estimate) {
             num_mbox = 0;
             num_mbox_commit = 0;
 
-            retry = random;
-
             while(1){ 
                 // m = receive()
                 if(m_5.lab == 1) {  // Estimate sent by followers to leader
                     if(filter_propose(&m_5, round)) {
-                        if(m_5.round > round) {
-                            round = m_5.round;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         //mbox_est[num_mbox_est] = &m_est;
                         num_mbox = num_mbox + 1;
                     }
@@ -331,8 +301,6 @@ int propose(int pid, int num, int estimate) {
                         break;
                     }
                 }
-                
-                retry = random;
             }
 
             if(num_mbox_commit >= 1) {
@@ -350,9 +318,9 @@ int propose(int pid, int num, int estimate) {
 
             // Update estimate and timestamp
 
-            lab = 3;
+            lab = lab + 1; // lab = 3
             
-            // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
+            assert((round == old_round) && (lab = old_lab + 1));
             assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
             old_round = round;
             old_lab = lab;
@@ -380,8 +348,6 @@ int propose(int pid, int num, int estimate) {
                 if(timeout) {
                     break;
                 }
-                
-                retry = random;
             }
 
             if(num_mbox_commit >= 1) {
