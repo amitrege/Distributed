@@ -382,7 +382,7 @@ int main_thread(int pid, int num){
             // Empty mbox
             num_mbox = 0;
             
-            retry = random;
+            
             while(1) {
                 // m = receive()
                 if(m_ack_e.lab == 3) {
