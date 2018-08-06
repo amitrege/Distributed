@@ -223,9 +223,9 @@ int AlternatingBit(int id) {
             old_count = count;
             old_lab = lab;
 
-            int retry = random1;
-            assert(retry == 0);
-            while (retry) {
+            int retry1 = random1;
+            assert(retry1 == 0);
+            while (retry1) {
                 msg a_1;
                 a_1.lab = lab;
                 a_1.count = count;
@@ -233,7 +233,7 @@ int AlternatingBit(int id) {
                 // send a_1 to B
                 assert((a_1.lab == lab) && (a_1.count == count));
 
-                retry = random1;
+                retry1 = random1;
             }
             
             count = count + 1;
