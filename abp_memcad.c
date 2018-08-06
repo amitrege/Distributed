@@ -226,7 +226,7 @@ int AlternatingBit(int id) {
             int retry1 = random1;
             assert(retry1 == 0);
             int i = 1;
-            while (retry1) {
+            while (i) {
                 msg a_1;
                 a_1.lab = lab;
                 a_1.count = count;
