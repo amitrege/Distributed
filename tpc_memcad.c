@@ -253,6 +253,6 @@ void TwoPhaseCommit(int pid, int leader, int num) {
 }
 
 int main () {
-    TwoPhaseCommit(0,0,3);
+    TwoPhaseCommit(1,0,3);
     return 0;
 }
