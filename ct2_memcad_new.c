@@ -136,7 +136,7 @@ int propose(int pid, int num, int estimate) {
             m_propose.round = round;
             m_propose.pid = pid;
             // send (p, round, estimate) to all
-            assert((m_propose.round == round) && (m_propose.lab = lab));
+            assert((m_propose.round == round) && (m_propose.lab == lab));
 
             // Empty mbox
             num_mbox_commit = 0;
@@ -234,7 +234,7 @@ int propose(int pid, int num, int estimate) {
             m_commit.round = round;
             m_commit.pid = pid;
             // send commit (p, round, estimate, decide)
-            assert((m_commit.round == round) && (m_commit.lab = lab));
+            assert((m_commit.round == round) && (m_commit.lab == lab));
             
             
             // State is decided
@@ -249,7 +249,7 @@ int propose(int pid, int num, int estimate) {
             m_est.pid = pid;
             m_est.timestamp = timestamp;
             // send (p, round, est, ts) to leader
-            assert((m_est.round == round) && (m_est.lab = lab));
+            assert((m_est.round == round) && (m_est.lab == lab));
             
             // Empty mbox
             num_mbox_commit = 0;
@@ -351,7 +351,7 @@ int propose(int pid, int num, int estimate) {
             m_ack.pid = pid;
             m_ack.ack = ack;
             // send (p, round, ack) to leader
-            assert((m_ack.round == round) && (m_ack.lab = lab));            
+            assert((m_ack.round == round) && (m_ack.lab == lab));            
 
             // Empty mbox
             num_mbox_commit = 0;
