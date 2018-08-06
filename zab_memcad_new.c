@@ -89,7 +89,7 @@ int sendingThread (int p, int lab, int i, int labr){
     }
 }
 
-int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr, int *old_p, int *old_lab, int *old_i, int *old_labr) {
+void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr, int *old_p, int *old_lab, int *old_i, int *old_labr) {
 
     int num_mbox = 0;
     msg m_propose;
@@ -101,6 +101,8 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
     msg m_cmt;
 
     int retry;
+
+    int timeout;
 
     volatile int random;
 
@@ -146,7 +148,13 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
                     if (num_mbox >= 1) {
                         break;
                     }
-                }   
+                } 
+                
+                timeout = random;
+                if(timeout) {
+                    *p = *p + 1;
+                    return;
+                }
     
                 retry = random;
             }
@@ -195,7 +203,13 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
                     if (num_mbox >= 1) {
                         break;
                     }
-                }   
+                }
+                
+                timeout = random;
+                if(timeout) {
+                    *p = *p + 1;
+                    return;
+                }
     
                 retry = random;
             }
@@ -239,7 +253,13 @@ int Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr
                     if (num_mbox >= (num+1)/2) {
                         break;
                     }
-                }   
+                }
+                
+                timeout = random;
+                if(timeout) {
+                    *p = *p + 1;
+                    return;
+                }
     
                 retry = random;
             }
@@ -629,559 +649,10 @@ int main_thread(int pid, int num){
             // Update zvid
 
             // Start Broadcast
-            //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
-                        
-            // Simulating Brooadcast
-            retry = random;
-            if(retry) {
-                p = p + 1;
-            }
-            else {
-                i = i + 1;
-                p = p + 1;
-            }
+            Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
         }
     }
 }
-/*
-int leadership (int num) {
-    int lab = 0;
-    int p = 0;
-    int i = 0;
-    int labr = 0;
-
-    int old_p = p - 1;
-    int old_lab = 0;
-    int old_i = 0;
-    int old_labr = 0;
-
-    int leader;
-
-    msg_curr_e* mbox_curr_e[200];
-    int num_mbox_curr_e = 0;
-    msg_curr_e m_curr_e;
-
-    msg_new_e* mbox_new_e[200];
-    int num_mbox_new_e = 0;
-    msg_new_e m_new_e;
-
-    msg_ack_e* mbox_ack_e[200];
-    int num_mbox_ack_e = 0;
-    msg_ack_e m_ack_e;
-
-    msg_new_l* mbox_new_l[200];
-    int num_mbox_new_l = 0;
-    msg_new_l m_new_l;
-
-    msg_ack_l* mbox_ack_l[200];
-    int num_mbox_ack_l = 0;
-    msg_ack_l m_ack_l;
-
-    msg_com* mbox_com[200];
-    int num_mbox_com = 0;
-    msg_com m_com;
-
-    int retry;
-
-    volatile int random;
-    
-    while (1) {
-        lab = 1; // Curr_E
-        
-        //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
-        assert(p > old_p);
-        old_p = p;
-        old_lab = lab;
-        old_i = i;
-        old_labr = labr;
-        
-        // send (p,lab) to leader
-    
-        // receive curr_e
-        retry = random;
-        while(retry && (num_mbox_curr_e < ((num+1)/2))) {
-            if(filter_curr_e(&m_curr_e, p, lab)) {
-                // mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
-                num_mbox_curr_e = num_mbox_curr_e + 1;
-            }
-    
-            if (num_mbox_curr_e > ((num+1)/2)) {
-                break;
-            }
-    
-            retry = random;
-        }
-        
-        if (num_mbox_curr_e >= ((num+1)/2)) {
-            // Update set Q which is the set of pids in mbox
-            // get max p in mbox and add 1
-    
-            retry = random;
-            if(retry) {  // Actually, p is the max value of all p's received by the leader
-                p = p + 1;
-            }
-            else {
-                p = p + 2;
-            } 
-            p = p + 1;
-    
-            lab = 2; // new_e
-    
-            //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                        
-            assert(lab > old_lab);
-            old_p = p;
-            old_lab = lab;
-            old_i = i;
-            old_labr = labr;
-    
-            //send p to all (in set q)
-    
-            lab = 3; // ack_e
-    
-            //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                        
-            assert(lab > old_lab);
-            old_p = p;
-            old_lab = lab;
-            old_i = i;
-            old_labr = labr;
-    
-            // receive ack_e
-            retry = random;
-            while(retry ) {
-                if(filter_ack_e(&m_ack_e, p, lab)) {
-                    // mbox_ack_e[num_mbox_ack_e] = &m_ack_e;
-                    num_mbox_ack_e = num_mbox_ack_e + 1;
-                }
-    
-                if (num_mbox_ack_e >= ((num+1)/2)) {
-                    break;
-                }
-    
-                retry = random;
-            }
-    
-            if(num_mbox_ack_e >= (num+1)/2) {
-                // Update history
-    
-                lab = 4; // new_l
-    
-                //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                            
-                assert(lab > old_lab);
-                old_p = p;
-                old_lab = lab;
-                old_i = i;
-                old_labr = labr;
-    
-                // send (p, lab, h) to Q
-    
-                lab = 5; // ack_l
-    
-                //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                            
-                assert(lab > old_lab);
-                old_p = p;
-                old_lab = lab;
-                old_i = i;
-                old_labr = labr;
-    
-                // receive ack_l
-                retry = random;
-                while(retry) {
-                    if(filter_ack_l(&m_ack_l, p, lab)) {
-                        mbox_ack_l[num_mbox_ack_l] = &m_ack_l;
-                        num_mbox_ack_l = num_mbox_ack_l + 1;
-                    }
-        
-                    if (num_mbox_ack_l >= ((num+1)/2)) {
-                        break;
-                    }
-        
-                    retry = random;
-                }
-                
-                if (num_mbox_ack_l >= ((num+1)/2)) {
-                    lab = 6; // cmt
-    
-                    //assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                
-                    assert(lab > old_lab);
-                    old_p = p;
-                    old_lab = lab;
-                    old_i = i;
-                    old_labr = labr;
-    
-                    // send (p, lab, h) to Q
-    
-                    // Start Broadcast
-                    //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
-                    
-                    // Simulating Broadcast
-                    retry = random;
-                    if(retry) {
-                        p = p + 1;
-                    }
-                    else {
-                        i = i + 1;
-                        p = p + 1;
-                    }
-                }
-                else {
-                    p = p + 1;
-                } 
-            }
-            else {
-                p = p + 1;
-            } 
-        }
-        else {
-            p = p + 1;
-        }
-    lab=1;
-    }
-}
-
-int notLeader(int num) {
-    int lab = 0;
-    int p = 0;
-    int i = 0;
-    int labr = 0;
-
-    int old_p = p - 1;
-    int old_lab = 0;
-    int old_i = 0;
-    int old_labr = 0;
-
-    int leader;
-
-    msg_curr_e* mbox_curr_e[200];
-    int num_mbox_curr_e = 0;
-    msg_curr_e m_curr_e;
-
-    msg_new_e* mbox_new_e[200];
-    int num_mbox_new_e = 0;
-    msg_new_e m_new_e;
-
-    msg_ack_e* mbox_ack_e[200];
-    int num_mbox_ack_e = 0;
-    msg_ack_e m_ack_e;
-
-    msg_new_l* mbox_new_l[200];
-    int num_mbox_new_l = 0;
-    msg_new_l m_new_l;
-
-    msg_ack_l* mbox_ack_l[200];
-    int num_mbox_ack_l = 0;
-    msg_ack_l m_ack_l;
-
-    msg_com* mbox_com[200];
-    int num_mbox_com = 0;
-    msg_com m_com;
-
-    int retry;
-    volatile int random;
-    
-    while(1) {
-        lab = 1; // Curr_E
-        
-        assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
-        old_p = p;
-        old_lab = lab;
-        old_i = i;
-        old_labr = labr;
-        
-        // send (p,lab) to leader
-    
-        lab = 2; // New_E
-        
-        assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                    
-        old_p = p;
-        old_lab = lab;
-        old_i = i;
-        old_labr = labr;
-    
-        // receive new_e
-        // retry = rand() % 2;
-        retry = random;
-        while(retry && num_mbox_new_e < 1) {
-            if(filter_new_e(&m_new_e, p, lab)) {
-                // mbox_new_e[num_mbox_new_e] = &m_new_e;
-                num_mbox_new_e = num_mbox_new_e + 1;
-            }
-    
-            if (num_mbox_new_e >= 1) {
-                break;
-            }
-    
-            // retry = rand() % 2;
-            retry = random;
-        }
-        
-        if (num_mbox_new_e >= 1) {
-            retry = random;
-            if(retry) {  // Actually, p is the max value of all p's received by the leader
-                p = p + 1;
-            }
-            else {
-                p = p + 2;
-            } 
-            p = p + 1;
-    
-            lab = 3; // ack_e
-    
-            assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                    
-            old_p = p;
-            old_lab = lab;
-            old_i = i;
-            old_labr = labr;
-    
-            // send (p, lab, a, h) to leader
-    
-            lab = 4; // new_l
-    
-            assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                    
-            old_p = p;
-            old_lab = lab;
-            old_i = i;
-            old_labr = labr;
-    
-            // receive new_l
-            // retry = rand() % 2;
-            retry = random;
-            while(retry && num_mbox_new_l < 1) {
-                if(filter_new_l(&m_new_l, p, lab)) {
-                    // mbox_new_l[num_mbox_new_l] = &m_new_l;
-                    num_mbox_new_l = num_mbox_new_l + 1;
-                }
-    
-                if (num_mbox_new_l >= 1) {
-                    break;
-                }
-    
-                // retry = rand() % 2;
-                retry = random;
-            }
-    
-            if(num_mbox_new_l >= 1) {
-                // Update a
-                // Update history
-    
-                lab = 5; // ack_l
-    
-                assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                        
-                old_p = p;
-                old_lab = lab;
-                old_i = i;
-                old_labr = labr;
-    
-                // send (lab, a, h) to leader
-    
-                lab = 6; // cmt
-                
-                assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                        
-                old_p = p;
-                old_lab = lab;
-                old_i = i;
-                old_labr = labr;
-                
-                // receive commit
-                // retry = rand() % 2;
-                retry = random;
-                while(retry && num_mbox_com < 1) {
-                    if(filter_com(&m_com, p, lab)) {
-                        //mbox_com[num_mbox_com] = &m_com;
-                        num_mbox_com = num_mbox_com + 1;
-                    }
-        
-                    if (num_mbox_com >= 1) {
-                        break;
-                    }
-        
-                    // retry = rand() % 2;
-                    retry = random;
-                }
-    
-                if (num_mbox_com >= 1) {
-                    // Update zvid
-    
-                    // Start Broadcast
-                    //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
-                    
-                    // Simulating Brooadcast
-                    retry = random;
-                    if(retry) {
-                        p = p + 1;
-                    }
-                    else {
-                        i = i + 1;
-                        p = p + 1;
-                    }
-                }
-                else {
-                    p = p + 1;
-                }
-            }
-            else {
-                p = p + 1;
-            }
-        }
-        else {
-            // Special Case (state transfer?) 
-            p = p + 1;
-        }
-    }
-            
-}
-
-int test(int num) {
-    int lab = 0;
-    int p = 0;
-    int i = 0;
-    int labr = 0;
-
-    int old_p = p - 1;
-    int old_lab = 0;
-    int old_i = 0;
-    int old_labr = 0;
-
-    int leader;
-
-    msg_curr_e* mbox_curr_e[200];
-    int num_mbox_curr_e = 0;
-    msg_curr_e m_curr_e;
-
-    msg_new_e* mbox_new_e[200];
-    int num_mbox_new_e = 0;
-    msg_new_e m_new_e;
-
-    msg_ack_e* mbox_ack_e[200];
-    int num_mbox_ack_e = 0;
-    msg_ack_e m_ack_e;
-
-    msg_new_l* mbox_new_l[200];
-    int num_mbox_new_l = 0;
-    msg_new_l m_new_l;
-
-    msg_ack_l* mbox_ack_l[200];
-    int num_mbox_ack_l = 0;
-    msg_ack_l m_ack_l;
-
-    msg_com* mbox_com[200];
-    int num_mbox_com = 0;
-    msg_com m_com;
-
-    int retry;
-    int retry1;
-    int retry2;
-
-    // send (p,lab) to leader
-
-    //_memcad("assume(num_mbox_new_e > 1)");
-    //assert(num_mbox_new_e > 1);
-    num_mbox_new_e = 2;
-
-    if (num_mbox_new_e >= 1) {
-        //rand(&retry);
-        if(retry) {  // Actually, p is the max value of all p's received by the leader
-            p = p + 1;
-        }
-        else {
-            p = p + 2;
-        } 
-        p = p + 1;
-
-        lab = 3; // ack_e
-
-        assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                    
-        old_p = p;
-        old_lab = lab;
-        old_i = i;
-        old_labr = labr;
-
-        // send (p, lab, a, h) to leader
-
-        lab = 4; // new_l
-
-        assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                    
-        old_p = p;
-        old_lab = lab;
-        old_i = i;
-        old_labr = labr;
-
-        // receive new_l
-        // retry = rand() % 2;
-        //rand(&retry);
-        while(retry1 && num_mbox_new_l < 1) {
-            if(filter_new_l(&m_new_l, p, lab)) {
-                //mbox_new_l[num_mbox_new_l] = &m_new_l;
-                num_mbox_new_l = num_mbox_new_l + 1;
-            }
-
-            if (num_mbox_new_l >= 1) {
-                break;
-            }
-
-            // retry = rand() % 2;
-            //rand(&retry);
-        }
-
-        if(num_mbox_new_l >= 1) {
-            // Update a
-            // Update history
-
-            lab = 5; // ack_l
-
-            assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                        
-            old_p = p;
-            old_lab = lab;
-            old_i = i;
-            old_labr = labr;
-
-            // send (lab, a, h) to leader
-
-            lab = 6; // cmt
-            
-            assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));                                        
-            old_p = p;
-            old_lab = lab;
-            old_i = i;
-            old_labr = labr;
-            
-            // receive commit
-            // retry = rand() % 2;
-            // rand(&retry);
-            while(retry2 && num_mbox_com < 1) {
-                if(filter_com(&m_com, p, lab)) {
-                    //mbox_com[num_mbox_com] = &m_com;
-                    num_mbox_com = num_mbox_com + 1;
-                }
-    
-                if (num_mbox_com >= 1) {
-                    break;
-                }
-    
-                // retry = rand() % 2;
-                //rand(&retry);
-            }
-
-            if (num_mbox_com >= 1) {
-                assert(num_mbox_com >= 1);
-                // Update zvid
-
-                // Start Broadcast
-                //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
-                p = p + 1;
-            }
-            else {
-                p = p + 1;
-            }
-        }
-        else {
-            p = p + 1;
-        }
-    }
-    else { 
-        p = p + 1;
-    }
-}
-*/
 
 int main() {
     int p = 0;
