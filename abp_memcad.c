@@ -38,13 +38,6 @@ int filter_ack_1 (msg* m, int count) {
     return 0;
 }
 
-// Initialize a message
-void init_msg(msg* m, int lab, int count, int req) {
-    m->lab = lab;
-    m->count = count;
-    m->req = req;
-}
-
 int AlternatingBit(int id) {
     // Tags
     int lab = 0;

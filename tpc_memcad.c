@@ -32,22 +32,6 @@ int filter_c2 (msg* m, int count) {
     return 0;
 }
 
-msg init_msg(int count, int lab) {
-    msg m;
-    m.count = count;
-    m.lab = lab;
-    m.response = 0;
-    return m;
-}
-
-msg init_cr2(int count, int lab, int response) {
-    msg m;
-    m.count = count;
-    m.lab = lab;
-    m.response = response;
-    return m;
-}
-
 void TwoPhaseCommit(int pid, int leader, int num) {
     int commit = 0;
     
