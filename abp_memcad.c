@@ -223,6 +223,7 @@ int AlternatingBit(int id) {
             old_lab = lab;
 
             retry = random;
+            assert(retry == 0);
             while (retry) {
                 msg a_1;
                 a_1.lab = lab;
