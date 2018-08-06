@@ -40,7 +40,6 @@ int filter_ack_1 (msg* m, int count) {
 
 // Initialize a message
 void init_msg(msg* m, int lab, int count, int req) {
-    msg m;
     m->lab = lab;
     m->count = count;
     m->req = req;
