@@ -199,7 +199,10 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             old_lab = lab;
         
             int r; // This is the response (can be 0 or 1)
-            msg cr2 = init_cr2(count, lab, r);
+            msg cr2;
+            cr2.count = count;
+            cr2.lab = lab;
+            cr2.response = r;
             // send Respomse to leader
             assert((cr2.count == count) && (cr2.lab == lab));
 
@@ -238,7 +241,9 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             old_count = count;
             old_lab = lab;
 
-            msg c2 = init_msg(count, lab);
+            msg c2;
+            c2.count = count;
+            c2.lab = lab;
             // send Ack to leaderr
             assert((c2.count == count) && (c2.lab == lab));
 
