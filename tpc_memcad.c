@@ -79,7 +79,9 @@ void TwoPhaseCommit(int pid, int leader, int num) {
         old_lab = lab;
 
         if (pid == leader) {
-            msg cr1 = init_msg(count, lab);
+            msg cr1;
+            cr1.count = count;
+            cr1.lab = lab;
             // send Transaction to all
             assert((cr1.count == count) && (cr1.lab == lab));
 
@@ -121,7 +123,9 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 old_count = count;
                 old_lab = lab;
 
-                msg c1_commit = init_msg(count, lab);
+                msg c1_commit;
+                c1_commit.count = count;
+                c1_commit.lab = lab; 
                 // send Commit to all
                 assert((c1_commit.count == count) && (c1_commit.lab == lab));
             }
@@ -134,7 +138,9 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 old_count = count;
                 old_lab = lab;
         
-                msg c1_rollback = init_msg(count, lab);
+                msg c1_rollback;
+                c1_rollback.count = count;
+                c1_rollback.lab = lab;
                 // send RollBack to all
                 assert((c1_rollback.count == count) && (c1_rollback.lab == lab));
             }
