@@ -75,10 +75,12 @@ int AlternatingBit(int id) {
 
             retry = random;
             while (retry) {
-                msg* m_0;
-                init_msg(m_0, lab, count, 0);
+                msg m_0;
+                m_0.lab = lab;
+                m_0.count = count;
+                m_0.req = 0;
                 // send m_0 to B
-                assert((m_0->lab == lab) && (m_0->count == count));
+                assert((m_0.lab == lab) && (m_0.count == count));
 
                 retry = random;
             }
@@ -117,10 +119,12 @@ int AlternatingBit(int id) {
 
             retry = random;
             while (retry) {
-                msg* m_1;
-                init_msg(m_1, lab, count, 1);
+                msg m_1;
+                m_1.lab = lab;
+                m_1.count = count;
+                m_1.req = 1;
                 // send m_1 to B
-                assert((m_1->lab == lab) && (m_1->count == count));
+                assert((m_1.lab == lab) && (m_1.count == count));
 
                 retry = random;
             }
@@ -178,10 +182,12 @@ int AlternatingBit(int id) {
 
             retry = random;
             while (retry) {
-                msg* a_0;
-                init_msg(a_0, lab, count, 0);
+                msg a_0;
+                a_0.lab = lab;
+                a_0.count = count;
+                a_0.req = 0;
                 // send a_0 to B
-                assert((a_0->lab == lab) && (a_0->count == count));
+                assert((a_0.lab == lab) && (a_0.count == count));
                 
                 retry = random;
             }
@@ -218,10 +224,12 @@ int AlternatingBit(int id) {
 
             retry = random;
             while (retry) {
-                msg* a_1;
-                init_msg(a_1, lab, count, 1);
+                msg a_1;
+                a_1.lab = lab;
+                a_1.count = count;
+                a_1.req = 1;
                 // send a_1 to B
-                assert((a_1->lab == lab) && (a_1->count == count));
+                assert((a_1.lab == lab) && (a_1.count == count));
 
                 retry = random;
             }
