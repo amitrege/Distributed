@@ -223,20 +223,18 @@ int AlternatingBit(int id) {
             old_count = count;
             old_lab = lab;
 
-            int retry1 = random1;
-            assert(retry1 == 0);
-            int i = 1;
-            while (i) {
+            retry = random;
+            while (retry) {
                 msg a_1;
                 a_1.lab = lab;
                 a_1.count = count;
                 a_1.req = 1;
                 // send a_1 to B
                 assert((a_1.lab == lab) && (a_1.count == count));
-
-                i = random1;
+                
+                retry = random;
             }
-            assert(0==0);
+
             count = count + 1;
         }
     }
