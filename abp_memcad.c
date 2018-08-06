@@ -60,6 +60,7 @@ int AlternatingBit(int id) {
 
     // Acts as random number generators
     volatile int random;
+    volatile int random1;
 
     int retry;
 
@@ -222,9 +223,9 @@ int AlternatingBit(int id) {
             old_count = count;
             old_lab = lab;
 
-            int retry1 = random;
-            assert(retry1 == 0);
-            while (retry1) {
+            int retry = random1;
+            assert(retry == 0);
+            while (retry) {
                 msg a_1;
                 a_1.lab = lab;
                 a_1.count = count;
@@ -232,7 +233,7 @@ int AlternatingBit(int id) {
                 // send a_1 to B
                 assert((a_1.lab == lab) && (a_1.count == count));
 
-                retry1 = random;
+                retry = random1;
             }
             
             count = count + 1;
