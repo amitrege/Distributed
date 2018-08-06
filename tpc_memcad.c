@@ -1,7 +1,7 @@
 typedef struct _msg {
     int count;
     int lab;
-    int response; // for Commit Request 2 (0 -> abort, 1 -> commit)
+    int response; // Only for Commit Request 2 (0 -> abort, 1 -> commit)
 } msg;
 
 int filter_cr1 (msg* m, int count) {
@@ -32,9 +32,28 @@ int filter_c2 (msg* m, int count) {
     return 0;
 }
 
+msg init_msg(int count, int lab) {
+    msg m;
+    m.count = count;
+    m.lab = lab;
+    m.response = 0;
+    return m;
+}
+
+msg init_cr2(int count, int lab, int response) {
+    msg m;
+    m.count = count;
+    m.lab = lab;
+    m.response = response;
+    return m;
+}
+
 void TwoPhaseCommit(int pid, int leader, int num) {
     int commit = 0;
+    
+    // Tags
     int count = 1;
+    int lab = 1;
 
     int num_mbox = 0;
     int num_acks = 0;
@@ -43,13 +62,11 @@ void TwoPhaseCommit(int pid, int leader, int num) {
     
     int retry;
 
-    int lab = 1;
-
     int old_count = count - 1;
     int old_lab = 0;
 
     msg m;
-    msg* mbox[200];  // memcad doesn't handle variable size
+    // msg* mbox[200];  // memcad doesn't handle variable size
 
     while (1) {
         // New Transaction
@@ -62,7 +79,9 @@ void TwoPhaseCommit(int pid, int leader, int num) {
         old_lab = lab;
 
         if (pid == leader) {
+            msg cr1 = init_msg(count, lab);
             // send Transaction to all
+            assert((cr1.count == count) && (cr1.lab == lab));
 
             lab = lab + 1; // lab = 2 -> Commit Request 2
 
@@ -102,7 +121,9 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 old_count = count;
                 old_lab = lab;
 
-                // send commit message
+                msg c1_commit = init_msg(count, lab);
+                // send Commit to all
+                assert((c1_commit.count == count) && (c1_commit.lab == lab));
             }
             else {
                 commit = 0; // Perform rollback
@@ -113,7 +134,9 @@ void TwoPhaseCommit(int pid, int leader, int num) {
                 old_count = count;
                 old_lab = lab;
         
-                // send rollback message
+                msg c1_rollback = init_msg(count, lab);
+                // send RollBack to all
+                assert((c1_rollback.count == count) && (c1_rollback.lab == lab));
             }
 
             lab = lab + 1; // lab = 4 -> Commit Phase 2
@@ -169,7 +192,10 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             old_count = count;
             old_lab = lab;
         
-            // send agreement/ abort to leader
+            int r; // This is the response (can be 0 or 1)
+            msg cr2 = init_cr2(count, lab, r);
+            // send Respomse to leader
+            assert((cr2.count == count) && (cr2.lab == lab));
 
             lab = lab + 1; // lab = 3 -> Commit Phase 1 
             
@@ -206,7 +232,9 @@ void TwoPhaseCommit(int pid, int leader, int num) {
             old_count = count;
             old_lab = lab;
 
-            // send ack
+            msg c2 = init_msg(count, lab);
+            // send Ack to leaderr
+            assert((c2.count == count) && (c2.lab == lab));
 
             count = count + 1;
         } 

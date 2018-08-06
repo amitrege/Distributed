@@ -272,10 +272,6 @@ int propose(int pid, int num, int estimate) {
                             state = 1;
                             break;
                         }
-/*
-                        estimate = m_commit.estimate;
-                        state = 1;
-                        break;*/
                     }
 
                     lab = 4;

@@ -1,11 +1,12 @@
 // Assumption - network delay is bounded
 
 typedef struct _msg {
-    int lab;
-    int count;
-    int req;
+    int lab;     // Label of the round
+    int count;   // Round Number
+    int req;     // Takes values 0 or 1 (alternating bits) 
 } msg;
 
+// Message 0 sent by Process A to B
 int filter_msg_0(msg* m, int count) {
     if (m->req == 0 && m->count == count) {
         return 1;
@@ -13,6 +14,7 @@ int filter_msg_0(msg* m, int count) {
     return 0;
 }
 
+// Message 1 sent by Process A to B
 int filter_msg_1(msg* m, int count) {
     if (m->count == count && m->req == 1) {
         return 1;
@@ -20,6 +22,7 @@ int filter_msg_1(msg* m, int count) {
     return 0;
 }
 
+// Ack for 0 sent by Process B to A
 int filter_ack_0 (msg* m, int count) {
     if (m->count == count && m->req == 0) {
         return 1;
@@ -27,6 +30,7 @@ int filter_ack_0 (msg* m, int count) {
     return 0;
 }
 
+// Ack for 0 sent by Process B to A
 int filter_ack_1 (msg* m, int count) {
     if (m->count == count && m->req == 1) {
         return 1;
@@ -34,17 +38,29 @@ int filter_ack_1 (msg* m, int count) {
     return 0;
 }
 
+// Initialize a message
+msg init_msg(int lab, int count, int req) {
+    msg m;
+    m.lab = lab;
+    m.count = count;
+    m.req = req;
+    return m;
+}
+
 int AlternatingBit(int id) {
+    // Tags
     int lab = 0;
     int count = 0;
 
+    // Old Tags
     int old_lab = 0;
-    int old_count = count - 1;  // needed for first assertion
+    int old_count = count - 1;  // needed for first assertion in the first iteration
     
-    msg* mbox_msg[2];
+    // msg* mbox_msg[2];
     msg m;
     int num_mbox_msg;
 
+    // Acts as random number generators
     volatile int random;
 
     int retry;
@@ -57,11 +73,13 @@ int AlternatingBit(int id) {
 	    old_count = count;
         old_lab = lab;
 
-        if (id == 1) { // Process is A
+        if (id == 1) { // Branch for Process A
 
             retry = random;
             while (retry) {
-                // send 0 to B
+                msg m_0 = init_msg(lab, count, 0);
+                // send m_0 to B
+                assert((m_0.lab == lab) && (m_0.count == count));
 
                 retry = random;
             }
@@ -100,7 +118,9 @@ int AlternatingBit(int id) {
 
             retry = random;
             while (retry) {
-                // send 1 to B
+                msg m_1 = init_msg(lab, count, 1);
+                // send m_1 to B
+                assert((m_1.lab == lab) && (m_1.count == count));
 
                 retry = random;
             }
@@ -158,7 +178,9 @@ int AlternatingBit(int id) {
 
             retry = random;
             while (retry) {
-                // send ack to A
+                msg a_0 = init_msg(lab, count, 0);
+                // send a_0 to B
+                assert((a_0.lab == lab) && (a_0.count == count));
                 
                 retry = random;
             }
@@ -195,7 +217,9 @@ int AlternatingBit(int id) {
 
             retry = random;
             while (retry) {
-                // send ack to A
+                msg a_1 = init_msg(lab, count, 1);
+                // send a_1 to B
+                assert((a_1.lab == lab) && (a_1.count == count));
 
                 retry = random;
             }
@@ -209,77 +233,3 @@ int main() {
     AlternatingBit(0);
     return 0;
 } 
-
-/*
-Code for Interproc
-
-proc AlternatingBit(id:int) returns (count : int)
-var lab:int, retry:int, m:int; 
-begin
-    lab = 0;
-    retry = 1;
-    count = 0;
-
-    while true and count < 1000 
-    do
-        lab = 1;
-        if id == 1 then
-            while retry == 1
-            do
-                retry = random;
-                assume retry>=0 and retry <= 1;
-            done;
-            
-            lab = 2;
-            m = random;
-
-            if m == 2 then 
-                lab = 3;
-                
-                while retry == 1
-                do
-                    retry = random;
-                    assume retry>=0 and retry <= 1;
-                done;
-
-                lab = 4;
-
-                m = random;
-                if m == 4 then
-                    lab = 1;
-                endif;
-            endif;
-        else
-            m = random;
-
-            if m == 1 then
-                lab = 2; 
-                while retry == 1
-                do
-                    retry = random;
-                    assume retry>=0 and retry <= 1;
-                done;
-                lab = 3;
-
-                m = random;
-                if m==3 then
-                    lab = 4;
-                    while retry == 1
-                    do
-                        retry = random;
-                        assume retry>=0 and retry <= 1;
-                    done;
-                endif;
-            endif;
-        endif;
-
-        count = count + 1;
-    done;
-end
-
-var pid:int;
-begin
-  pid = 0;
-  pid = AlternatingBit(pid);
-end
-*/

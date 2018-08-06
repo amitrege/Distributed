@@ -33,6 +33,52 @@ int filter_commit(msg* m) {
     return 1;
 }
 
+msg init_propose(int round, int lab, int pid, int estimate) {
+    msg m;
+    m.lab = lab;
+    m.estimate = estimate;
+    m.round = round;
+    m.pid = pid;
+    m.ack = 0;
+    m.timestamp = 0;
+    return m;
+}
+
+msg init_commit(int round, int lab, int pid, int estimate) {
+    msg m;
+    m.lab = lab;
+    m.estimate = estimate;
+    m.round = round;
+    m.pid = pid;
+    m.ack = 0;
+    m.timestamp = 0;
+    return m;
+}
+
+msg init_est(int round, int lab, int pid, int estimate, int timestamp) {
+    msg m;
+    m.lab = lab;
+    m.estimate = estimate;
+    m.round = round;
+    m.pid = pid;
+    m.ack = 0;
+    m.timestamp = timestamp;
+    return m;
+}
+
+msg init_ack(int round, int lab, int ack) {
+    msg m;
+    m.lab = lab;
+    m.estimate = 0;
+    m.round = round;
+    m.pid = 0;
+    m.ack = ack;
+    m.timestamp = 0;
+    return m;
+}
+
+// The non deterministic R deliver is not a sequential round so it has only one aseert unlike others
+// which have two - one for showing increasing tags and one for showing the sequence of rounds
 int propose(int pid, int num, int estimate) {
     int state = 0; // 0 -> undecided, 1 -> decided
     int round = 0;
@@ -128,7 +174,9 @@ int propose(int pid, int num, int estimate) {
             old_round = round;
             old_lab = lab;
 
+            msg m_propose = init_propose(round, lab, pid, estimate);
             // send (p, round, estimate) to all
+            assert((m_propose.round == round) && (m_propose.lab = lab));
 
             // Empty mbox
             num_mbox_commit = 0;
@@ -156,7 +204,6 @@ int propose(int pid, int num, int estimate) {
             if(num_mbox_commit >= 1) {
                 lab = 4;
                 
-                // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
                 assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
                 old_round = round;
                 old_lab = lab;
@@ -205,7 +252,6 @@ int propose(int pid, int num, int estimate) {
             if(num_mbox_commit >= 1) {
                 lab = 4;
                 
-                // assert lab == 4 || (round > old_round) || ((round == old_round) ==> lab >= old_lab);
                 assert((lab == 4) || (round > old_round) || ((round == old_round) && (lab > old_lab)));
                 old_round = round;
                 old_lab = lab;
@@ -222,15 +268,20 @@ int propose(int pid, int num, int estimate) {
             old_round = round;
             old_lab = lab;
 
+            msg m_commit = init_commit(round, lab, pid, estimate);
             // send commit (p, round, estimate, decide)
+            assert((m_commit.round == round) && (m_commit.lab = lab));
+            
             
             // State is decided
             state = 1;
             break;
         }
         else {
+            msg m_est = init_est(round, lab, pid, estimate, timestamp);
             // send (p, round, est, ts) to leader
-
+            assert((m_est.round == round) && (m_est.lab = lab));
+            
             // Empty mbox
             num_mbox_commit = 0;
             
@@ -323,7 +374,11 @@ int propose(int pid, int num, int estimate) {
             old_round = round;
             old_lab = lab;
 
+            // Send an ack or nack
+            int ack;
+            msg m_ack = init_ack(round, lab, ack);
             // send (p, round, ack) to leader
+            assert((m_ack.round == round) && (m_ack.lab = lab));            
 
             // Empty mbox
             num_mbox_commit = 0;
