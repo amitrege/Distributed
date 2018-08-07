@@ -162,7 +162,8 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
             // Update history
             
             *labr = 2; // ack_p
-            
+
+            assert((*i == *old_i) && (*labr == *old_labr));            
             assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));                
             *old_p = *p;
             *old_lab = *lab;
@@ -179,6 +180,7 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
 
             *labr = 3; // cmt
 
+            assert((*i == *old_i) && (*labr == *old_labr));            
             assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));                
             *old_p = *p;
             *old_lab = *lab;
@@ -227,7 +229,8 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
             assert((m_propose.p == *p) && (m_propose.i == *i) && (m_propose.labr == *labr));
 
             *labr = 2; // ack_p
-            
+
+            assert((*i == *old_i) && (*labr == *old_labr));            
             assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));            
             *old_p = *p;
             *old_lab = *lab;
@@ -263,6 +266,7 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
 
             *labr = 3; // Commit
             
+            assert((*i == *old_i) && (*labr == *old_labr));
             assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));                
             *old_p = *p;
             *old_lab = *lab;
@@ -324,6 +328,7 @@ int main_thread(int pid, int num){
     volatile int random;
 
     while (1) {
+        // Actually, leader is chosen by an oracle
         leader = p % num;
 
         lab = 1; // Curr_E
