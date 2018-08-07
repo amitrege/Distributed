@@ -13,21 +13,24 @@ typedef struct _msg {
     // history not included (as it is not relevant to prove increasing tags)
 } msg;
 
-int filter_propose (msg* m, int p, int i) {
-    if (m->p >= p && m->i >= i)
+int filter_propose (msg* m, int p, int i, int labr) {
+    if (m->p == p && m->i == i && m->labr == labr) {
         return 1;
+    }
     return 0;
 }
 
-int filter_ack_p (msg* m, int p, int lab, int i, int labr) {
-    if (m->p >= p && m->lab == lab && m->i >= i && m->labr == labr)
+int filter_ack_p (msg* m, int p, int i, int labr) {
+    if (m->p == p && m->i == i && m->labr == labr) {
         return 1;
+    }
     return 0;
 }
 
 int filter_cmt (msg* m, int p, int i, int labr) {
-    if (m->p >= p && m->i >= i && m->labr == labr)
+    if (m->p == p && m->i == i && m->labr == labr) {
         return 1;
+    }
     return 0;
 }
 
@@ -91,6 +94,9 @@ int sendingThread (int p, int lab, int i, int labr){
 
 void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *labr, int *old_p, int *old_lab, int *old_i, int *old_labr) {
 
+    // Value received from client
+    int val;
+
     int num_mbox = 0;
     msg m_propose;
 
@@ -133,14 +139,7 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
             while(1) {
                 // m = receive()
                 if(m_propose.labr == 1) {
-                    if(filter_propose(&m_propose, *p, *i)) {
-                        if(m_propose.p > *p) {
-                            // Skip forward
-                            *p = m_propose.p;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
+                    if(filter_propose(&m_propose, *p, *i, *labr)) {
                         //mbox_propose[num_mbox_propose] = &m_propose;
                         num_mbox = num_mbox + 1;
                     }
@@ -170,7 +169,13 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
             *old_i = *i;
             *old_labr = *labr;
 
-            // send(p, lab, i, labr, val) to leader
+            msg m_ack;
+            m_ack.p = *p;
+            m_ack.i = *i;
+            m_ack.labr = *labr;
+            m_ack.val = val;
+            // send(p, i, labr, val) to leader
+            assert((m_ack.p == *p) && (m_ack.i == *i) && (m_ack.labr == *labr));
 
             *labr = 3; // cmt
 
@@ -189,13 +194,6 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
                 // m = receive()
                 if(m_propose.labr == 3) {
                     if(filter_cmt(&m_cmt, *p, *i, *labr)) {
-                        if(m_cmt.p > *p) {
-                            // Skip forward
-                            *p = m_cmt.p;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         //mbox_propose[num_mbox_propose] = &m_propose;
                         num_mbox = num_mbox + 1;
                     }
@@ -220,7 +218,13 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
             (*i) = (*i) + 1;
         }
         else {
+            msg m_propose;
+            m_propose.p = *p;
+            m_propose.i = *i;
+            m_propose.labr = *labr;
+            m_propose.val = val;
             // send propose
+            assert((m_propose.p == *p) && (m_propose.i == *i) && (m_propose.labr == *labr));
 
             *labr = 2; // ack_p
             
@@ -238,14 +242,7 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
             while(1) {
                 // m = receive()
                 if(m_ack_p.labr == 2) {
-                    if(filter_ack_p(&m_ack_p, *p, *lab, *i, *labr)) {
-                        if(m_ack_p.p > *p) {
-                            // Skip forward
-                            *p = m_ack_p.p;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
+                    if(filter_ack_p(&m_ack_p, *p, *i, *labr)) {
                         //mbox_propose[num_mbox_propose] = &m_propose;
                         num_mbox = num_mbox + 1;
                     }
@@ -272,8 +269,13 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
             *old_i = *i;
             *old_labr = *labr;
 
+            msg m_commit;
+            m_commit.p = *p;
+            m_commit.i = *i;
+            m_commit.labr = *labr;
             // send commit (labr, a, i) to all
-
+            assert((m_commit.p == *p) && (m_commit.i == *i) && (m_commit.labr == *labr));
+            
             (*i) = (*i) + 1;
         }
     }
@@ -487,17 +489,7 @@ int main_thread(int pid, int num){
             // send (p, lab, h) to Q
 
             // Start Broadcast
-            //Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
-            
-            // Simulating Brooadcast
-            retry = random;
-            if(retry) {
-                p = p + 1;
-            }
-            else {
-                i = i + 1;
-                p = p + 1;
-            }
+            Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
         }
         else {
             lab = 2; // New_E
@@ -664,7 +656,7 @@ int main() {
     int old_i = 0;
     int old_labr = 0;
     //sendingThread(0, 0, 0, 0);
-    main_thread(0, 5); // pid, num
+    // main_thread(0, 5); // pid, num
     // leadership(5);
-    // Broadcast(5,1,0,&p,&lab,&i,&labr,&old_p,&old_lab,&old_i,&old_labr);
+    Broadcast(5,1,0,&p,&lab,&i,&labr,&old_p,&old_lab,&old_i,&old_labr);
 }
