@@ -1,9 +1,3 @@
-int p = 0;
-int lab = 0;
-int i = 0;
-int labr = 0;
-int leader = 0;
-
 typedef struct _msg {
     int p;
     int lab;
@@ -56,20 +50,23 @@ int filter_ack_e (msg* m, int p, int lab) {
 }
 
 int filter_new_l (msg* m, int p, int lab) {
-    if (m->p >= p && m->lab == lab)
+    if (m->p >= p && m->lab == lab) {
         return 1;
+    }
     return 0;
 }
 
 int filter_ack_l (msg* m, int p, int lab) {
-    if (m->p == p && m->lab == lab)
+    if (m->p == p && m->lab == lab) {
         return 1;
+    }
     return 0;
 }
 
 int filter_com (msg* m, int p, int lab) {
-    if (m->p == p && m->lab == lab)
+    if (m->p == p && m->lab == lab) {
         return 1;
+    }
     return 0;
 }
 
