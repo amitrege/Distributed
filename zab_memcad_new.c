@@ -671,7 +671,7 @@ int main() {
     int old_i = 0;
     int old_labr = 0;
     //sendingThread(0, 0, 0, 0);
-    main_thread(1, 5); // pid, num
+    main_thread(0, 5); // pid, num
     // leadership(5);
     //Broadcast(5,1,0,&p,&lab,&i,&labr,&old_p,&old_lab,&old_i,&old_labr);
 }
