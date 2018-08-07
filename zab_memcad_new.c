@@ -35,20 +35,23 @@ int filter_cmt (msg* m, int p, int i, int labr) {
 }
 
 int filter_curr_e (msg* m, int p, int lab) {
-    if (m->p >= p && m->lab >= lab)
+    if (m->p == p && m->lab == lab) {
         return 1;
+    }
     return 0;
 }
 
 int filter_new_e (msg* m, int p, int lab) {
-    if (m->p >= p && m->lab == lab)
+    if (m->p >= p && m->lab == lab) {
         return 1;
+    }
     return 0;
 }
 
 int filter_ack_e (msg* m, int p, int lab) {
-    if (m->p >= p && m->lab == lab)
+    if (m->p == p && m->lab == lab) {
         return 1;
+    }
     return 0;
 }
 
@@ -65,7 +68,7 @@ int filter_ack_l (msg* m, int p, int lab) {
 }
 
 int filter_com (msg* m, int p, int lab) {
-    if (m->p >= p && m->lab >= lab)
+    if (m->p == p && m->lab == lab)
         return 1;
     return 0;
 }
@@ -334,13 +337,18 @@ int main_thread(int pid, int num){
         lab = 1; // Curr_E
 
         assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
-        // assert((p > old_p));
+        assert((p > old_p));
+        
         old_p = p;
         old_lab = lab;
         old_i = i;
         old_labr = labr;
         
+        msg m_curr_e;
+        m_curr_e.p = p;
+        m_curr_e.lab = lab;
         // send (p,lab) to leader
+        assert((m_curr_e.p == p) && (m_curr_e.lab == lab));
     
         if (leader == pid){
             // receive curr_e
@@ -353,12 +361,6 @@ int main_thread(int pid, int num){
                 // m = receive()
                 if(m_curr_e.lab == 1) {
                     if(filter_curr_e(&m_curr_e, p, lab)) {
-                        if(m_curr_e.p > p) {
-                            p = m_curr_e.p;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         //mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
                         num_mbox = num_mbox + 1;
                     }
@@ -375,6 +377,7 @@ int main_thread(int pid, int num){
             // get max p in mbox and add 1
 
             // Simulating picking the max p
+            // Since lists do not work yet, we make do with randomly increasing the value of p
             retry = random;
             if(retry) {  // Actually, p is the max value of all p's received by the leader
                 p = p + 1;
@@ -387,13 +390,16 @@ int main_thread(int pid, int num){
             lab = 2; // new_e
             
             assert((p > old_p) || ((p == old_p) && (lab > old_lab)) || ((p == old_p) && (lab == old_lab) && (i > old_i)) || ((p == old_p) && (lab == old_lab) && (i == old_i) && (labr >= old_labr)));        
-            // assert(lab > old_lab);
             old_p = p;
             old_lab = lab;
             old_i = i;
             old_labr = labr;
             
+            msg m_new_e;
+            m_new_e.p = p;
+            m_new_e.lab = lab;
             //send p to all (in set q)
+            assert((m_new_e.p == p) && (m_new_e.lab == lab));            
 
             lab = 3; // ack_e
             
@@ -409,17 +415,10 @@ int main_thread(int pid, int num){
             // Empty mbox
             num_mbox = 0;
             
-            
             while(1) {
                 // m = receive()
                 if(m_ack_e.lab == 3) {
                     if(filter_ack_e(&m_ack_e, p, lab)) {
-                        if(m_ack_e.p > p) {
-                            p = m_ack_e.p;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         //mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
                         num_mbox = num_mbox + 1;
                     }
@@ -432,7 +431,10 @@ int main_thread(int pid, int num){
                 retry = random;
             }
 
-            // Update history
+            // Pick the most up to date history from the followers
+            // Update history and store to disk
+
+            // Synchronization Phase starts here
 
             lab = 4; // new_l
             
@@ -443,7 +445,11 @@ int main_thread(int pid, int num){
             old_i = i;
             old_labr = labr;
 
+            msg m_new_l;
+            m_new_l.p = p;
+            m_new_l.lab = lab;
             // send (p, lab, h) to Q
+            assert((m_new_l.p == p) && (m_new_l.lab == lab));                        
 
             lab = 5; // ack_l
 
@@ -464,12 +470,6 @@ int main_thread(int pid, int num){
                 // m = receive()
                 if(m_ack_l.lab == 5) {
                     if(filter_ack_l(&m_ack_l, p, lab)) {
-                        if(m_ack_l.p > p) {
-                            p = m_ack_l.p;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         //mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
                         num_mbox = num_mbox + 1;
                     }
@@ -491,7 +491,11 @@ int main_thread(int pid, int num){
             old_i = i;
             old_labr = labr;
 
+            msg m_cmt;
+            m_cmt.p = p;
+            m_cmt.lab = lab;
             // send (p, lab, h) to Q
+            assert((m_cmt.p == p) && (m_cmt.lab == lab));                          
 
             // Start Broadcast
             Broadcast(num, pid, leader, &p, &lab, &i, &labr, &old_p, &old_lab, &old_i, &old_labr);
@@ -518,9 +522,6 @@ int main_thread(int pid, int num){
                     if(filter_new_e(&m_new_e, p, lab)) {
                         if(m_new_e.p > p) {
                             p = m_new_e.p;
-
-                            // Empty Mbox
-                            num_mbox = 0;
                         }
                         //mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
                         num_mbox = num_mbox + 1;
@@ -553,7 +554,13 @@ int main_thread(int pid, int num){
             old_i = i;
             old_labr = labr;
 
+            msg m_ack_e;
+            m_ack_e.p = p;
+            m_ack_e.lab = lab;
             // send (p, lab, a, h) to leader
+            assert((m_ack_e.p == p) && (m_ack_e.lab == lab));                                      
+
+            // Synchronization Phase starts here
 
             lab = 4; // new_l
 
@@ -574,14 +581,15 @@ int main_thread(int pid, int num){
                 // m = receive()
                 if(m_new_l.lab == 4) {
                     if(filter_new_l(&m_new_l, p, lab)) {
-                        if(m_new_l.p > p) {
-                            p = m_new_l.p;
-
-                            // Empty Mbox
-                            num_mbox = 0;
+                        if(m_new_l.p == p) {
+                            //mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
+                            num_mbox = num_mbox + 1;
                         }
-                        //mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
-                        num_mbox = num_mbox + 1;
+                        else {
+                            // New election 
+                            p = p + 1;
+                            break;
+                        }
                     }
         
                     if (num_mbox >= 1) {
@@ -592,8 +600,12 @@ int main_thread(int pid, int num){
                 retry = random;
             }
 
+            if(num_mbox == 0) {
+                continue;
+            }
+ 
             // Update a
-            // Update history
+            // Update history (using history of the leader)
 
             lab = 5; // ack_l
             
@@ -604,7 +616,11 @@ int main_thread(int pid, int num){
             old_i = i;
             old_labr = labr;
 
+            msg m_ack_l;
+            m_ack_l.p = p;
+            m_ack_l.lab = lab;
             // send (lab, a, h) to leader
+            assert((m_ack_l.p == p) && (m_ack_l.lab == lab));                                                  
 
             lab = 6; // cmt
 
@@ -625,12 +641,6 @@ int main_thread(int pid, int num){
                 // m = receive()
                 if(m_com.lab == 6) {
                     if(filter_com(&m_com, p, lab)) {
-                        if(m_com.p > p) {
-                            p = m_com.p;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         //mbox_curr_e[num_mbox_curr_e] = &m_curr_e;
                         num_mbox = num_mbox + 1;
                     }
