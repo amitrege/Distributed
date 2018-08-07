@@ -163,7 +163,7 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
             
             *labr = 2; // ack_p
 
-            assert((*i == *old_i) && (*labr == *old_labr));            
+            assert((*i == *old_i) && (*labr == *old_labr + 1));            
             assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));                
             *old_p = *p;
             *old_lab = *lab;
@@ -180,7 +180,7 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
 
             *labr = 3; // cmt
 
-            assert((*i == *old_i) && (*labr == *old_labr));            
+            assert((*i == *old_i) && (*labr == *old_labr + 1));            
             assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));                
             *old_p = *p;
             *old_lab = *lab;
@@ -230,7 +230,7 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
 
             *labr = 2; // ack_p
 
-            assert((*i == *old_i) && (*labr == *old_labr));            
+            assert((*i == *old_i) && (*labr == *old_labr + 1));            
             assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));            
             *old_p = *p;
             *old_lab = *lab;
@@ -266,7 +266,7 @@ void Broadcast (int num, int pid, int leader, int *p, int *lab, int *i, int *lab
 
             *labr = 3; // Commit
             
-            assert((*i == *old_i) && (*labr == *old_labr));
+            assert((*i == *old_i) && (*labr == *old_labr + 1));            
             assert((*p > *old_p) || ((*p == *old_p) && (*lab > *old_lab)) || ((*p == *old_p) && (*lab == *old_lab) && (*i > *old_i)) || ((*p == *old_p) && (*lab == *old_lab) && (*i == *old_i) && (*labr >= *old_labr)));                
             *old_p = *p;
             *old_lab = *lab;
