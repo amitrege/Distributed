@@ -32,7 +32,7 @@ int filter_startView (msg* m, int v) {
 }
 
 int filter_prep (msg* m, int n, int v) {
-    if (m->v >= v && m->n == n+1) { 
+    if (m->v == v && m->n == n+1) { 
         return 1;
     }
     return 0; 
@@ -134,7 +134,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
             *num_mbox_doVC = 0;
             *num_mbox_startVC = 0;
 
-            retry = random;
             while (1) {
                 // m = receive()
                 
@@ -145,12 +144,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
 
                 if(m_1.lab_vc == 1 && m_1.type == 1) { // startVC
                     if(filter_startVC(&m_1, *v)) {
-                        if(m_1.v > *v) {
-                            *v = m_1.v;
-
-                            // Empty Mbox
-                            *num_mbox_startVC = 0;
-                        }
                         // mbox_startVC[num_mbox_startVC] = m_startVC;
                         *num_mbox_startVC = *num_mbox_startVC + 1;
                     } 
@@ -162,12 +155,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
 
                 if(m_1.lab_vc == 2 && m_1.type == 1) { // doVC
                     if(filter_doVC(&m_1, *v)) {
-                        if(m_1.v > *v) {
-                            *v = m_1.v;
-
-                            // Empty Mbox
-                            *num_mbox_doVC = 0;
-                        }
                         // mbox_startVC[num_mbox_startVC] = m_startVC;
                         *num_mbox_doVC = *num_mbox_doVC + 1;
                     } 
@@ -182,8 +169,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
                 if(normal) {
                     break;
                 }
-
-                retry = random;
             }
 
 
@@ -213,12 +198,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
 
                 if(m_2.lab_vc == 1 && m_2.type == 1) { // startVC
                     if(filter_startVC(&m_2, *v)) {
-                        if(m_2.v > *v) {
-                            *v = m_2.v;
-
-                            // Empty Mbox
-                            *num_mbox_startVC = 0;
-                        }
                         // mbox_startVC[num_mbox_startVC] = m_startVC;
                         *num_mbox_startVC = *num_mbox_startVC + 1;
                     } 
@@ -230,12 +209,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
 
                 if(m_2.lab_vc == 2 && m_2.type == 1) { // doVC
                     if(filter_doVC(&m_2, *v)) {
-                        if(m_2.v > *v) {
-                            *v = m_2.v;
-
-                            // Empty Mbox
-                            *num_mbox_doVC = 0;
-                        }
                         // mbox_startVC[num_mbox_startVC] = m_startVC;
                         *num_mbox_doVC = *num_mbox_doVC + 1;
                     } 
@@ -247,13 +220,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
 
                 if(m_2.lab == 2 && m_2.type == 0) { // prepOK
                     if(filter_prepOK(&m_2, *v, *k)) {
-                        // State transfer case not yet handled
-                        if(m_2.v > *v) {
-                            *v = m_2.v;
-
-                            // Empty Mbox
-                            num_mbox = 0;
-                        }
                         // mbox_startVC[num_mbox_startVC] = m_startVC;
                         num_mbox = num_mbox + 1;
                     } 
@@ -272,7 +238,7 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
             // out()
             *k = *k + 1;
         }
-        else {
+        else {  // Process is a Replica
             lab = 1;
             
             assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
@@ -286,7 +252,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
             *num_mbox_doVC = 0;
             *num_mbox_startVC = 0;
 
-            retry = random;
             while (1) {
                 // m = receive()
                 
@@ -297,12 +262,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
 
                 if(m_3.lab_vc == 1 && m_3.type == 1) { // startVC
                     if(filter_startVC(&m_3, *v)) {
-                        if(m_3.v > *v) {
-                            *v = m_3.v;
-
-                            // Empty Mbox
-                            *num_mbox_startVC = 0;
-                        }
                         // mbox_startVC[num_mbox_startVC] = m_startVC;
                         *num_mbox_startVC = *num_mbox_startVC + 1;
                     } 
@@ -314,12 +273,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
 
                 if(m_3.lab_vc == 2 && m_3.type == 1) { // doVC
                     if(filter_doVC(&m_3, *v)) {
-                        if(m_3.v > *v) {
-                            *v = m_3.v;
-
-                            // Empty Mbox
-                            *num_mbox_doVC = 0;
-                        }
                         // mbox_startVC[num_mbox_startVC] = m_startVC;
                         *num_mbox_doVC = *num_mbox_doVC + 1;
                     } 
@@ -330,12 +283,10 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
                 }
 
                 if(m_3.lab == 1 && m_3.type == 0) { // prep
-                    if(filter_prepOK(&m_3, *v, *k)) {
-                        if(m_3.v > *v) {
-                            *v = m_3.v;
-
-                            // Empty Mbox
-                            num_mbox = 0;
+                    if(filter_prep(&m_3, *n, *v)) {
+                        // Update Commit no
+                        if(m_3.k > *k) {
+                            *k = m_3.k;
                         }
                         // mbox_startVC[num_mbox_startVC] = m_startVC;
                         num_mbox = num_mbox + 1;
@@ -345,9 +296,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
                         break; 
                     }
                 }
-
-                retry = random;
             }
+
+            *n = *n + 1;
             
             lab = 2;
             
@@ -366,7 +317,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
             *num_mbox_doVC = 0;
             *num_mbox_startVC = 0;
 
-            retry = random;
             while (1) {
                 // m = receive()
                 
@@ -377,12 +327,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
 
                 if(m_4.lab_vc == 1 && m_4.type == 1) { // startVC
                     if(filter_startVC(&m_4, *v)) {
-                        if(m_4.v > *v) {
-                            *v = m_4.v;
-
-                            // Empty Mbox
-                            *num_mbox_startVC = 0;
-                        }
                         // mbox_startVC[num_mbox_startVC] = m_startVC;
                         *num_mbox_startVC = *num_mbox_startVC + 1;
                     } 
@@ -394,12 +338,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
 
                 if(m_4.lab_vc == 2 && m_4.type == 1) { // doVC
                     if(filter_doVC(&m_4, *v)) {
-                        if(m_4.v > *v) {
-                            *v = m_4.v;
-
-                            // Empty Mbox
-                            *num_mbox_doVC = 0;
-                        }
                         // mbox_startVC[num_mbox_startVC] = m_startVC;
                         *num_mbox_doVC = *num_mbox_doVC + 1;
                     } 
@@ -414,8 +352,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
                 if(normal) {
                     break;
                 }
-
-                retry = random;
             }
         }
     }    
