@@ -80,50 +80,160 @@ void test(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_doVC
     *old_n = 0;
 
 
-    while (1) {
-        
-        // Take input
-        // cmd = in()
-        cmd = random;
-
-        // Command is empty
-        if (cmd == 0)
-        {
-            // When Command is empty (or it is too long between two commands), we send an empty heartbeat
-            *lab = 1; // Prepare
-
-            assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
-            *old_v = *v;
-            *old_lab_vc = *lab_vc;
-            *old_k = *k;
-            *old_lab = *lab;
-            *old_n = *n;
-
-            // send empty prepare (Heartbeat) with commit number
-        }
-        else
-        {
-            *n = *n + 1;
-
-            // Add command to Log
-            //log[n] = cmd;
-
-            *lab = 1; // Prepare
+    if (pid == leader) {
+        while (1) {
             
-            assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
-            *old_v = *v;
-            *old_lab_vc = *lab_vc;
-            *old_k = *k;
-            *old_lab = *lab;
-            *old_n = *n;
+            // Take input
+            // cmd = in()
+            cmd = random;
 
-            // send prepare
+            // Command is empty
+            if (cmd == 0)
+            {
+                // When Command is empty (or it is too long between two commands), we send an empty heartbeat
+                *lab = 1; // Prepare
+
+                assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
+                *old_v = *v;
+                *old_lab_vc = *lab_vc;
+                *old_k = *k;
+                *old_lab = *lab;
+                *old_n = *n;
+
+                // send empty prepare (Heartbeat) with commit number
+            }
+            else
+            {
+                *n = *n + 1;
+
+                // Add command to Log
+                //log[n] = cmd;
+
+                *lab = 1; // Prepare
+                
+                assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
+                *old_v = *v;
+                *old_lab_vc = *lab_vc;
+                *old_k = *k;
+                *old_lab = *lab;
+                *old_n = *n;
+
+                // send prepare
+            }
+
+            retry = random;
+            if(retry) {
+                break;
+            }
         }
+
+        // Receive startVC or doVC
+        *num_mbox_doVC = 0;
+        *num_mbox_startVC = 0;
+
+        while (1) {
+            // m = receive()
+            
+            timeout = random;
+            if (timeout) {
+                return;
+            }
+
+            if(m_1.lab_vc == 1 && m_1.type == 1) { // startVC
+                if(filter_startVC(&m_1, *v)) {
+                    // mbox_startVC[num_mbox_startVC] = m_startVC;
+                    *num_mbox_startVC = *num_mbox_startVC + 1;
+                } 
+    
+                if(*num_mbox_startVC >= 1) {
+                    return; 
+                }
+            }
+
+            if(m_1.lab_vc == 2 && m_1.type == 1) { // doVC
+                if(filter_doVC(&m_1, *v)) {
+                    // mbox_startVC[num_mbox_startVC] = m_startVC;
+                    *num_mbox_doVC = *num_mbox_doVC + 1;
+                } 
+    
+                if(*num_mbox_doVC >= 1) {
+                    return; 
+                }
+            }
+
+            // The case where nothing is received
+            normal = random;
+            if(normal) {
+                break;
+            }
+        }
+
+
+        *lab = 2;  // PrepareOK
+
+        assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
+        *old_v = *v;
+        *old_lab_vc = *lab_vc;
+        *old_k = *k;
+        *old_lab = *lab;
+        *old_n = *n;
+
+        // Empty mbox
+        // memset(mbox_prepOK,0,sizeof(mbox_prepOK));
+        num_mbox = 0;
+        *num_mbox_doVC = 0;
+        *num_mbox_startVC = 0;
 
         retry = random;
-        if(retry) {
-            break;
+        while (1) {
+            // m = receive()
+            
+            timeout = random;
+            if (timeout) {
+                return;
+            }
+
+            if(m_2.lab_vc == 1 && m_2.type == 1) { // startVC
+                if(filter_startVC(&m_2, *v)) {
+                    // mbox_startVC[num_mbox_startVC] = m_startVC;
+                    *num_mbox_startVC = *num_mbox_startVC + 1;
+                } 
+    
+                if(*num_mbox_startVC >= 1) {
+                    return; 
+                }
+            }
+
+            if(m_2.lab_vc == 2 && m_2.type == 1) { // doVC
+                if(filter_doVC(&m_2, *v)) {
+                    // mbox_startVC[num_mbox_startVC] = m_startVC;
+                    *num_mbox_doVC = *num_mbox_doVC + 1;
+                } 
+    
+                if(*num_mbox_doVC >= 1) {
+                    return; 
+                }
+            }
+
+            if(m_2.lab == 2 && m_2.type == 0) { // prepOK
+                if(filter_prepOK(&m_2, *v, *k)) {
+                    // mbox_startVC[num_mbox_startVC] = m_startVC;
+                    num_mbox = num_mbox + 1;
+                } 
+    
+                if(num_mbox >= (num+1)/2) {
+                    break; 
+                }
+            }
+
+            retry = random;
+            if(retry) {
+                break;
+            }
         }
+
+        // out()
+        *k = *k + 1;
     }
 }
 
