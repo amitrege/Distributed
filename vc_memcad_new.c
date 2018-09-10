@@ -45,6 +45,88 @@ int filter_prepOK (msg* m, int v, int k) {
     return 0; 
 }
 
+void test(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_doVC, int* v, int* lab_vc, int* k, int* lab, int* n, int* old_v, int* old_lab_vc, int* old_k, int* old_lab, int* old_n){
+    int retry;
+    int timeout;
+    int normal;
+    
+    int cmd; // Declaration for incoming command
+    
+    int vc_msg;
+
+    // msg_prep mbox_prep[2*num];
+    // int num_mbox_prep = 0;
+
+    // msg_prepOK mbox_prepOK[2*num];
+    // int num_mbox_prepOK = 0;
+
+    int num_mbox = 0;
+
+    volatile int random;
+
+    int leaderCommit;
+
+    // For leader branch
+    msg m_1;
+    msg m_2;
+
+    // For follower branch
+    msg m_3;
+    msg m_4;
+
+    // new machine entrance
+    *old_k = 0;
+    *old_lab = 0;
+    *old_n = 0;
+
+
+    while (1) {
+        
+        // Take input
+        // cmd = in()
+        cmd = random;
+
+        // Command is empty
+        if (cmd == 0)
+        {
+            // When Command is empty (or it is too long between two commands), we send an empty heartbeat
+            *lab = 1; // Prepare
+
+            assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
+            *old_v = *v;
+            *old_lab_vc = *lab_vc;
+            *old_k = *k;
+            *old_lab = *lab;
+            *old_n = *n;
+
+            // send empty prepare (Heartbeat) with commit number
+        }
+        else
+        {
+            *n = *n + 1;
+
+            // Add command to Log
+            //log[n] = cmd;
+
+            *lab = 1; // Prepare
+            
+            assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
+            *old_v = *v;
+            *old_lab_vc = *lab_vc;
+            *old_k = *k;
+            *old_lab = *lab;
+            *old_n = *n;
+
+            // send prepare
+        }
+
+        retry = random;
+        if(retry) {
+            break;
+        }
+    }
+}
+
 // The case where messages have higher view number is ignored for now (recovery)
 void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_doVC, int* v, int* lab_vc, int* k, int* lab, int* n, int* old_v, int* old_lab_vc, int* old_k, int* old_lab, int* old_n)
 {
@@ -559,5 +641,6 @@ int main(){
     int num_mbox_startVC = 0;
 
     // VC(0,5);
-    NormalOp(0,5,0, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+    test(0,5,0, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);    
+    //NormalOp(0,5,0, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
 }
