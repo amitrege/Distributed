@@ -39,7 +39,7 @@ int filter_prep (msg* m, int n, int v) {
 }
 
 int filter_prepOK (msg* m, int v, int k) {
-    if (m->n == k+1 && m->v >= v) {
+    if (m->n == k+1 && m->v == v) {
         return 1;
     }
     return 0; 
@@ -84,15 +84,16 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
     
     while (1) {
         if (pid == leader) {
-            retry = random;
-            while (retry) {
+            while (1) {
                 
+                // Take input
                 // cmd = in()
                 cmd = random;
 
                 // Command is empty
                 if (cmd == 0)
                 {
+                    // When Command is empty (or it is too long between two commands), we send an empty heartbeat
                     *lab = 1; // Prepare
 
                     assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
@@ -107,6 +108,8 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
                 else
                 {
                     *n = *n + 1;
+
+                    // Add command to Log
                     //log[n] = cmd;
 
                     *lab = 1; // Prepare
@@ -119,6 +122,11 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
                     *old_n = *n;
 
                     // send prepare
+                }
+
+                retry = random;
+                if(retry) {
+                    break;
                 }
             }
 
@@ -239,6 +247,7 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
 
                 if(m_2.lab == 2 && m_2.type == 0) { // prepOK
                     if(filter_prepOK(&m_2, *v, *k)) {
+                        // State transfer case not yet handled
                         if(m_2.v > *v) {
                             *v = m_2.v;
 
@@ -255,6 +264,9 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
                 }
 
                 retry = random;
+                if(retry) {
+                    break;
+                }
             }
 
             // out()
@@ -610,6 +622,6 @@ int main(){
     int num_mbox_doVC = 0;
     int num_mbox_startVC = 0;
 
-    VC(0,5);
-    //NormalOp(0,5,0, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+    // VC(0,5);
+    NormalOp(0,5,0, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
 }
