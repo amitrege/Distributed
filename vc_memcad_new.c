@@ -126,6 +126,47 @@ void test(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_doVC
                     break;
                 }
             }
+
+            // Receive startVC or doVC
+            *num_mbox_doVC = 0;
+            *num_mbox_startVC = 0;
+
+            while (1) {
+                // m = receive()
+                
+                timeout = random;
+                if (timeout) {
+                    return;
+                }
+
+                if(m_1.lab_vc == 1 && m_1.type == 1) { // startVC
+                    if(filter_startVC(&m_1, *v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        *num_mbox_startVC = *num_mbox_startVC + 1;
+                    } 
+        
+                    if(*num_mbox_startVC >= 1) {
+                        return; 
+                    }
+                }
+
+                if(m_1.lab_vc == 2 && m_1.type == 1) { // doVC
+                    if(filter_doVC(&m_1, *v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        *num_mbox_doVC = *num_mbox_doVC + 1;
+                    } 
+        
+                    if(*num_mbox_doVC >= 1) {
+                        return; 
+                    }
+                }
+
+                // The case where nothing is received
+                normal = random;
+                if(normal) {
+                    break;
+                }
+            }
         }
     } 
     
