@@ -79,7 +79,55 @@ void test(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_doVC
     *old_lab = 0;
     *old_n = 0;
 
+    while (1) {
+        if (pid == leader) {
+            while (1) {
+                
+                // Take input
+                // cmd = in()
+                cmd = random;
 
+                // Command is empty
+                if (cmd == 0)
+                {
+                    // When Command is empty (or it is too long between two commands), we send an empty heartbeat
+                    *lab = 1; // Prepare
+
+                    assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
+                    *old_v = *v;
+                    *old_lab_vc = *lab_vc;
+                    *old_k = *k;
+                    *old_lab = *lab;
+                    *old_n = *n;
+
+                    // send empty prepare (Heartbeat) with commit number
+                }
+                else
+                {
+                    *n = *n + 1;
+
+                    // Add command to Log
+                    //log[n] = cmd;
+
+                    *lab = 1; // Prepare
+                    
+                    assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
+                    *old_v = *v;
+                    *old_lab_vc = *lab_vc;
+                    *old_k = *k;
+                    *old_lab = *lab;
+                    *old_n = *n;
+
+                    // send prepare
+                }
+
+                retry = random;
+                if(retry) {
+                    break;
+                }
+            }
+        }
+    } 
     
 }
 
