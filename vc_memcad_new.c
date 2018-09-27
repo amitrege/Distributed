@@ -779,7 +779,7 @@ int VC(int pid, int num)
             old_n = n;
 
             // send <startView v, l, n, k> to all
-            NormalOp(pid, num, leader, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+            // NormalOp(pid, num, leader, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
             v = v + 1;
         }
         else {
