@@ -530,11 +530,6 @@ void NormalOp(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_
                         break; 
                     }
                 }
-
-                retry = random;
-                if(retry) {
-                    break;
-                }
             }
 
             // out()
@@ -714,7 +709,6 @@ int VC(int pid, int num)
         }   
 
         // receive Transaction
-        retry = random;
         while(1){
             // m = receive()
             if(m_startVC.lab_vc == 1 && m_startVC.type == 1) { // startVC
@@ -733,8 +727,6 @@ int VC(int pid, int num)
                     break; 
                 }
             }
-
-            retry = random;
         }
 
         lab_vc = 2; // doVC
@@ -753,7 +745,6 @@ int VC(int pid, int num)
             num_mbox_doVC = 0;
 
             // receive doVC messages
-            retry = random;
             while(1){
                 if(m_doVC.lab_vc == 2 && m_doVC.type == 1) { // doVC
                     if(filter_doVC(&m_doVC, v)) {
@@ -771,8 +762,6 @@ int VC(int pid, int num)
                         break; 
                     }
                 }
-
-                retry = random;
             }
 
             // log = largest_log(mbox);
@@ -811,8 +800,7 @@ int VC(int pid, int num)
             num_mbox_startView = 0;   
 
             // receive Transaction
-            retry = random;
-            while(retry) {
+            while(1) {
                 if(m_startView.lab_vc == 3 && m_startView.type == 1) { // doVC
                     if(filter_startView(&m_startView, v)) {
                         if(m_startView.v > v) {
@@ -829,8 +817,6 @@ int VC(int pid, int num)
                         break; 
                     }
                 }
-
-                retry = random;
             }
 
             // log = m.log;
@@ -838,7 +824,7 @@ int VC(int pid, int num)
             // k = mbox_startView[0].log_k;
             // v = mbox_startView[0].v;
 
-            NormalOp(pid, num, leader, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
+            // NormalOp(pid, num, leader, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
             v = v + 1; 
         }
     }
@@ -860,7 +846,7 @@ int main(){
     int num_mbox_doVC = 0;
     int num_mbox_startVC = 0;
 
-    // VC(0,5);
-    test(0,5,0, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);    
+    VC(0,5);
+    //test(0,5,0, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);    
     //NormalOp(0,5,0, &num_mbox_startVC, &num_mbox_doVC, &v, &lab_vc, &k, &lab, &n, &old_v, &old_lab_vc, &old_k, &old_lab, &old_n);
 }
