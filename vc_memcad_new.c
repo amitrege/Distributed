@@ -223,11 +223,6 @@ void test(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_doVC
                         break; 
                     }
                 }
-
-                retry = random;
-                if(retry) {
-                    break;
-                }
             }
 
             // out()
