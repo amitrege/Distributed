@@ -166,72 +166,72 @@ void test(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_doVC
                 if(normal) {
                     break;
                 }
+            }
 
-                *lab = 2;  // PrepareOK
+            *lab = 2;  // PrepareOK
+
+            assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
+            *old_v = *v;
+            *old_lab_vc = *lab_vc;
+            *old_k = *k;
+            *old_lab = *lab;
+            *old_n = *n;
+
+            // Empty mbox
+            // memset(mbox_prepOK,0,sizeof(mbox_prepOK));
+            num_mbox = 0;
+            *num_mbox_doVC = 0;
+            *num_mbox_startVC = 0;
+
+            while (1) {
+                // m = receive()
                 
-                assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
-                *old_v = *v;
-                *old_lab_vc = *lab_vc;
-                *old_k = *k;
-                *old_lab = *lab;
-                *old_n = *n;
-    
-                // Empty mbox
-                // memset(mbox_prepOK,0,sizeof(mbox_prepOK));
-                num_mbox = 0;
-                *num_mbox_doVC = 0;
-                *num_mbox_startVC = 0;
-    
-                while (1) {
-                    // m = receive()
-                    
-                    timeout = random;
-                    if (timeout) {
-                        return;
-                    }
-    
-                    if(m_2.lab_vc == 1 && m_2.type == 1) { // startVC
-                        if(filter_startVC(&m_2, *v)) {
-                            // mbox_startVC[num_mbox_startVC] = m_startVC;
-                            *num_mbox_startVC = *num_mbox_startVC + 1;
-                        } 
-            
-                        if(*num_mbox_startVC >= 1) {
-                            return; 
-                        }
-                    }
-    
-                    if(m_2.lab_vc == 2 && m_2.type == 1) { // doVC
-                        if(filter_doVC(&m_2, *v)) {
-                            // mbox_startVC[num_mbox_startVC] = m_startVC;
-                            *num_mbox_doVC = *num_mbox_doVC + 1;
-                        } 
-            
-                        if(*num_mbox_doVC >= 1) {
-                            return; 
-                        }
-                    }
-    
-                    if(m_2.lab == 2 && m_2.type == 0) { // prepOK
-                        if(filter_prepOK(&m_2, *v, *k)) {
-                            // mbox_startVC[num_mbox_startVC] = m_startVC;
-                            num_mbox = num_mbox + 1;
-                        } 
-            
-                        if(num_mbox >= (num+1)/2) {
-                            break; 
-                        }
-                    }
-    
-                    retry = random;
-                    if(retry) {
-                        break;
+                timeout = random;
+                if (timeout) {
+                    return;
+                }
+
+                if(m_2.lab_vc == 1 && m_2.type == 1) { // startVC
+                    if(filter_startVC(&m_2, *v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        *num_mbox_startVC = *num_mbox_startVC + 1;
+                    } 
+        
+                    if(*num_mbox_startVC >= 1) {
+                        return; 
                     }
                 }
-    
-                // out()
-                *k = *k + 1;
+
+                if(m_2.lab_vc == 2 && m_2.type == 1) { // doVC
+                    if(filter_doVC(&m_2, *v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        *num_mbox_doVC = *num_mbox_doVC + 1;
+                    } 
+        
+                    if(*num_mbox_doVC >= 1) {
+                        return; 
+                    }
+                }
+
+                if(m_2.lab == 2 && m_2.type == 0) { // prepOK
+                    if(filter_prepOK(&m_2, *v, *k)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        num_mbox = num_mbox + 1;
+                    } 
+        
+                    if(num_mbox >= (num+1)/2) {
+                        break; 
+                    }
+                }
+
+                retry = random;
+                if(retry) {
+                    break;
+                }
             }
+
+            // out()
+            *k = *k + 1;
         }
     } 
     
