@@ -228,6 +228,122 @@ void test(int pid, int num, int leader,int* num_mbox_startVC, int* num_mbox_doVC
             // out()
             *k = *k + 1;
         }
+        else {  // Process is a Replica
+            lab = 1;
+            
+            assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
+            *old_v = *v;
+            *old_lab_vc = *lab_vc;
+            *old_k = *k;
+            *old_lab = *lab;
+            *old_n = *n;
+
+            num_mbox = 0;
+            *num_mbox_doVC = 0;
+            *num_mbox_startVC = 0;
+
+            while (1) {
+                // m = receive()
+                
+                timeout = random;
+                if (timeout) {
+                    return;
+                }
+
+                if(m_3.lab_vc == 1 && m_3.type == 1) { // startVC
+                    if(filter_startVC(&m_3, *v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        *num_mbox_startVC = *num_mbox_startVC + 1;
+                    } 
+        
+                    if(*num_mbox_startVC >= 1) {
+                        return; 
+                    }
+                }
+
+                if(m_3.lab_vc == 2 && m_3.type == 1) { // doVC
+                    if(filter_doVC(&m_3, *v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        *num_mbox_doVC = *num_mbox_doVC + 1;
+                    } 
+        
+                    if(*num_mbox_doVC >= 1) {
+                        return; 
+                    }
+                }
+
+                if(m_3.lab == 1 && m_3.type == 0) { // prep
+                    if(filter_prep(&m_3, *n, *v)) {
+                        // Update Commit no
+                        if(m_3.k > *k) {
+                            *k = m_3.k;
+                        }
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        num_mbox = num_mbox + 1;
+                    } 
+        
+                    if(num_mbox >= 1) {
+                        break; 
+                    }
+                }
+            }
+
+            *n = *n + 1;
+            
+            lab = 2;
+            
+            assert((*v > *old_v) || ((*v == *old_v) && (*lab_vc > *old_lab_vc)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k > *old_k)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab > *old_lab)) || ((*v == *old_v) && (*lab_vc == *old_lab_vc) && (*k == *old_k) && (*lab == *old_lab) && (*n >= *old_n)));
+            *old_v = *v;
+            *old_lab_vc = *lab_vc;
+            *old_k = *k;
+            *old_lab = *lab;
+            *old_n = *n;
+
+            // send Ack
+
+            *k = *k + 1;
+
+            // Receive startVC or doVC
+            *num_mbox_doVC = 0;
+            *num_mbox_startVC = 0;
+
+            while (1) {
+                // m = receive()
+                
+                timeout = random;
+                if (timeout) {
+                    return;
+                }
+
+                if(m_4.lab_vc == 1 && m_4.type == 1) { // startVC
+                    if(filter_startVC(&m_4, *v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        *num_mbox_startVC = *num_mbox_startVC + 1;
+                    } 
+        
+                    if(*num_mbox_startVC >= 1) {
+                        return; 
+                    }
+                }
+
+                if(m_4.lab_vc == 2 && m_4.type == 1) { // doVC
+                    if(filter_doVC(&m_4, *v)) {
+                        // mbox_startVC[num_mbox_startVC] = m_startVC;
+                        *num_mbox_doVC = *num_mbox_doVC + 1;
+                    } 
+        
+                    if(*num_mbox_doVC >= 1) {
+                        return; 
+                    }
+                }
+
+                // The case where nothing is received
+                normal = random;
+                if(normal) {
+                    break;
+                }
+            }
+        }
     } 
     
 }
